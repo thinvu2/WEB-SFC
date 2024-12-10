@@ -1,0 +1,69 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\V1039443\\Desktop\\SOURCE-NIC\\webapi\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{AF760C50-6E43-4FC3-B343-C52ECF0BC4B0}|SN_API\\SN_API.csproj|c:\\users\\v1039443\\desktop\\source-nic\\webapi\\sn_api\\controllers\\config\\config76controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AF760C50-6E43-4FC3-B343-C52ECF0BC4B0}|SN_API\\SN_API.csproj|solutionrelative:sn_api\\controllers\\config\\config76controller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AF760C50-6E43-4FC3-B343-C52ECF0BC4B0}|SN_API\\SN_API.csproj|C:\\Users\\V1039443\\Desktop\\SOURCE-NIC\\webapi\\sn_api\\controllers\\config\\configjigcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AF760C50-6E43-4FC3-B343-C52ECF0BC4B0}|SN_API\\SN_API.csproj|solutionrelative:sn_api\\controllers\\config\\configjigcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{AF760C50-6E43-4FC3-B343-C52ECF0BC4B0}|SN_API\\SN_API.csproj|C:\\Users\\V1039443\\Desktop\\SOURCE-NIC\\webapi\\sn_api\\services\\getstring.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AF760C50-6E43-4FC3-B343-C52ECF0BC4B0}|SN_API\\SN_API.csproj|solutionrelative:sn_api\\services\\getstring.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Config76Controller.cs",
+              "DocumentMoniker": "C:\\Users\\V1039443\\Desktop\\SOURCE-NIC\\webapi\\SN_API\\Controllers\\Config\\Config76Controller.cs",
+              "RelativeDocumentMoniker": "SN_API\\Controllers\\Config\\Config76Controller.cs",
+              "ToolTip": "C:\\Users\\V1039443\\Desktop\\SOURCE-NIC\\webapi\\SN_API\\Controllers\\Config\\Config76Controller.cs",
+              "RelativeToolTip": "SN_API\\Controllers\\Config\\Config76Controller.cs",
+              "ViewState": "AgIAAOsAAAAAAAAAAAAAAPQAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-29T06:18:30.499Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "GetString.cs",
+              "DocumentMoniker": "C:\\Users\\V1039443\\Desktop\\SOURCE-NIC\\webapi\\SN_API\\Services\\GetString.cs",
+              "RelativeDocumentMoniker": "SN_API\\Services\\GetString.cs",
+              "ToolTip": "C:\\Users\\V1039443\\Desktop\\SOURCE-NIC\\webapi\\SN_API\\Services\\GetString.cs",
+              "RelativeToolTip": "SN_API\\Services\\GetString.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-29T03:36:38.254Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ConfigJIGController.cs",
+              "DocumentMoniker": "C:\\Users\\V1039443\\Desktop\\SOURCE-NIC\\webapi\\SN_API\\Controllers\\Config\\ConfigJIGController.cs",
+              "RelativeDocumentMoniker": "SN_API\\Controllers\\Config\\ConfigJIGController.cs",
+              "ToolTip": "C:\\Users\\V1039443\\Desktop\\SOURCE-NIC\\webapi\\SN_API\\Controllers\\Config\\ConfigJIGController.cs",
+              "RelativeToolTip": "SN_API\\Controllers\\Config\\ConfigJIGController.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAgwCwAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-29T03:07:38.012Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
