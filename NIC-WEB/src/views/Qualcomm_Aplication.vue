@@ -41,9 +41,7 @@
         CheckPrivilege: "QUERY",
       };
     },
-    mounted() {
-      console.log("QualcommApplications: ", QualcommApplications);
-      
+    mounted() { 
       this.CheckEmpClass();
     },
     methods: {

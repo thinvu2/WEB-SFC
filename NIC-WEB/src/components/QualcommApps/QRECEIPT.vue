@@ -39,25 +39,6 @@
         </div>
       </div>
     </div>
-      <!-- <div class="div-searchbox row" v-if="isShowForm === false">
-        <div class="div-searchbox-content">
-          <input
-            v-on:keyup.enter="QuerySearch()"
-            v-model="valueSearch"
-            type="text"
-            ref="input"
-            class="form-control"
-            @click="selectAll"
-            :placeholder="
-              $store.state.language == 'En'
-                ? 'Enter PACKSLIP_NO...'
-                : 'Nhập PACKSLIP_NO...'"
-          />
-          <button @click="QuerySearch()" class="btn">
-            <Icon icon="search" class="sidenav-icon" />
-          </button>
-        </div>
-      </div> -->
       <!-- Form input data -->
       <div class="container" v-if="isShowForm === true">
             <div class="title-class">
@@ -113,16 +94,16 @@
                     v-model="model.AIRWAYBILL"
                 />
             </div>
-            <!-- <div class="form-row">
-                <label for="item_no">Invoice:</label>
+            <div class="form-row">
+                <label for="lot-no">Lot No:</label>
                 <input type="text"
                     class="text-input"
-                    id="item_no"
-                    name="item_no"
+                    id="lot-no"
+                    name="lot-no"
                     readonly
-                    v-model="model.PO_NO"
+                    v-model="model.LOT_NO"
                 />
-            </div> -->
+            </div>
             <div class="actual-ship-from">
                 <span class="title-actual-ship">Actual ship from</span>
                 <div class="form-row-actual">
@@ -161,30 +142,12 @@
                         <label for="packslip_no">Address:</label>
                     </div>
                     <div class="form-row-actual-all-input">
-                        <!-- <input type="text"
-                        id="packslip_no"
-                        name="packslip_no"
-                        readonly
-                        v-model="model.SHIP_MCMN_STREET1"
-                    /> -->
-                    <p>{{ model.SHIP_MCMN_STREET1 }}</p>
+                        <p>{{ model.SHIP_MCMN_STREET1 }}</p>
                     </div>
                     <div class="form-row-actual-all-input">
-                        <!-- <input type="text"
-                        id="packslip_no"
-                        name="packslip_no"
-                        readonly
-                        v-model="model.SHIP_MCMN_STREET2"
-                    /> -->
-                    <p>{{ model.SHIP_MCMN_STREET2 }}</p>
+                        <p>{{ model.SHIP_MCMN_STREET2 }}</p>
                     </div>
                     <div class="form-row-actual-all-input">
-                        <!-- <input type="text"
-                        id="packslip_no"
-                        name="packslip_no"
-                        readonly
-                        v-model="model.SHIP_MCMN_STREET3"
-                        /> -->
                         <p>{{ model.SHIP_MCMN_STREET3 }}</p>
                     </div>
                 </div>
@@ -353,67 +316,30 @@
         <div class="submit-form" v-if="isShowForm === true && isShowSubmitForm === false">
         </div>
 
-      <div class="main-contain" v-if="isShowForm === false">
+        <div class="main-contain" v-if="isShowForm === false">
         <div class="row col-sm-12 div-content">
           <template v-if="DataTableHeader">
             <table id="tableMain" class="table mytable">
-              <thead v-if="DataTable.length > 0">
-                <tr>
-                  <th style="width: 1px">
-                    {{ $store.state.language == "En" ? "Edit" : "Sửa" }}
-                  </th>
-                  <template v-for="(item, index) in DataTableHeader" :key="index">
-                    <th v-if="item != 'ID'">
-                      {{ item }}
-                    </th>
-                  </template>
-                </tr>
-              </thead>
-              <!-- <tbody>
-                <template v-for="(item, index) in DataTable" :key="index">
-                <tr>
-                    <td 
-                    class="td-edit" 
-                    :style="{ backgroundColor: FLAG != 1 ? 'blue' : 'inherit' }" 
-                    @click="ShowDetail(index)">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        height="24"
-                    >
-                        <path fill="none" d="M0 0h24v24H0z" />
-                        <path
-                        fill="#FFF"
-                        d="M16.757 3l-2 2H5v14h14V9.243l2-2V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h12.757zm3.728-.9L21.9 3.516l-9.192 9.192-1.412.003-.002-1.417L20.485 2.1z"
-                        />
-                    </svg>
-                    </td>
-                    <template v-for="(item1, index1) in item" :key="index1">
-                    <td v-if="index1 != 'ID'">{{ item1 }}</td>
+                <thead v-if="DataTable.length > 0">
+                    <tr>
+                    <template v-for="(item, index) in DataTableHeader" :key="index">
+                        <th v-if="item == 'PACKSLIP_NO' ||item=='STATUS' || item =='CREATE_TIME' || item=='PO_NO' || item == 'PO_LINE' || item == 'ITEM_NO' || item == 'ITEM_SHIPPEDQTY' ||
+                            item =='ITEM_MPN' || item=='ITEM_DESCRIPTION'|| item=='LOT_NO' || item=='RECEIVER_LOCATION'|| item=='RECEIVER_NAME'||item=='PALLET_LPN'||
+                            item=='PAL_GROSSWEIGHT'||item=='PAL_NETWEIGHT'">
+                        {{ item }}
+                        </th>
                     </template>
-                </tr>
-                </template>
-            </tbody> -->
+                    </tr>
+                </thead>
                 <tbody>
                     <template v-for="(item, index) in DataTable" :key="index">
                         <tr>
-                            <td class="td-edit" @click="ShowDetail(index)">
-                                <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                width="24"
-                                height="24"
-                                >
-                                <path fill="none" d="M0 0h24v24H0z" />
-                                <path
-                                    fill="#FFF"
-                                    d="M16.757 3l-2 2H5v14h14V9.243l2-2V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h12.757zm3.728-.9L21.9 3.516l-9.192 9.192-1.412.003-.002-1.417L20.485 2.1z"
-                                />
-                                </svg>
-                            </td>
                             <template v-for="(item1, index1) in item" :key="index1">
-                                <td v-if="index1 != 'ID'">{{ item1 }}</td>
+                                <td @click="index1 == 'PACKSLIP_NO' && ShowDetail(index)" v-if="index1 == 'PACKSLIP_NO'||index1=='STATUS'|| index1 =='CREATE_TIME' || index1=='PO_NO' || index1 == 'PO_LINE' || index1 == 'ITEM_NO' || index1 == 'ITEM_SHIPPEDQTY' ||
+                                    index1 =='ITEM_MPN' || index1=='ITEM_DESCRIPTION'|| index1=='LOT_NO' || index1=='RECEIVER_LOCATION'|| index1=='RECEIVER_NAME'||index1=='PALLET_LPN'||
+                                    index1=='PAL_GROSSWEIGHT'||index1=='PAL_NETWEIGHT'">
+                                    {{ item1 }}
+                                </td>
                             </template>
                         </tr>
                     </template>
@@ -491,7 +417,7 @@
             PAL_HEIGHT: "", 
             SHIP_MCMN_FREIGHT_CARRIER_CODE: "",
             LOCATIONNAME: "",
-            STATUS: ""
+            INNERBOX_LPN: ""
         }, 
       }
     },
@@ -553,7 +479,11 @@
                 SHIP_MCMN_POSTALCODE: this.model.POSTAL_CODE,
                 SHIP_MCMN_ADDR1: this.model.SHIP_MCMN_STREET1,
                 SHIP_MCMN_ADDR2: this.model.SHIP_MCMN_STREET2,
-                SHIP_MCMN_ADDR3: this.model.SHIP_MCMN_STREET3
+                SHIP_MCMN_ADDR3: this.model.SHIP_MCMN_STREET3,
+                POLINE_NO: this.model.POLINE_NO,
+                ITEM_UNITOFMEASURE: this.model.ITEM_UNITOFMEASURE,
+                ITEM_NO: this.model.ITEM_NO,
+                INNERBOX_LPN: this.model.INNERBOX_LPN
             };
             console.log("payload: ", payload);
             try {
@@ -576,11 +506,8 @@
       },
     async LoadComponent() {
         let databaseName = localStorage.databaseName;
-        let PACKSLIP_NO = this.model.PACKSLIP_NO;
-        let dateFrom = "";
-        let dateTo = "";
         try {
-            let { data } = await Repository.getApiServer(`GetDataQReciept?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}&dateFrom=${dateFrom}&dateTo=${dateTo}`);
+            let { data } = await Repository.getApiServer(`GetLoadFormQReceipt?database_name=${databaseName}`);
             this.DataTable = [];
             this.DataTable = data.data;
             if (this.DataTable.length > 0) {
@@ -593,9 +520,6 @@
             this.$swal ("", error.Message, "error")
             }
         }
-    },
-    pad(number) {
-        return number < 10 ? `0${number}` : `${number}`;
     },
     async QuerySearch() {
         const formatDate = (date) => {
@@ -625,21 +549,11 @@
     async ShowDetail(index) {
         let databaseName = localStorage.databaseName;
         let PACKSLIP_NO = this.DataTable[index].PACKSLIP_NO;
-        let FLAG = this.DataTable[index].STATUS;
+        let FLAG = this.DataTable[index].FLAG;
         let F_ID = this.DataTable[index].F_ID;
-        if(FLAG == "WAIT") {
-            FLAG = 0;
-        }else {
-            FLAG = 1;
-        }
-        console.log("Initial FLAG: ", FLAG);
-        console.log("Initial isShowSubmitForm: ", this.isShowSubmitForm);
         if (FLAG != "0") {
-            console.log("Condition met: FLAG != '0'");
             this.isShowSubmitForm = false;
         }
-        console.log("Final isShowSubmitForm: ", this.isShowSubmitForm);
-
         try {
             let responseData = await Repository.getApiServer(`GetShowDetailQReceipt?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}&FLAG=${FLAG}&F_ID=${F_ID}`);
              this.ShowDataDetail = [];
@@ -672,6 +586,7 @@
             this.model.ITEM_DESCRIPTION = firstItem.ITEM_DESCRIPTION;
             this.model.LOT_NO = firstItem.LOT_NO;
             this.model.RECEIVER_NAME = firstItem.RECEIVER_NAME;
+            this.model.INNERBOX_LPN = firstItem.INNERBOX_LPN;
             //new
             this.model.AIRWAYBILL = firstItem.AIRWAYBILL;
             this.model.SHIP_MCMN_FREIGHT_CARRIER_CODE = firstItem.FREIGHT_CARRIER_CODE;
@@ -688,10 +603,8 @@
             this.model.PAL_WIDTH = firstItem.PAL_WIDTH;
             this.model.PAL_LENGTH = firstItem.PAL_LENGTH;
             this.model.PAL_HEIGHT = firstItem.PAL_HEIGHT;
-                console.log("this.FLAG: ", this.model.FLAG, "this.F_ID: ", this.model.F_ID);
             this.isShowForm = true;
         } else {
-            console.log("No data available in ShowDataDetail.");
             this.isShowForm = false;
         }
         }catch(error) {
@@ -702,9 +615,14 @@
             }
         }
       },
+        pad(number) {
+            return number < 10 ? `0${number}` : `${number}`;
+        },
       ClearForm() {
         this.isShowForm = false;
         this.model.PACKSLIP_NO = "";
+        this.isShowSubmitForm = true;
+        this.selectedItems = [];
         this.model.FLAG = "";
         this.model.F_ID = "";
         this.LoadComponent()
@@ -728,17 +646,6 @@
         padding: 0 10px;
         background-color: #f9f9f9;
     }
-    // .header {
-    //     display: flex;
-    //     align-items: center;
-    //     justify-content: space-between;
-    //     padding: 16px;
-    //     background: linear-gradient(90deg, #007bff, #6610f2, #e83e8c, #ffc107);
-    //     color: white;
-    //     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    //     border-radius: 8px;
-    // }
-
 /* Back Button Styles */
     .div-back {
         float: left;
@@ -766,32 +673,6 @@
             font-size: 17px;
         }
     }
-    // .back-button {
-    //     cursor: pointer;
-    //     display: flex;
-    //     align-items: center;
-    //     background-color: rgba(255, 255, 255, 0.2);
-    //     padding: 8px;
-    //     border-radius: 50%;
-    //     transition: background-color 0.3s ease;
-    // }
-
-    // .back-button:hover {
-    //     background-color: rgba(255, 255, 255, 0.4);
-    // }
-
-    // .back-icon {
-    //     font-size: 1.5rem;
-    //     color: white;
-    // }
-
-    // .config-name span {
-    //     font-size: 1.8rem;
-    //     font-weight: bold;
-    //     text-transform: uppercase;
-    //     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    // }
-
     .searchbox-time{
         height: 40px;
     }
@@ -832,19 +713,6 @@
         box-shadow: 0 5px #666;
         transform: translateY(4px);
     }
-    // .btn-button {
-    //     border-radius: 5px;
-    //     padding: 6px 20px;
-    //     height: 40px;
-    //     border: none;
-    //     background: #f18436;
-    //     color: #fff;
-    //     box-sizing: 0;
-    //     &:hover {
-    //         background: #ec690c;
-    //         transition: 0.5s;
-    //     }
-    // }
     .searchbox-content {
         display: flex;
         gap: 5px;
@@ -860,11 +728,11 @@
     }
     .container {
         display: grid;
-        grid-template-rows: 50px 40px 40px auto 40px 40px 40px auto 40px 40px;
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 50px repeat(2, 35px) auto repeat(3, 35px) auto repeat(2, 35px);
+        grid-template-columns: repeat(3, 1fr);
         align-content: space-around;
         box-sizing: border-box;
-        background: #e6e6e2;
+        background-color: #e6e6e2;
         padding: 0 20px 0px 20px;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         position: relative;
@@ -873,10 +741,12 @@
         width: 80%;
         overflow: auto;
         height: 500px;
+        row-gap: 5px;
         .text-input {
-            width: 50%;
+            width: 55%;
             padding: 5px;
             border: 1px solid #e6e6e2;
+            background-color: #e6e6e2;
             border-radius: 5px;
             box-sizing: border-box;
             margin-bottom: 10px;
@@ -884,13 +754,10 @@
             resize: vertical;
         }
         label {
-            // color: #141414;
-            // font-size: 16px;
-            // margin-left: 10px;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 555;
             color: #141414;
-            margin-left: 15px;
+            margin-left: 30px;
         }
         p {
             color: #141414;
@@ -905,27 +772,16 @@
         font-family: serif;
         font-style: italic;
     }
+    .title-class p {
+        margin: 0px;
+    }
     .submit-form{
-       // width: 100%;
         text-align: center;
         height: 45px;
     }
     .submit-form input {
-            margin-right: 5px;
-        }
-    // #submit-form {
-    //     background-color: #0dce87;
-    //     color: #fffdfd;
-    //     font-weight: 555;
-    //     padding: 8px 12px;
-    //     border: none;
-    //     border-radius: 5px;
-    //     cursor: pointer;
-    //     &:hover {
-    //         background-color: #028d5a;
-    //         transition: 0.5s;
-    //     }
-    // }
+        margin-right: 5px;
+    }
     #submit-form {
         font-weight: 555;
         margin-top: 5px;
@@ -942,7 +798,6 @@
     }
     #submit-form:hover {
         background-color: #3e8e41;
-        //font-weight: 555;
     }
     #submit-form:active {
         background-color: #3e8e41;
@@ -950,17 +805,17 @@
         transform: translateY(4px);
     }
 
-        input#clear-form {
-            background-color: #f8c323;
-            color: #000;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            &:hover {
-                background-color: #e0a800;
-            }
+    input#clear-form {
+        background-color: #f8c323;
+        color: #000;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        &:hover {
+            background-color: #e0a800;
         }
+    }
         input#return-form {
             background-color: #f77225;
             color: #000;
@@ -975,10 +830,11 @@
     .form-row {
         display: flex;
         justify-content: space-between;
+        align-items: center;
     }
     .actual-ship-from {
         display: grid;
-        grid-template-rows: repeat(4 40px);
+        grid-template-rows: repeat(4 35px);
         grid-template-columns: 1fr 1fr 1fr;
         grid-column-start: 1;
         grid-column-end: 4;
@@ -991,6 +847,7 @@
         .form-row-actual {
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
     }
     .title-actual-ship {
@@ -1006,10 +863,8 @@
     }
     .form-row-actual-all {
         display: grid;
-        grid-template-rows: 40px 40px 40px;
-        grid-template-columns: repeat(6 1fr);
-         grid-row-start: 2;
-         grid-row-end: 5;
+        grid-template-rows: repeat(3, 35px);
+        grid-template-columns: repeat(6, 1fr);
         grid-column-start: 1;
         grid-column-end: 4;
     }

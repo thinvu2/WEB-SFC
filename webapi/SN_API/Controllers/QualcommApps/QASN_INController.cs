@@ -16,21 +16,14 @@ namespace SN_API.Controllers.QualcommApps
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class QASN_INController : ApiController
     {
-        [System.Web.Http.Route("GetTableLPN")]
+        [System.Web.Http.Route("GetLoadFormQASN_IN")]
         [System.Web.Http.HttpGet]
-        public async Task<HttpResponseMessage> GetTableLPN(string database_name, string PACKSLIP_NO)
+        public async Task<HttpResponseMessage> GetLoadFormQASN_IN(string database_name)
         {
             try
             {
                 string strGetData = "";
-                if (string.IsNullOrEmpty(PACKSLIP_NO))
-                {
-                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, SHIP_MCMN_CREATTIME, MSG_SENDER_NAME, MSG_RECEIVER_NAME, PO_NO, POLINE_NO, ITEM_NO,ITEM_SHIPPEDQTY, ITEM_UNITOFMEASURE, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME, RECEIVER_NAME FROM SFISM4.R_QASN_IN order by PACKSLIP_NO, F_ID desc";
-                }
-                else
-                {
-                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, SHIP_MCMN_CREATTIME, MSG_SENDER_NAME, MSG_RECEIVER_NAME, PO_NO, POLINE_NO, ITEM_NO,ITEM_SHIPPEDQTY, ITEM_UNITOFMEASURE, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME, RECEIVER_NAME FROM SFISM4.R_QASN_IN WHERE PACKSLIP_NO = '{PACKSLIP_NO}' order by PACKSLIP_NO, F_ID desc";
-                }
+                strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN where rownum < 100 order by F_ID desc, CREATE_TIME desc";
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
             }
@@ -59,21 +52,13 @@ namespace SN_API.Controllers.QualcommApps
                     dateTo = DateTime.Now.ToString("yyyyMMdd");
                 }
                 string strGetData = "";
-                if (string.IsNullOrEmpty(PACKSLIP_NO) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
+                if (string.IsNullOrEmpty(PACKSLIP_NO) && !string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
                 {
-                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID,DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE FROM SFISM4.R_QASN_IN order by PACKSLIP_NO, F_ID desc";
-                }
-                else if (!string.IsNullOrEmpty(PACKSLIP_NO) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
-                {
-                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID,DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE FROM SFISM4.R_QASN_IN WHERE PACKSLIP_NO = '{PACKSLIP_NO}' order by PACKSLIP_NO, F_ID desc";
-                }
-                else if (string.IsNullOrEmpty(PACKSLIP_NO) && !string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
-                {
-                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID,DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE FROM SFISM4.R_QASN_IN WHERE to_char(CREAT_TIME,'YYYYMMDD') >= '{dateFrom}' and to_char(CREAT_TIME,'YYYYMMDD') <= '{dateTo}' order by PACKSLIP_NO, F_ID desc";
+                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN WHERE to_char(CREAT_TIME,'YYYYMMDD') >= '{dateFrom}' and to_char(CREAT_TIME,'YYYYMMDD') <= '{dateTo}' order by F_ID desc, CREATE_TIME desc";
                 }
                 else if (!string.IsNullOrEmpty(PACKSLIP_NO))
                 {
-                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID,DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE FROM SFISM4.R_QASN_IN WHERE PACKSLIP_NO = '{PACKSLIP_NO}' order by PACKSLIP_NO, F_ID desc";
+                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN WHERE PACKSLIP_NO = '{PACKSLIP_NO}' order by F_ID desc, CREATE_TIME desc";
                 }
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
@@ -129,23 +114,15 @@ namespace SN_API.Controllers.QualcommApps
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
             }
         }
-
         //QReceipt
-        [System.Web.Http.Route("GetTableQReceipt")]
+        [System.Web.Http.Route("GetLoadFormQReceipt")]
         [System.Web.Http.HttpGet]
-        public async Task<HttpResponseMessage> GetTableQReceipt(string database_name, string PACKSLIP_NO)
+        public async Task<HttpResponseMessage> GetLoadFormQReceipt(string database_name)
         {
             try
             {
                 string strGetData = "";
-                if (string.IsNullOrEmpty(PACKSLIP_NO))
-                {
-                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, CREAT_TIME, MSG_SENDER_NAME, MSG_RECEIVER_NAME, PO_NO, POLINE_NO, ITEM_NO,ITEM_SHIPPEDQTY, ITEM_UNITOFMEASURE, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME, RECEIVER_NAME FROM SFISM4.R_QASN_IN order by PACKSLIP_NO, F_ID desc";
-                }
-                else
-                {
-                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, CREAT_TIME, MSG_SENDER_NAME, MSG_RECEIVER_NAME, PO_NO, POLINE_NO, ITEM_NO,ITEM_SHIPPEDQTY, ITEM_UNITOFMEASURE, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME, RECEIVER_NAME FROM SFISM4.R_QASN_IN WHERE PACKSLIP_NO = '{PACKSLIP_NO}' order by PACKSLIP_NO, F_ID desc";
-                }
+                strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN where rownum < 100 order by F_ID desc, CREATE_TIME desc";
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
             }
@@ -158,7 +135,6 @@ namespace SN_API.Controllers.QualcommApps
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
             }
         }
-
         [System.Web.Http.Route("GetDataQReciept")]
         [System.Web.Http.HttpGet]
         public async Task<HttpResponseMessage> GetDataQReciept(string database_name, string PACKSLIP_NO, string dateFrom, string dateTo)
@@ -175,21 +151,14 @@ namespace SN_API.Controllers.QualcommApps
                     dateTo = DateTime.Now.ToString("yyyyMMdd");
                 }
                 string strGetData = "";
-                if (string.IsNullOrEmpty(PACKSLIP_NO) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
+
+                if (string.IsNullOrEmpty(PACKSLIP_NO) && !string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
                 {
-                    strGetData = $"SELECT PACKSLIP_NO, DECODE(FLAG, 0, 'WAIT',1,'CONFIRMED','WAIT') as Status, F_ID, CREAT_TIME, MSG_SENDER_NAME as SENDER_NAME, MSG_RECEIVER_NAME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME FROM SFISM4.R_QASN_IN order by PACKSLIP_NO desc";
-                }
-                else if (!string.IsNullOrEmpty(PACKSLIP_NO) && string.IsNullOrEmpty(dateFrom) && string.IsNullOrEmpty(dateTo))
-                {
-                    strGetData = $"SELECT PACKSLIP_NO, DECODE(FLAG, 0, 'WAIT',1,'CONFIRMED','WAIT') as Status, F_ID, CREAT_TIME, MSG_SENDER_NAME as SENDER_NAME, MSG_RECEIVER_NAME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME FROM SFISM4.R_QASN_IN WHERE PACKSLIP_NO = '{PACKSLIP_NO}' order by PACKSLIP_NO desc";
-                }
-                else if (string.IsNullOrEmpty(PACKSLIP_NO) && !string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
-                {
-                    strGetData = $"SELECT PACKSLIP_NO, DECODE(FLAG, 0, 'WAIT',1,'CONFIRMED','WAIT') as Status, F_ID, CREAT_TIME, MSG_SENDER_NAME as SENDER_NAME, MSG_RECEIVER_NAME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME FROM SFISM4.R_QASN_IN WHERE to_char(CREAT_TIME,'YYYYMMDD') >= '{dateFrom}' and to_char(CREAT_TIME,'YYYYMMDD') <= '{dateTo}' order by PACKSLIP_NO desc";
+                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN WHERE to_char(CREAT_TIME,'YYYYMMDD') >= '{dateFrom}' and to_char(CREAT_TIME,'YYYYMMDD') <= '{dateTo}' order by F_ID desc, CREATE_TIME desc";
                 }
                 else if (!string.IsNullOrEmpty(PACKSLIP_NO))
                 {
-                    strGetData = $"SELECT PACKSLIP_NO, DECODE(FLAG, 0, 'WAIT',1,'CONFIRMED','WAIT') as Status, F_ID, CREAT_TIME, MSG_SENDER_NAME as SENDER_NAME, MSG_RECEIVER_NAME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME FROM SFISM4.R_QASN_IN WHERE PACKSLIP_NO = '{PACKSLIP_NO}' order by PACKSLIP_NO desc";
+                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN WHERE PACKSLIP_NO = '{PACKSLIP_NO}' order by PACKSLIP_NO desc";
                 }
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
@@ -219,7 +188,7 @@ namespace SN_API.Controllers.QualcommApps
                                 SHIP_MCMN_STREET1, SHIP_MCMN_STREET2, SHIP_MCMN_CITY,RECEIVER_LOCATIONNAME, COUNTRY_CODE, POSTAL_CODE,
                                 SHIP_MCMN_STREET3, SHIP_MCMN_LPN, PAL_GROSSWEIGHT || ' ' || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT , PAL_NETWEIGHT || ' ' || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT, 
                                 PAL_WIDTH || ' ' || PAL_DSUNITOFMEASURE as PAL_WIDTH, PAL_LENGTH || ' ' || PAL_DSUNITOFMEASURE as PAL_LENGTH, PAL_HEIGHT || ' ' || PAL_DSUNITOFMEASURE as PAL_HEIGHT, 
-                                PO_NO, POLINE_NO, LOT_NO, ITEM_NO, ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN
+                                PO_NO, POLINE_NO, LOT_NO, ITEM_NO, ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY,ITEM_UNITOFMEASURE, ITEM_MPN, INNERBOX_LPN
                                 FROM SFISM4.R_QASN_IN where PACKSLIP_NO = '{PACKSLIP_NO}' and FLAG = '{FLAG}' and F_ID = '{F_ID}' ";
                 strGetDataTableOuterLPN = $"select PACKSLIP_NO, flag, OUTERBOX_LPN, OUTERBOX_GROSSWEIGHT, OUTERBOX_NETWEIGHT, OUTERBOX_WEIGHTUNITOFMEASURE, INNERBOX_WEIGHTUNITOFMEASURE, count(*) as OUTERBOX_qty from SFISM4.R_QASN_IN where PACKSLIP_NO = '{PACKSLIP_NO}' and FLAG = '{FLAG}' group by PACKSLIP_NO, flag, OUTERBOX_LPN, OUTERBOX_GROSSWEIGHT, OUTERBOX_NETWEIGHT, OUTERBOX_WEIGHTUNITOFMEASURE, INNERBOX_WEIGHTUNITOFMEASURE";
                 strGetDataTableInnerLPN = $"select INNERBOX_LPN, 'LPN' LPN, INNERBOX_GROSSWEIGHT, INNERBOX_NETWEIGHT, count(*) as INNERBOX_qty from SFISM4.R_QASN_IN  where PACKSLIP_NO = '{PACKSLIP_NO}' group by INNERBOX_LPN, INNERBOX_GROSSWEIGHT, INNERBOX_NETWEIGHT";
@@ -268,7 +237,7 @@ namespace SN_API.Controllers.QualcommApps
                 //{
                 // not exist => insert
                 sb.Append(" Insert into SFISM4.R_QRECEIPT_OUT ");
-                    sb.Append(" (SITE, PIP_TYPE, PO_TYPE, CREAT_TIME, MSG_ID, MSG_SENDER_NAME, MSG_SENDER_DUNS, MSG_RECEIVER_NAME, MSG_RECEIVER_DUNS, PACKSLIP_NO, RECEIVER_DUNS, RECEIVER_DUNS4, SHIP_MCMN_LOCATIONNAME, SHIP_MCMN_CITY, PO_NO, LOT_NO, SHIP_MCMN_AIRWAYBILL, SHIP_MCMN_FREIGHT_CARRIER_CODE, LOCATION_CODE, SHIP_MCMN_COUNTRYCODE, SHIP_MCMN_POSTALCODE, SHIP_MCMN_ADDR1, SHIP_MCMN_ADDR2, SHIP_MCMN_ADDR3, LAST_EDIT_TIME) ");
+                    sb.Append(" (SITE, PIP_TYPE, PO_TYPE, CREAT_TIME, MSG_ID, MSG_SENDER_NAME, MSG_SENDER_DUNS, MSG_RECEIVER_NAME, MSG_RECEIVER_DUNS, PACKSLIP_NO, RECEIVER_DUNS, RECEIVER_DUNS4, SHIP_MCMN_LOCATIONNAME, SHIP_MCMN_CITY, PO_NO, LOT_NO, SHIP_MCMN_AIRWAYBILL, SHIP_MCMN_FREIGHT_CARRIER_CODE, LOCATION_CODE, SHIP_MCMN_COUNTRYCODE, SHIP_MCMN_POSTALCODE, SHIP_MCMN_ADDR1, SHIP_MCMN_ADDR2, SHIP_MCMN_ADDR3, PO_LINE, ITEMSHIP_MCMN_UNITOFMEASURE, ITEMSHIP_MCMN_NO, INNERBOX_SHIP_MCMN_LPN, LAST_EDIT_TIME) ");
                     sb.Append(" values ( ");
                     sb.Append($"'{model.SITE}', ");
                     sb.Append($"'{model.PIP_TYPE}', ");
@@ -294,6 +263,10 @@ namespace SN_API.Controllers.QualcommApps
                     sb.Append($"'{model.SHIP_MCMN_ADDR1}', ");
                     sb.Append($"'{model.SHIP_MCMN_ADDR2}', ");
                     sb.Append($"'{model.SHIP_MCMN_ADDR3}', ");
+                    sb.Append($"'{model.POLINE_NO}', ");
+                    sb.Append($"'{model.ITEM_UNITOFMEASURE}', ");
+                    sb.Append($"'{model.ITEM_NO}', ");
+                    sb.Append($"'{model.INNERBOX_LPN}', ");
                 sb.Append($"to_date('{model.LAST_EDIT_TIME}','YYYY/MM/DD HH24:MI:SS')");
                     sb.Append(" )");
 
@@ -354,6 +327,10 @@ namespace SN_API.Controllers.QualcommApps
             public string LAST_EDIT_TIME { get; set; }
             public string FLAG { get; set; }
             public string F_ID { get; set; }
+            public string POLINE_NO { get; set; }
+            public string ITEM_UNITOFMEASURE { get; set; }
+            public string ITEM_NO { get; set; }
+            public string INNERBOX_LPN { get; set; }
         }
     }
 }

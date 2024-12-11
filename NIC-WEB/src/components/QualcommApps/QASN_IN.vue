@@ -12,7 +12,7 @@
     <div class="searchbox" v-if="!isShowForm">
       <div class="searchbox-content">
         <input
-          v-on:keyup.enter="QuerySearch()"
+          v-on:keyup.enter="handleEnter"
           v-model="valueSearch"
           type="text"
           ref="input"
@@ -40,44 +40,19 @@
         </div>
       </div>
     </div>
-    <div class="export-excel">
+    <div class="export-excel"  v-if="!isShowForm">
+        <img @click="exportexcelxlsx()"
+            class="img-excel"
+            src="assets/img/xlsx-icon.jpg"
+            alt=""
+        />
         <img
-        @click="exportExcel()"
-        class="img-excel"
-        src="/src/assets/img/excel_64.png"
-        alt=""
+            @click="exportExcel()"
+            class="img-excel"
+            src="assets/img/excel_64.png"
+            alt=""
       />
     </div>
-      <!-- <div class="div-searchbox" v-if="isShowForm === false">
-        <div class="div-searchbox-content">
-          <input
-            v-on:keyup.enter="QuerySearch()"
-            v-model="valueSearch"
-            type="text"
-            ref="input"
-            class="form-control"
-            placeholder= "Enter PACKSLIP_NO..."/>
-          <button @click="QuerySearch()" class="btn">
-            <Icon icon="search" class="sidenav-icon" />
-          </button>
-        </div>
-        <div class="searchbox-time">
-            <div class="searchbox-time1" style="display: inline-block;">
-                <datepicker
-                   class="form-control form-control-sm"
-                    v-model="dateFrom" 
-                    :upperLimit="dateTo"  
-                />
-            </div>
-            <div class="searchbox-time2" style="display: inline-block;">
-                <datepicker
-                   class="form-control form-control-sm"
-                    v-model="dateTo" 
-                    :lowerLimit="dateFrom" 
-                />
-            </div>
-        </div>
-      </div> -->
       <!-- Form show data -->
     <div class="container" v-if="isShowForm === true">
             <div class="title-class">
@@ -615,7 +590,6 @@
                 />
             </div>
     </div>
-
     <!-- table inside -->
       <div class="main-contain" v-if="isShowForm === false">
         <div class="row col-sm-12 div-content">
@@ -623,13 +597,10 @@
             <table id="tableMain" class="table mytable">
                 <thead v-if="DataTable.length > 0">
                     <tr>
-                    <th>
-                        SHOW_ASN
-                    </th>
                     <template v-for="(item, index) in DataTableHeader" :key="index">
-                        <th v-if="item =='STATUS' || item =='CREATE_TIME' || item=='PO_NO' || item == 'PO_LINE' || item == 'ITEM_NO' || item == 'ITEM_SHIPPEDQTY' ||
+                        <th v-if="item == 'PACKSLIP_NO' || item =='CREATE_TIME' || item=='PO_NO' || item == 'PO_LINE' || item == 'ITEM_NO' || item == 'ITEM_SHIPPEDQTY' ||
                             item =='ITEM_MPN' || item=='ITEM_DESCRIPTION'|| item=='LOT_NO' || item=='RECEIVER_LOCATION'|| item=='RECEIVER_NAME'||item=='PALLET_LPN'||
-                            item=='PAL_GROSSWEIGHT'||item=='PAL_WEIGHTUNITOFMEASURE'">
+                            item=='PAL_GROSSWEIGHT'||item=='PAL_NETWEIGHT'">
                         {{ item }}
                         </th>
                     </template>
@@ -638,24 +609,10 @@
                 <tbody>
                     <template v-for="(item, index) in DataTable" :key="index">
                         <tr>
-                            <td class="td-show" @click="ShowDetail(index)">
-                                <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                width="24"
-                                height="24"
-                                >
-                                <path fill="none" d="M0 0h24v24H0z" />
-                                <path
-                                    fill="#FFF"
-                                    d="M16.757 3l-2 2H5v14h14V9.243l2-2V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h12.757zm3.728-.9L21.9 3.516l-9.192 9.192-1.412.003-.002-1.417L20.485 2.1z"
-                                />
-                                </svg>
-                            </td>
                             <template v-for="(item1, index1) in item" :key="index1">
-                                <td v-if="index1 =='STATUS' || index1 =='CREATE_TIME' || index1=='PO_NO' || index1 == 'PO_LINE' || index1 == 'ITEM_NO' || index1 == 'ITEM_SHIPPEDQTY' ||
+                                <td @click="index1 == 'PACKSLIP_NO' && ShowDetail(index)" v-if="index1 == 'PACKSLIP_NO'|| index1 =='CREATE_TIME' || index1=='PO_NO' || index1 == 'PO_LINE' || index1 == 'ITEM_NO' || index1 == 'ITEM_SHIPPEDQTY' ||
                                     index1 =='ITEM_MPN' || index1=='ITEM_DESCRIPTION'|| index1=='LOT_NO' || index1=='RECEIVER_LOCATION'|| index1=='RECEIVER_NAME'||index1=='PALLET_LPN'||
-                                    index1=='PAL_GROSSWEIGHT'||index1=='PAL_WEIGHTUNITOFMEASURE'">
+                                    index1=='PAL_GROSSWEIGHT'||index1=='PAL_NETWEIGHT'">
                                     {{ item1 }}
                                 </td>
                             </template>
@@ -669,6 +626,7 @@
     </div>
   </template>
   <script>
+  import xlsx from 'xlsx';
   import Repository from "../../services/Repository";
   export default {
     data() {
@@ -764,30 +722,31 @@
        this.LoadComponent();
     },
     methods: {
-      async LoadComponent() {
-        let databaseName = localStorage.databaseName;
-        let PACKSLIP_NO = this.model.PACKSLIP_NO;
-        let dateFrom = "";
-        let dateTo = "";
-        try {
-            let { data } = await Repository.getApiServer(`GetQASN_IN?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}&dateFrom=${dateFrom}&dateTo=${dateTo}`);
-            this.DataTable = [];
-            this.DataTableHeader = [];
-            this.DataTable = data.data;
-            if (this.DataTable.length > 0) {
-                this.DataTableHeader = Object.keys(this.DataTable[0]);
-            }
-        }catch(error) {
-            if(error.response && error.response.data) {
-            this.$swal("", error.response.data.error, "error");
+        handleEnter () {
+            if(!this.valueSearch) {
+                this.LoadComponent()
             }else {
-            this.$swal ("", error.Message, "error")
+                this.QuerySearch()
             }
-        }
-    },
-    pad(number) {
-        return number < 10 ? `0${number}` : `${number}`;
-    },
+        },
+        async LoadComponent() {
+            let databaseName = localStorage.databaseName;
+            try {
+                let { data } = await Repository.getApiServer(`GetLoadFormQASN_IN?database_name=${databaseName}`);
+                this.DataTable = [];
+                this.DataTableHeader = [];
+                this.DataTable = data.data;
+                if (this.DataTable.length > 0) {
+                    this.DataTableHeader = Object.keys(this.DataTable[0]);
+                }
+            }catch(error) {
+                if(error.response && error.response.data) {
+                this.$swal("", error.response.data.error, "error");
+                }else {
+                this.$swal ("", error.Message, "error")
+                }
+            }
+        },
     async QuerySearch() {
         const formatDate = (date) => {
             if (!date) return "";
@@ -820,13 +779,13 @@
         let databaseName = localStorage.databaseName;
         // Lấy giá trị từ DataTable
         let PACKSLIP_NO = this.DataTable[index].PACKSLIP_NO;
-        let FLAG = this.DataTable[index].STATUS;
+        let FLAG = this.DataTable[index].FLAG;
         let F_ID = this.DataTable[index].F_ID;
-        if(FLAG == "WAITING") {
-            FLAG = 0;
-        }else {
-            FLAG = 1;
-        }
+        // if(FLAG == "WAITING") {
+        //     FLAG = 0;
+        // }else {
+        //     FLAG = 1;
+        // }
         try {
             let responseData = await Repository.getApiServer(`GetShowDetail?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}&FLAG=${FLAG}&F_ID=${F_ID}`);
              this.ShowDataDetail = [];
@@ -902,9 +861,36 @@
             }
         }
       },
+        pad(number) {
+            return number < 10 ? `0${number}` : `${number}`;
+        },
+      exportexcelxlsx(){
+        const filteredData = this.DataTable.map((element) => {
+        return Object.keys(element).reduce((acc, key) => {
+            if (key !== "FLAG" && key !== "F_ID") {
+            acc[key] = element[key];
+            }
+            return acc;
+        }, {});
+        });
+        let ws = xlsx.utils.json_to_sheet(filteredData);
+        /* add to workbook */
+        let wb = xlsx.utils.book_new();
+        xlsx.utils.book_append_sheet(wb, ws, "data");
+        /* generate an XLSX file */
+        xlsx.writeFile(wb, "download.xlsx");
+    },
       exportExcel() {
-        const items = this.DataTable;
-        const replacer = (key, value) => (value === null ? "" : value); // specify how you want to handle null values here
+        const filteredData = this.DataTable.map((element) => {
+        return Object.keys(element).reduce((acc, key) => {
+            if (key !== "FLAG" && key !== "F_ID") {
+            acc[key] = element[key];
+            }
+            return acc;
+        }, {});
+        });
+        const items = filteredData;
+        const replacer = (key, value) => (value === null ? "" : value);
         const header = Object.keys(items[0]);
         const csv = [
             header.join(","), // header row first
@@ -914,16 +900,14 @@
                 .join(",")
             ),
         ].join("\r\n");
-
-        var downloadLink = document.createElement("a");
-        var blob = new Blob(["\ufeff", csv]);
-        var url = URL.createObjectURL(blob);
+        let downloadLink = document.createElement("a");
+        let blob = new Blob(["\ufeff", csv]);
+        let url = URL.createObjectURL(blob);
         downloadLink.href = url;
         downloadLink.download = "data.csv";
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
-        console.log(csv);
     },
       ReturnForm() {
         this.isShowForm = false;
@@ -995,15 +979,18 @@
     }
     .export-excel {
         display: inline-block;
+        right: 25px;
+        position: absolute;
     }
     .img-excel {
-        height: 30px;
-        width: 35px;
+        height: 40px;
+        width: 40px;
+        cursor: pointer;
     }
 
     .container {
         display: grid;
-        grid-template-rows: 50px, repeat(4, 35px), auto,  repeat(4, 35px), auto, repeat(7, 35px);
+        grid-template-rows: 50px repeat(4, 35px) auto  repeat(4, 35px) auto repeat(7, 35px);
         grid-template-columns: 1fr 1fr 1fr;
         align-content: space-around;
         box-sizing: border-box;
@@ -1014,7 +1001,7 @@
         font-size: 16px;
         border-radius: 5px;
         overflow-x: auto;
-        max-width: 85%;
+        width: 85%;
         row-gap: 5px;
         height: 550px;
         .text-input {
@@ -1024,10 +1011,10 @@
             box-sizing: border-box;
             border: none;
             resize: vertical;
-            //background-color: #e6e6e2;
+            background-color: #e6e6e2;
         }
         label {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 555;
             color: #141414;
             margin-left: 20px;
@@ -1045,14 +1032,16 @@
         font-family: serif;
         font-style: italic;
     }
+    .title-class p {
+        margin: 0;
+    }
     .submit-form{
-       // width: 100%;
         text-align: center;
         height: 45px;
     }
     .submit-form input {
-            margin-right: 5px;
-        }
+        margin-right: 5px;
+    }
         input#submit-form {
             background-color: #04AA6D;
             color: #000;
@@ -1087,9 +1076,9 @@
             }
         }
     .form-row {
-
         display: flex;
         justify-content: space-between;
+        align-items: center;
     }
     .actual-ship-from {
         display: grid;
@@ -1273,19 +1262,20 @@
         }
         }
         tr {
-        &:hover {
-            background: #89cfed;
-        }
-        td {
-            overflow-x: auto;
-            white-space: nowrap;
-            z-index: 1;
-            padding: 2px;
-            min-width: 60px;
-            border: 0.5px solid #cdc;
-            font-size: 17px;
-            color: #000;
-        }
+            &:hover {
+                background: #89cfed;
+            }
+            td {
+                overflow-x: auto;
+                white-space: nowrap;
+                z-index: 1;
+                padding: 2px;
+                min-width: 60px;
+                border: 0.5px solid #cdc;
+                font-size: 17px;
+                color: #000;
+                cursor: pointer;
+            }
         }
     }
   </style>
