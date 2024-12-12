@@ -23,7 +23,7 @@ namespace SN_API.Controllers.QualcommApps
             try
             {
                 string strGetData = "";
-                strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN where rownum < 100 order by F_ID desc, CREATE_TIME desc";
+                strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN where rownum < 51 order by F_ID desc, CREATE_TIME desc";
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
             }
@@ -38,27 +38,31 @@ namespace SN_API.Controllers.QualcommApps
         }
         [System.Web.Http.Route("GetQASN_IN")]
         [System.Web.Http.HttpGet]
-        public async Task<HttpResponseMessage> GetQASN_IN(string database_name, string PACKSLIP_NO, string dateFrom, string dateTo)
+        public async Task<HttpResponseMessage> GetQASN_IN(string database_name, string PACKSLIP_NO, string dateFrom, string dateTo, string showTimeForm)
         {
             try
             {
-                if (string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
-                {
-                    dateFrom = "19000101";
-                }
+                //if (string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
+                //{
+                //    dateFrom = "19000101";
+                //}
 
-                if (string.IsNullOrEmpty(dateTo) && !string.IsNullOrEmpty(dateFrom))
-                {
-                    dateTo = DateTime.Now.ToString("yyyyMMdd");
-                }
+                //if (string.IsNullOrEmpty(dateTo) && !string.IsNullOrEmpty(dateFrom))
+                //{
+                //    dateTo = DateTime.Now.ToString("yyyyMMdd");
+                //}
                 string strGetData = "";
-                if (string.IsNullOrEmpty(PACKSLIP_NO) && !string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
+                if(string.IsNullOrEmpty(PACKSLIP_NO) && showTimeForm == "false")
                 {
-                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN WHERE to_char(CREAT_TIME,'YYYYMMDD') >= '{dateFrom}' and to_char(CREAT_TIME,'YYYYMMDD') <= '{dateTo}' order by F_ID desc, CREATE_TIME desc";
+                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN where rownum < 51 order by F_ID desc, CREATE_TIME desc";
                 }
-                else if (!string.IsNullOrEmpty(PACKSLIP_NO))
+                else if (!string.IsNullOrEmpty(PACKSLIP_NO) && showTimeForm == "false")
                 {
                     strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN WHERE PACKSLIP_NO = '{PACKSLIP_NO}' order by F_ID desc, CREATE_TIME desc";
+                }
+                else if (showTimeForm == "true" && !string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
+                {
+                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN WHERE to_char(CREAT_TIME,'YYYYMMDD') >= '{dateFrom}' and to_char(CREAT_TIME,'YYYYMMDD') <= '{dateTo}' order by F_ID desc, CREATE_TIME desc";
                 }
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
@@ -122,7 +126,7 @@ namespace SN_API.Controllers.QualcommApps
             try
             {
                 string strGetData = "";
-                strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN where rownum < 100 order by F_ID desc, CREATE_TIME desc";
+                strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN where rownum < 51 order by STATUS desc, F_ID desc, CREATE_TIME desc";
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
             }
@@ -137,28 +141,22 @@ namespace SN_API.Controllers.QualcommApps
         }
         [System.Web.Http.Route("GetDataQReciept")]
         [System.Web.Http.HttpGet]
-        public async Task<HttpResponseMessage> GetDataQReciept(string database_name, string PACKSLIP_NO, string dateFrom, string dateTo)
+        public async Task<HttpResponseMessage> GetDataQReciept(string database_name, string PACKSLIP_NO, string dateFrom, string dateTo, string showTimeForm)
         {
             try
             {
-                if (string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
-                {
-                    dateFrom = "19000101";
-                }
-
-                if (string.IsNullOrEmpty(dateTo) && !string.IsNullOrEmpty(dateFrom))
-                {
-                    dateTo = DateTime.Now.ToString("yyyyMMdd");
-                }
                 string strGetData = "";
-
-                if (string.IsNullOrEmpty(PACKSLIP_NO) && !string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
-                {
-                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN WHERE to_char(CREAT_TIME,'YYYYMMDD') >= '{dateFrom}' and to_char(CREAT_TIME,'YYYYMMDD') <= '{dateTo}' order by F_ID desc, CREATE_TIME desc";
-                }
-                else if (!string.IsNullOrEmpty(PACKSLIP_NO))
+                if(!string.IsNullOrEmpty(PACKSLIP_NO) && showTimeForm == "false")
                 {
                     strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN WHERE PACKSLIP_NO = '{PACKSLIP_NO}' order by PACKSLIP_NO desc";
+                }
+                else if(string.IsNullOrEmpty(PACKSLIP_NO) && showTimeForm == "false")
+                {
+                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN where rownum < 51 order by STATUS desc, F_ID desc, CREATE_TIME desc";
+                }
+                else if (showTimeForm == "true" && !string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
+                {
+                    strGetData = $"SELECT PACKSLIP_NO, FLAG, F_ID, DECODE(FLAG, 0, 'WAITING',1,'CONFIRMED','WAITING') as Status, CREAT_TIME as CREATE_TIME, PO_NO, POLINE_NO as PO_LINE, ITEM_NO,ITEM_SHIPPEDQTY || ' ' || ITEM_UNITOFMEASURE as ITEM_SHIPPEDQTY, ITEM_MPN, ITEM_DESCRIPTION, LOT_NO, RECEIVER_LOCATIONNAME as RECEIVER_LOCATION, RECEIVER_NAME,SHIP_MCMN_LPN as PALLET_LPN,PAL_GROSSWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_GROSSWEIGHT, PAL_NETWEIGHT || PAL_WEIGHTUNITOFMEASURE as PAL_NETWEIGHT FROM SFISM4.R_QASN_IN WHERE to_char(CREAT_TIME,'YYYYMMDD') >= '{dateFrom}' and to_char(CREAT_TIME,'YYYYMMDD') <= '{dateTo}' order by STATUS desc, F_ID desc, CREATE_TIME desc";
                 }
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });

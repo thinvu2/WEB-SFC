@@ -31,7 +31,7 @@ var dataConfig = [
         Id: '5',
         Name: 'ROUTE CONTROL',
         ReplaceName: 'ROUTE CONTROL',
-        Route: '',
+        Route: '/Home/ConfigApp/Config5',
         IsDisable: false,
     },
     {

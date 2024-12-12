@@ -370,6 +370,7 @@ export default {
               this.$swal("", "Bạn không có quyền thêm sửa", "error");
             }
           } else if (data.result == "ok") {
+             this.ClearForm();
             await this.QuerySearch();
             if (localStorage.language == "En") {
               this.$swal("", "Apply successfully", "success");
@@ -411,6 +412,7 @@ export default {
         var { data } = await Repository.getRepo("DeleteConfig15", payload);
         if (data.result == "ok") {
           await this.QuerySearch();
+          this.ClearForm();
           if (localStorage.language == "En") {
             this.$swal("", "Apply successfully", "success");
           } else {

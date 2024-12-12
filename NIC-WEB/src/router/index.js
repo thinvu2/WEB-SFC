@@ -207,6 +207,11 @@ const routes = [{
             import('../components/ConfigComponents/Config4.vue'),
     },
     {
+        path: '/Home/ConfigApp/Config5',
+        component: () =>
+            import('../components/ConfigComponents/Config5.vue'),
+    },
+    {
         path: '/Home/ConfigApp/Config6',
         component: () =>
             import('../components/ConfigComponents/Config6.vue'),

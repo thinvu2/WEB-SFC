@@ -3162,7 +3162,6 @@ C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\zxing.xml
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\zxing.presentation.pdb
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\zxing.presentation.xml
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\System.Web.Http.WebHost.xml
-C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.csproj.AssemblyReference.cache
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.csproj.CoreCompileInputs.cache
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.dll
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.pdb

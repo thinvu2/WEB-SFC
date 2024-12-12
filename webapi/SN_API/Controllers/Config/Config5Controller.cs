@@ -12,8 +12,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using System.Web.Mvc;
-using static SN_API.Models.LineElement;
 
 namespace SN_API.Controllers.Config
 {
@@ -22,20 +20,23 @@ namespace SN_API.Controllers.Config
     {
         [System.Web.Http.Route("getRouteCode")]
         [System.Web.Http.HttpGet]
-        public async Task<HttpResponseMessage> getRouteCode(string database_name)
+        public async Task<HttpResponseMessage> getRouteCode(string database_name, string routeCode)
         {
             try
             {
-                string getPrivilege = "";
-                getPrivilege = $"SELECT EMP_NO ||'_'|| EMP_NAME AS EMP_NO_NAME FROM SFIS1.C_EMP_DESC_T";
-                DataTable dtPrivilege = DBConnect.GetData(getPrivilege, database_name);
-                if (dtPrivilege.Rows.Count == 0)
+                //string strGetData = "";
+                string strGetLineMain = "";
+                //strGetData = $"select * from SFIS1.C_ROUTE_CONTROL_T where route_code ='{routeCode}'";
+                strGetLineMain = $"select GROUP_NEXT from (select GROUP_NEXT, min(STEP_SEQUENCE) as STEP_SEQUENCE  from SFIS1.C_ROUTE_CONTROL_T a where route_code ='{routeCode}' and STATE_FLAG ='0' and GROUP_NAME not like 'R_%'and GROUP_NEXT not like 'R_%' group by GROUP_NEXT order by STEP_SEQUENCE)";
+                
+                DataTable dtGetLineMain = DBConnect.GetData(strGetLineMain, database_name);
+                if (dtGetLineMain.Rows.Count == 0)
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, new { result = "fail" });
                 }
                 else
                 {
-                    return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtPrivilege });
+                    return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtGetLineMain });
                 }
             }
             catch (SqlException ex)
