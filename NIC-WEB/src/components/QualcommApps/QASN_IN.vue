@@ -664,6 +664,24 @@
         />
       </div>
     </div>
+    <div  class="button-areas" v-if="isShowForm === true && isShowSubmitForm === true">
+      <div class="submit-btn">
+        <input
+          type="button"
+          id="submit-btn"
+          value="Submit"
+          @click="SubmitBtn('actionSubmit')"
+        />
+      </div>
+      <div class="reject-btn">
+        <input
+          type = "button"
+          id = "reject-btn"
+          value = "Reject"
+          @click = "SubmitBtn('actionReject')"
+        />
+      </div>
+    </div>
     <!-- table inside -->
     <div class="main-contain" v-if="isShowForm === false">
       <div class="row col-sm-12 div-content">
@@ -675,19 +693,20 @@
                   <th
                     v-if="
                       item == 'PACKSLIP_NO' ||
-                        item == 'CREATE_TIME' ||
-                        item == 'PO_NO' ||
-                        item == 'PO_LINE' ||
-                        item == 'ITEM_NO' ||
-                        item == 'ITEM_SHIPPEDQTY' ||
-                        item == 'ITEM_MPN' ||
-                        item == 'ITEM_DESCRIPTION' ||
-                        item == 'LOT_NO' ||
-                        item == 'RECEIVER_LOCATION' ||
-                        item == 'RECEIVER_NAME' ||
-                        item == 'PALLET_LPN' ||
-                        item == 'PAL_GROSSWEIGHT' ||
-                        item == 'PAL_NETWEIGHT'
+                      item== 'STATUS' ||
+                      item == 'CREATE_TIME' ||
+                      item == 'PO_NO' ||
+                      item == 'PO_LINE' ||
+                      item == 'ITEM_NO' ||
+                      item == 'ITEM_SHIPPEDQTY' ||
+                      item == 'ITEM_MPN' ||
+                      item == 'ITEM_DESCRIPTION' ||
+                      item == 'LOT_NO' ||
+                      item == 'RECEIVER_LOCATION' ||
+                      item == 'RECEIVER_NAME' ||
+                      item == 'PALLET_LPN' ||
+                      item == 'PAL_GROSSWEIGHT' ||
+                      item == 'PAL_NETWEIGHT'
                     "
                   >
                     {{ item }}
@@ -703,19 +722,20 @@
                       @click="index1 == 'PACKSLIP_NO' && ShowDetail(index)"
                       v-if="
                         index1 == 'PACKSLIP_NO' ||
-                          index1 == 'CREATE_TIME' ||
-                          index1 == 'PO_NO' ||
-                          index1 == 'PO_LINE' ||
-                          index1 == 'ITEM_NO' ||
-                          index1 == 'ITEM_SHIPPEDQTY' ||
-                          index1 == 'ITEM_MPN' ||
-                          index1 == 'ITEM_DESCRIPTION' ||
-                          index1 == 'LOT_NO' ||
-                          index1 == 'RECEIVER_LOCATION' ||
-                          index1 == 'RECEIVER_NAME' ||
-                          index1 == 'PALLET_LPN' ||
-                          index1 == 'PAL_GROSSWEIGHT' ||
-                          index1 == 'PAL_NETWEIGHT'
+                        index1 == 'STATUS' ||
+                        index1 == 'CREATE_TIME' ||
+                        index1 == 'PO_NO' ||
+                        index1 == 'PO_LINE' ||
+                        index1 == 'ITEM_NO' ||
+                        index1 == 'ITEM_SHIPPEDQTY' ||
+                        index1 == 'ITEM_MPN' ||
+                        index1 == 'ITEM_DESCRIPTION' ||
+                        index1 == 'LOT_NO' ||
+                        index1 == 'RECEIVER_LOCATION' ||
+                        index1 == 'RECEIVER_NAME' ||
+                        index1 == 'PALLET_LPN' ||
+                        index1 == 'PAL_GROSSWEIGHT' ||
+                        index1 == 'PAL_NETWEIGHT'
                       "
                     >
                       {{ item1 }}
@@ -737,6 +757,7 @@ export default {
   data() {
     return {
       showTimeForm: false,
+      isShowSubmitForm: false,
       showError: false,
       dateFrom: new Date(),
       dateTo: new Date(),
@@ -828,6 +849,53 @@ export default {
     this.LoadComponent();
   },
   methods: {
+    async SubmitBtn(actionBtn) {
+        let titleValue = "";
+        let textValue = "";
+        titleValue = "Are you sure edit?";
+        textValue = "Once OK, data will be updated!";
+        this.$swal({
+          title: titleValue,
+          text: textValue,
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        }).then(async (willDelete) => {
+          if (willDelete.isConfirmed == false) return;
+          let payload = {
+            EMP_NO: localStorage.username,
+            database_name: localStorage.databaseName,
+            PACKSLIP_NO: this.model.PACKSLIP_NO,
+            FLAG: this.model.FLAG,
+            F_ID: this.model.F_ID,
+            actionBtn: actionBtn
+          };
+          console.log("payload: ", payload);
+          try {
+            let { data } = await Repository.getRepo("InsertQasn_in", payload);
+            console.log("data,", data);
+            if (data.result == "ok") {
+              this.ClearForm();
+              this.$swal("", "Successfully applied", "success");
+            } else if (data.result == "notPrivilege") {
+              if (localStorage.language == "En") {
+              this.$swal("", "Not privilege", "error");
+              } else {
+                this.$swal("", "Bạn không có quyền thêm sửa", "error");
+              }
+            }
+             else {
+              this.$swal("", data.result, "error");
+            }
+          } catch (error) {
+            if (error.response && error.response.data) {
+              this.$swal("", error.response.data.error, "error");
+            } else {
+              this.$swal("", error.Message, "error");
+            }
+          }
+        });
+    },
     async LoadComponent() {
       let databaseName = localStorage.databaseName;
       try {
@@ -883,6 +951,9 @@ export default {
       let PACKSLIP_NO = this.DataTable[index].PACKSLIP_NO;
       let FLAG = this.DataTable[index].FLAG;
       let F_ID = this.DataTable[index].F_ID;
+      if (FLAG == "2") {
+        this.isShowSubmitForm = true;
+      }
       try {
         let responseData = await Repository.getApiServer(
           `GetShowDetail?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}&FLAG=${FLAG}&F_ID=${F_ID}`
@@ -895,6 +966,8 @@ export default {
         if (this.ShowDataDetail.length > 0) {
           let firstItem = this.ShowDataDetail[0];
           this.model.PACKSLIP_NO = firstItem.PACKSLIP_NO;
+          this.model.FLAG = firstItem.FLAG;
+          this.model.F_ID = firstItem.F_ID;
           this.model.SHIP_MCMN_CREATTIME = firstItem.SHIP_MCMN_CREATTIME;
           this.model.MSG_SENDER_NAME = firstItem.MSG_SENDER_NAME;
           this.model.MSG_RECEIVER_NAME = firstItem.MSG_RECEIVER_NAME;
@@ -1011,11 +1084,15 @@ export default {
       downloadLink.click();
       document.body.removeChild(downloadLink);
     },
+    ClearForm() {
+      this.isShowSubmitForm = false;
+    },
     ReturnForm() {
       this.isShowForm = false;
       this.model.PACKSLIP_NO = "";
       this.model.FLAG = "";
       this.model.F_ID = "";
+      this.LoadComponent();
     },
     BackToParent() {
       this.$router.push({ path: "/Home/Qualcomm_Aplication" });
@@ -1093,10 +1170,7 @@ export default {
 
 .container {
   display: grid;
-  grid-template-rows: 50px repeat(4, 35px) auto 5px repeat(4, 35px) auto repeat(
-      7,
-      35px
-    );
+  grid-template-rows: 50px repeat(4, 35px) auto 5px repeat(4, 35px) auto repeat(7, 35px);
   grid-template-columns: 1fr 1fr 1fr;
   align-content: space-around;
   box-sizing: border-box;
@@ -1141,24 +1215,67 @@ export default {
 .title-class p {
   margin: 0;
 }
-.submit-form {
-  text-align: center;
+//submit-form
+.button-areas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 45px;
 }
-.submit-form input {
+// .submit-btn .reject-btn {
+//   text-align: center;
+// }
+.submit-btn input {
   margin-right: 5px;
 }
-input#submit-form {
-  background-color: #04aa6d;
-  color: #000;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 5px;
+#submit-btn {
+  font-weight: 555;
+  margin-top: 5px;
+  padding: 8px 11px;
+  font-size: 17px;
+  width: 80px;
+  text-align: center;
   cursor: pointer;
-  &:hover {
-    background-color: #45a049;
-  }
+  outline: none;
+  color: #fff;
+  background-color: #04aa6d;
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 5px #999;
 }
+#submit-btn:hover {
+  background-color: #3e8e41;
+}
+#submit-btn:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+//reject -button
+#reject-btn {
+  font-weight: 555;
+  margin-top: 5px;
+  padding: 8px 11px;
+  font-size: 17px;
+  width: 80px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: #fff;
+  background-color: #e2651d;
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 5px #999;
+}
+#reject-btn:hover {
+  background-color: #8e3e3e;
+}
+#reject-btn:active {
+  background-color: #8e3e3e;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
 input#clear-form {
   background-color: #f8c323;
   color: #000;

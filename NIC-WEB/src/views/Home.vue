@@ -1,6 +1,4 @@
 <template>
-  
-  
   <div class="container body">
     <div class="main_container">
       <LeftNav />
@@ -14,12 +12,13 @@
       </div>
       <!-- /page content -->
       <!-- footer content -->
-      <footer>
+       <!-- <FooterNav/> -->
+      <!-- <footer>
         <div class="pull-right">
           @Copyright 2025 IT Shopfloor Vietnam. All Rights Reserved. (535) 31529
         </div>
         <div class="clearfix"></div>
-      </footer>
+      </footer> -->
       <!-- /footer content -->
     </div>
   </div>
@@ -28,6 +27,7 @@
 <script>
 import TopNav from "../components/Home/TopNav.vue";
 import LeftNav from "../components/Home/LeftNav.vue";
+//import FooterNav from "../components/Home/FooterNav.vue";
 // import * as mykey  from '../../public/template/build/js/custom.min.js'
 export default {
   name: "Home",
@@ -40,6 +40,7 @@ export default {
   components: {
     TopNav,
     LeftNav,
+    //FooterNav
   },
   methods: {
     changeLanguage(lang) {
@@ -109,7 +110,7 @@ export default {
   }
 }
 .main_container {
-  background: #024873 !important;
+  background: #ffffff !important;
 }
 footer div {
   color: #000 !important;
