@@ -3166,3 +3166,5 @@ C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.csproj.CoreC
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.dll
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.pdb
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.csproj.CopyComplete
+C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\Oracle.ManagedDataAccess.dll
+C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.csproj.AssemblyReference.cache

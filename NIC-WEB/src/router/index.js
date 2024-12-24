@@ -14,9 +14,9 @@ const routes = [{
                 import('../views/Applications.vue')
         },
         {
-            path: '/Home/Qualcomm_Aplication',
+            path: '/Home/Qualcomm_Application',
             component: () =>
-                import('../views/Qualcomm_Aplication.vue')
+                import('../views/Qualcomm_Application.vue')
         },
         {
         path: '/Home/QM',
@@ -482,6 +482,11 @@ const routes = [{
         path: '/Home/ConfigApp/QRECEIPT',
         component: () =>
             import('../components/QualcommApps/QRECEIPT.vue'),
+    },
+    {
+        path: '/Home/ConfigApp/MAPPING_MO',
+        component: () =>
+            import('../components/QualcommApps/MAPPING_MO.vue'),
     }
 ]
 },

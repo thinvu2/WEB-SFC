@@ -74,12 +74,12 @@
         class="img-excel"
         src="../assets/img/xlsx-icon.jpg"
         />
-        <img
+        <!-- <img
         @click="exportExcelCSV()"
         class="img-excel"
         src="../assets/img/excel_64.png"
         alt=""
-        />
+        /> -->
       </div>
       
     </div>

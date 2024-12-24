@@ -22,6 +22,12 @@ let QualcommApplications = [
                     Route: "/Home/ConfigApp/QRECEIPT",
                     Image: "assets/img/receiptQ.png",
                     Style: "background-color: rgb(255 255 255); border: 3px solid rgb(255 255 255); box-shadow: 2px 2px 2px #919191; "
+                },
+                {
+                    Name: 'MAPPING_MO',
+                    Route: "/Home/ConfigApp/MAPPING_MO",
+                    Image: "assets/img/mapping.png",
+                    Style: "background-color: rgb(255 255 255); border: 3px solid rgb(255 255 255); box-shadow: 2px 2px 2px #919191; "
                 }
             ]
         }

@@ -9,7 +9,6 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Mvc;
 using System.Net;
-using System.Net.Http;
 using SN_API.Models;
 using System.Data;
 using System.Text;

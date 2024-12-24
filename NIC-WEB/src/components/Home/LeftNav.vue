@@ -46,7 +46,7 @@
               ></router-link>
             </li> -->
             <li>
-              <router-link to="/Home/Qualcomm_Aplication">
+              <router-link to="/Home/Qualcomm_Application">
                 <i class="fa fa-space-shuttle"></i>Qualcomm
                 <span class="fa fa-chevron-right"></span
               ></router-link>

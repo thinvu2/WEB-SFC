@@ -290,22 +290,22 @@
           <template v-for="(item, index) in ShowDataTableOuterLPN" :key="index">
             <thead>
               <tr>
-                <th></th>
                 <th>LPN</th>
                 <th>Gross Weight({{ item.OUTERBOX_WEIGHTUNITOFMEASURE }})</th>
                 <th>Net Weight({{ item.INNERBOX_WEIGHTUNITOFMEASURE }})</th>
                 <th>Quantity</th>
-                <th>Receive</th>
-                <th>Action</th>
+                <th>Receive Quantity</th>
+                <th>Reject Quantity</th>
+                <th>Reason</th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 <td>{{ item.OUTERBOX_LPN }}</td>
-                <td>LPN</td>
                 <td>{{ item.OUTERBOX_GROSSWEIGHT }}</td>
                 <td>{{ item.OUTERBOX_NETWEIGHT }}</td>
                 <td>{{ item.OUTERBOX_QTY }}</td>
+                <td></td>
                 <td></td>
                 <td></td>
               </tr>
@@ -321,7 +321,6 @@
                   <td
                     v-if="
                       indexInnerLPN1 == 'INNERBOX_LPN' ||
-                        indexInnerLPN1 == 'LPN' ||
                         indexInnerLPN1 == 'INNERBOX_GROSSWEIGHT' ||
                         indexInnerLPN1 == 'INNERBOX_NETWEIGHT' ||
                         indexInnerLPN1 == 'INNERBOX_QTY'
@@ -330,18 +329,34 @@
                     {{ itemInnerLPN1 }}
                   </td>
                 </template>
+                <!-- Receive QTY -->
                 <td>
-                  <input
-                    type="checkbox"
-                    :value="itemInnerLPN"
-                    v-model="selectedItems"
+                  <input type="text"
+                  autocomplete="off"
+                  class="class-re-qty"
+                  maxlength="3"
+                  pattern="[1-9]{1}[0-9]{9}"
+                  onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'"
+                  v-model="rowsInnerBox[indexInnerLPN].receiveQty"
                   />
                 </td>
+                <!-- reject qty -->
                 <td>
-                  <select>
-                    <option>Accept</option>
-                    <option>Reject</option>
-                  </select>
+                  <input type="text"
+                  autocomplete="off"
+                  class="class-re-qty"
+                  maxlength="3"
+                  pattern="[1-9]{1}[0-9]{9}"
+                  onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'"
+                  v-model="rowsInnerBox[indexInnerLPN].rejectQty"
+                  />
+                </td>
+                <!-- reason -->
+                <td>
+                  <input type="text"
+                  autocomplete="off"
+                  v-model="rowsInnerBox[indexInnerLPN].reason"
+                  />
                 </td>
               </tr>
             </tbody>
@@ -375,7 +390,6 @@
       class="submit-form"
       v-if="isShowForm === true && isShowSubmitForm === false"
     ></div>
-
     <div class="main-contain" v-if="isShowForm === false">
       <div class="row col-sm-12 div-content">
         <template v-if="DataTableHeader">
@@ -411,8 +425,11 @@
                 <tr v-for="(row, index) in DataTable" :key="index">
                  <template v-for="(value, key) in row" :key="key" >
                     <td
-                      @click="key === 'PACKSLIP_NO' && ShowDetail(index)"
-                      :style="{ backgroundColor: key === 'STATUS' && value ==='CONFIRMED' ? '#99e7ee' : '' }"
+                     @click="key === 'PACKSLIP_NO' && ShowDetail(index, row.STATUS)"
+                      :style="{ 
+                        backgroundColor: key === 'STATUS' && value ==='COMPLETED' ? 'rgb(43 226 66)' 
+                        :key === 'STATUS' && value ==='WAIT TO RECEIVE' ? 'rgb(224 236 12)' : ''
+                        }"
                       v-if="
                         key === 'PACKSLIP_NO' ||
                         key === 'STATUS' ||
@@ -448,12 +465,12 @@ import Repository from "../../services/Repository";
 export default {
   data() {
     return {
+      rowsInnerBox: [],
       showTimeForm: false,
       showError: false,
       dateFrom: new Date(),
       dateTo: new Date(),
       isShowSubmitForm: true,
-      selectedItems: [],
       isShowForm: false,
       isVisible: false,
       DataTableHeader: [],
@@ -484,8 +501,8 @@ export default {
         Inner_LPN: "",
         Box_Received_Qty: "",
         Box_Accepted_Qty: "",
-        MSG_SENDER_NAME: "Quancomm",
-        MSG_RECEIVER_NAME: "Foxconn",
+        MSG_SENDER_NAME: "",
+        MSG_RECEIVER_NAME: "",
         PO_NO: "",
         POLINE_NO: "",
         ITEM_NO: "",
@@ -522,20 +539,34 @@ export default {
       }
     });
   },
+  watch: {
+    ShowDataTableInnerLPN: {
+      immediate: true,
+      handler(newValue) {
+        this.rowsInnerBox = newValue.map(() => ({
+          receiveQty: '',
+          rejectQty: '',
+          reason: ''
+        }));
+      }
+    }
+  },
   computed: {},
   mounted() {
     this.LoadComponent();
+    this.initializeRowsInnerBox();
   },
   methods: {
+    initializeRowsInnerBox() {
+    this.rowsInnerBox = this.ShowDataTableInnerLPN.map(item => ({
+      INNERBOX_LPN: item.INNERBOX_LPN,
+      F_ID: item.F_ID, 
+      receiveQty: '',
+      rejectQty: '',
+      reason: ''
+    }));
+  },
     async SubmitForm() {
-      if (this.selectedItems.length === 0) {
-        this.$swal(
-          "",
-          "Please select at least one checkbox before submitting.",
-          "warning"
-        );
-        return;
-      } else {
         let titleValue = "";
         let textValue = "";
         titleValue = "Are you sure edit?";
@@ -548,41 +579,55 @@ export default {
           dangerMode: true,
         }).then(async (willDelete) => {
           if (willDelete.isConfirmed == false) return;
+
+          const filleredRows = this.rowsInnerBox.map((row, index) => ({
+            ...row,
+            F_ID: this.ShowDataTableInnerLPN[index].F_ID,
+            INNERBOX_LPN: this.ShowDataTableInnerLPN[index].INNERBOX_LPN
+          })).filter(row => row.receivedQty || row.rejectQty || row.reason);
+          if(filleredRows.length === 0) {
+            this.$swal("", "No data to submit", "warning");
+            return;
+          }
           let payload = {
             EMP_NO: localStorage.username,
             database_name: localStorage.databaseName,
-            PACKSLIP_NO: this.model.PACKSLIP_NO,
-            FLAG: this.model.FLAG,
-            F_ID: this.model.F_ID,
-            SITE: this.model.SITE,
-            PIP_TYPE: this.model.PIP_TYPE,
-            PO_TYPE: this.model.PO_TYPE,
-            CREAT_TIME: this.model.CREAT_TIME,
-            MSG_ID: this.model.MSG_ID,
-            MSG_SENDER_NAME: this.model.MSG_SENDER_NAME,
-            MSG_SENDER_DUNS: this.model.MSG_SENDER_DUNS,
-            MSG_RECEIVER_NAME: this.model.MSG_RECEIVER_NAME,
-            RECEIVER_DUNS: this.model.RECEIVER_DUNS,
-            MSG_RECEIVER_DUNS: this.model.MSG_RECEIVER_DUNS,
-            RECEIVER_DUNS4: this.model.RECEIVER_DUNS4,
-            SHIP_MCMN_LOCATIONNAME: this.model.SHIP_MCMN_LOCATIONNAME,
-            SHIP_MCMN_CITY: this.model.SHIP_MCMN_CITY,
-            PO_NO: this.model.PO_NO,
-            LOT_NO: this.model.LOT_NO,
-            LAST_EDIT_TIME: this.model.LAST_EDIT_TIME,
-            AIRWAYBILL: this.model.AIRWAYBILL,
-            SHIP_MCMN_FREIGHT_CARRIER_CODE: this.model
-              .SHIP_MCMN_FREIGHT_CARRIER_CODE,
-            LOCATIONNAME: this.model.LOCATIONNAME,
-            SHIP_MCMN_COUNTRYCODE: this.model.COUNTRY_CODE,
-            SHIP_MCMN_POSTALCODE: this.model.POSTAL_CODE,
-            SHIP_MCMN_ADDR1: this.model.SHIP_MCMN_STREET1,
-            SHIP_MCMN_ADDR2: this.model.SHIP_MCMN_STREET2,
-            SHIP_MCMN_ADDR3: this.model.SHIP_MCMN_STREET3,
-            POLINE_NO: this.model.POLINE_NO,
-            ITEM_UNITOFMEASURE: this.model.ITEM_UNITOFMEASURE,
-            ITEM_NO: this.model.ITEM_NO,
-            INNERBOX_LPN: this.model.INNERBOX_LPN,
+            rowsInnerBox: filleredRows,
+            data: [
+              {
+                PACKSLIP_NO: this.model.PACKSLIP_NO,
+                FLAG: this.model.FLAG,
+                //F_ID: this.model.F_ID,
+                SITE: this.model.SITE,
+                PIP_TYPE: this.model.PIP_TYPE,
+                PO_TYPE: this.model.PO_TYPE,
+                CREAT_TIME: this.model.CREAT_TIME,
+                MSG_ID: this.model.MSG_ID,
+                MSG_SENDER_NAME: this.model.MSG_SENDER_NAME,
+                MSG_SENDER_DUNS: this.model.MSG_SENDER_DUNS,
+                MSG_RECEIVER_NAME: this.model.MSG_RECEIVER_NAME,
+                RECEIVER_DUNS: this.model.RECEIVER_DUNS,
+                MSG_RECEIVER_DUNS: this.model.MSG_RECEIVER_DUNS,
+                RECEIVER_DUNS4: this.model.RECEIVER_DUNS4,
+                SHIP_MCMN_LOCATIONNAME: this.model.SHIP_MCMN_LOCATIONNAME,
+                SHIP_MCMN_CITY: this.model.SHIP_MCMN_CITY,
+                PO_NO: this.model.PO_NO,
+                LOT_NO: this.model.LOT_NO,
+                LAST_EDIT_TIME: this.model.LAST_EDIT_TIME,
+                SHIP_MCMN_AIRWAYBILL: this.model.AIRWAYBILL,
+                SHIP_MCMN_FREIGHT_CARRIER_CODE: this.model.SHIP_MCMN_FREIGHT_CARRIER_CODE,
+                LOCATION_CODE: this.model.LOCATIONNAME,
+                SHIP_MCMN_COUNTRYCODE: this.model.COUNTRY_CODE,
+                SHIP_MCMN_POSTALCODE: this.model.POSTAL_CODE,
+                SHIP_MCMN_ADDR1: this.model.SHIP_MCMN_STREET1,
+                SHIP_MCMN_ADDR2: this.model.SHIP_MCMN_STREET2,
+                SHIP_MCMN_ADDR3: this.model.SHIP_MCMN_STREET3,
+                PO_LINE: this.model.POLINE_NO,
+                ITEMSHIP_MCMN_UNITOFMEASURE: this.model.ITEM_UNITOFMEASURE,
+                ITEMSHIP_MCMN_NO: this.model.ITEM_NO,
+                INNERBOX_SHIP_MCMN_LPN: this.model.INNERBOX_LPN
+              }
+            ]
           };
           console.log("payload: ", payload);
           try {
@@ -601,7 +646,6 @@ export default {
             }
           }
         });
-      }
     },
     async LoadComponent() {
       let databaseName = localStorage.databaseName;
@@ -652,7 +696,7 @@ export default {
         }
       }
     },
-    async ShowDetail(index) {
+    async ShowDetail(index, value) {
       let databaseName = localStorage.databaseName;
       let PACKSLIP_NO = this.DataTable[index].PACKSLIP_NO;
       let FLAG = this.DataTable[index].FLAG;
@@ -662,12 +706,13 @@ export default {
       }
       try {
         let responseData = await Repository.getApiServer(
-          `GetShowDetailQReceipt?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}&FLAG=${FLAG}&F_ID=${F_ID}`
+          `GetShowDetailQReceipt?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}&FLAG=${FLAG}&F_ID=${F_ID}&value=${value}`
         );
         this.ShowDataDetail = [];
         this.ShowDataDetail = responseData.data.data;
         this.ShowDataTableOuterLPN = responseData.data.dataTableOuterLPN;
         this.ShowDataTableInnerLPN = responseData.data.dataTableInnerLPN;
+        console.log("ShowDataTableInnerLPN: ", this.ShowDataTableInnerLPN);
         this.ShowDataReceiveAddress = responseData.data.dataReceiveAddress;
         if (this.ShowDataDetail.length > 0) {
           let firstItem = this.ShowDataDetail[0];
@@ -695,6 +740,8 @@ export default {
           this.model.LOT_NO = firstItem.LOT_NO;
           this.model.RECEIVER_NAME = firstItem.RECEIVER_NAME;
           this.model.INNERBOX_LPN = firstItem.INNERBOX_LPN;
+          this.model.MSG_SENDER_NAME = firstItem.MSG_SENDER_NAME;
+          this.model.MSG_RECEIVER_NAME = firstItem.MSG_RECEIVER_NAME;
           //new
           this.model.AIRWAYBILL = firstItem.AIRWAYBILL;
           this.model.SHIP_MCMN_FREIGHT_CARRIER_CODE =
@@ -776,18 +823,26 @@ export default {
       this.isShowForm = false;
       this.model.PACKSLIP_NO = "";
       this.isShowSubmitForm = true;
-      this.selectedItems = [];
       this.model.FLAG = "";
       this.model.F_ID = "";
+      this.selectOptions = [];
+      this.selectReceiveQty = [];
+      this.selectRejectQty = [];
+      this.selectReason = [];
+      this.selectedItems = [];
       this.LoadComponent();
     },
     ReturnForm() {
       this.isShowForm = false;
       this.isShowSubmitForm = true;
+      this.selectOptions = [];
+      this.selectReceiveQty = [];
+      this.selectRejectQty = [];
+      this.selectReason = [];
       this.selectedItems = [];
     },
     BackToParent() {
-      this.$router.push({ path: "/Home/Qualcomm_Aplication" });
+      this.$router.push({ path: "/Home/Qualcomm_Application" });
     },
   },
 };
@@ -907,7 +962,7 @@ export default {
   border-radius: 5px;
   width: 80%;
   overflow: auto;
-  height: 500px;
+  height: 600px;
   row-gap: 5px;
   .text-input {
     width: 55%;
@@ -1060,6 +1115,7 @@ input#return-form {
 }
 
 .form-row-table {
+ // overflow-x: auto;
   display: grid;
   grid-template-rows: auto;
   grid-column-start: 1;
@@ -1078,6 +1134,7 @@ input#return-form {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
+  //overflow: auto;
 }
 
 .table-form th,
@@ -1092,6 +1149,9 @@ td {
   color: #0f0f0f;
   font-weight: bold;
   background-color: #bbbb9c;
+}
+.class-re-qty {
+  width: 100px;
 }
 
 .form-row-center {

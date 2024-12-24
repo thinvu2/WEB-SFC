@@ -361,8 +361,7 @@
           v-model="model.POLINE_NO"
         />
       </div>
-
-      <div class="form-row">
+      <!-- <div class="form-row">
         <label for="lot-no">Lot No:</label>
         <input
           type="text"
@@ -372,8 +371,7 @@
           readonly
           v-model="model.LOT_NO"
         />
-      </div>
-
+      </div> -->
       <div class="form-row">
         <label for="item-no">Items No:</label>
         <input
@@ -412,7 +410,7 @@
           <template v-for="(item, index) in ShowDataTableOuterLPN" :key="index">
             <thead>
               <tr>
-                <th></th>
+                <!-- <th></th> -->
                 <th>LPN</th>
                 <th>Gross Weight({{ item.OUTERBOX_WEIGHTUNITOFMEASURE }})</th>
                 <th>Net Weight({{ item.INNERBOX_WEIGHTUNITOFMEASURE }})</th>
@@ -422,7 +420,7 @@
             <tbody>
               <tr>
                 <td>{{ item.OUTERBOX_LPN }}</td>
-                <td>LPN</td>
+                <!-- <td>LPN</td> -->
                 <td>{{ item.OUTERBOX_GROSSWEIGHT }}</td>
                 <td>{{ item.OUTERBOX_NETWEIGHT }}</td>
                 <td>{{ item.OUTERBOX_QTY }}</td>
@@ -439,7 +437,7 @@
                   <td
                     v-if="
                       indexInnerLPN1 == 'INNERBOX_LPN' ||
-                        indexInnerLPN1 == 'LPN' ||
+                        // indexInnerLPN1 == 'LPN' ||
                         indexInnerLPN1 == 'INNERBOX_GROSSWEIGHT' ||
                         indexInnerLPN1 == 'INNERBOX_NETWEIGHT' ||
                         indexInnerLPN1 == 'INNERBOX_QTY'
@@ -720,6 +718,11 @@
                   <template v-for="(item1, index1) in item" :key="index1">
                     <td
                       @click="index1 == 'PACKSLIP_NO' && ShowDetail(index)"
+                      :style="{ 
+                        backgroundColor: (index1 === 'STATUS' && item1 ==='WAIT TO CONFIRM' ? 'rgb(236, 12, 12)' : '') ||
+                        (index1 === 'STATUS' && item1 ==='WAIT TO RECEIVE' ? 'rgb(224 236 12)' : '') ||
+                        (index1 === 'STATUS' && item1 ==='COMPLETED' ? 'rgb(43 226 66)' : '')
+                        }"
                       v-if="
                         index1 == 'PACKSLIP_NO' ||
                         index1 == 'STATUS' ||
@@ -768,7 +771,6 @@ export default {
       ShowDataDetail: [],
       ShowDataTableOuterLPN: [],
       ShowDataTableInnerLPN: [],
-      ShowDataReceiveAddress: [],
       columnName: [],
       valueSearch: "",
       model: {
@@ -962,7 +964,7 @@ export default {
         this.ShowDataDetail = responseData.data.data;
         this.ShowDataTableOuterLPN = responseData.data.dataTableOuterLPN;
         this.ShowDataTableInnerLPN = responseData.data.dataTableInnerLPN;
-        this.ShowDataReceiveAddress = responseData.data.dataReceiveAddress;
+        console.log("ShowDataTableOuterLPN: ", this.ShowDataTableOuterLPN);
         if (this.ShowDataDetail.length > 0) {
           let firstItem = this.ShowDataDetail[0];
           this.model.PACKSLIP_NO = firstItem.PACKSLIP_NO;
@@ -1089,13 +1091,14 @@ export default {
     },
     ReturnForm() {
       this.isShowForm = false;
+      this.isShowSubmitForm = false;
       this.model.PACKSLIP_NO = "";
       this.model.FLAG = "";
       this.model.F_ID = "";
       this.LoadComponent();
     },
     BackToParent() {
-      this.$router.push({ path: "/Home/Qualcomm_Aplication" });
+      this.$router.push({ path: "/Home/Qualcomm_Application" });
     },
   },
 };
@@ -1183,7 +1186,7 @@ export default {
   overflow-x: auto;
   width: 85%;
   row-gap: 5px;
-  height: 550px;
+  height: 600px;
   .text-input {
     width: 50%;
     padding: 5px;

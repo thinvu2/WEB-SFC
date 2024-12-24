@@ -1,27 +1,27 @@
 <template>
   <div class="container body">
-    <div class="main_container">
+    <!-- <div class="main_container"> -->
       <LeftNav />
       <!-- top navigation -->
       <TopNav />
       <!-- /top navigation -->
       <!-- page content -->
       <div class="right_col" role="main">
-
         <router-view />
       </div>
       <!-- /page content -->
       <!-- footer content -->
        <!-- <FooterNav/> -->
-      <!-- <footer>
-        <div class="pull-right">
-          @Copyright 2025 IT Shopfloor Vietnam. All Rights Reserved. (535) 31529
-        </div>
-        <div class="clearfix"></div>
-      </footer> -->
+      <!-- <footer class="footer"> -->
+
+      <!-- </footer> -->
+      
       <!-- /footer content -->
-    </div>
+    <!-- </div> -->
   </div>
+  <div class="footer-div">
+          <span>@Copyright IT Shopfloor Vietnam. All Rights Reserved. (535) 31529</span>
+        </div>
 </template>
 
 <script>
@@ -38,7 +38,7 @@ export default {
     };
   },
   components: {
-    TopNav,
+   TopNav,
     LeftNav,
     //FooterNav
   },
@@ -103,7 +103,6 @@ export default {
   justify-content: center;
   align-items: center;
 }
-
 @media only screen and (hover: none) and (pointer: coarse) and (orientation: portrait) {
   .div-portrait {
     display: block;
@@ -112,9 +111,26 @@ export default {
 .main_container {
   background: #ffffff !important;
 }
-footer div {
-  color: #000 !important;
+.footer-div {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    height: 40px;
+    width: 100%;
+    background-color: #d6d4d4;
+    color: #000 ;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
 }
+.footer-div span {
+  margin-right: 1rem;
+  font-size: 15px;
+}
+.container {
+  margin-bottom: 45px;
+}
+
 </style>
 <style src="../../public/template/vendors/bootstrap/dist/css/bootstrap.min.css"></style>
 <style src="../../public/template/vendors/font-awesome/css/font-awesome.min.css"></style>

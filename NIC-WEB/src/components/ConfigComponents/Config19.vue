@@ -443,7 +443,7 @@ export default {
     UpdateModelReceive(value) {
       this.model.MODEL_NAME = value;
       this.model.CUST_MODEL_NAME = value;
-      this.model.PALLET_LAB_NAME = `P_${this.model.MODEL_NAME}.LAB`;
+     // this.model.PALLET_LAB_NAME = `P_${this.model.MODEL_NAME}.LAB`;
       this.model.CARTON_LAB_NAME = `${this.model.MODEL_NAME}.LAB`;
     },
     async GetModel() {
@@ -467,7 +467,7 @@ export default {
     //   this.ListCustomer = data.data;
     // },
     ChangeModelName() {
-      this.model.PALLET_LAB_NAME = `P_${this.model.MODEL_NAME}.LAB`;
+      //this.model.PALLET_LAB_NAME = `P_${this.model.MODEL_NAME}.LAB`;
       this.model.CARTON_LAB_NAME = `${this.model.MODEL_NAME}.LAB`;
     },
     async SaveData() {

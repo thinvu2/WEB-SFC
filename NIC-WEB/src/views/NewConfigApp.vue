@@ -1,19 +1,18 @@
 <template>
-  <div class="content" style="min-height:700px">
+  <div class="div-content">
     <div class="div-back" style="font-size:24px" @click="BackToParent()">
-        <Icon icon="chevron-left" class="back-icon sidenav-icon" />Back     
-                         
+        <Icon icon="chevron-left" class="back-icon sidenav-icon" />Back        
     </div>
 
     <div class="row">
       <template v-for="(item, index) in dataList1" :key="index">
-        <div class="icon-app-disable col-sm-4" style="padding: 0 0px 8px 35px;border: 1px solid #Black" v-if="item.IsDisable == 0">
+        <div class="icon-app-disable col-sm-4" style="padding: 0 0px 8px 35px" v-if="item.IsDisable == 0">
           <div class="icon-content">
                 <span class= "config-border font-text">[{{ item.Id }}] . </span>
                 <span class="text-config-name font-text">{{ item.Name }}</span>
           </div>          
         </div>
-        <div v-else class="icon-app col-sm-4" style="padding: 0 0px 8px 35px;cursor:pointer;border: 1px solid #Black" @click="GotoRoute(item.Route)">
+        <div v-else class="icon-app col-sm-4" style="padding: 0 0px 8px 35px;cursor:pointer" @click="GotoRoute(item.Route)">
           <template v-if="item.Route != null ">
             <div class="icon-content">
                 <span class ="config-border font-text">[{{ item.Id }}] . </span>
@@ -21,7 +20,6 @@
              </div>  
             <!-- <span class="text-config-name ">{{ item.Name.toString() assets/img/config.png }}</span>-->
           </template>
-        
         </div>
       </template>
     </div>
@@ -138,19 +136,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.div-content {
+  height:700px;
+}
+.row {
+  overflow: auto;
+  height: 95%;
+}
 .config-content {
-
  display: grid;
   height: 90vh;
- 
   background: #7cb5f5;
   grid-template-columns: 25% 25% 25% 25%;
   grid-template-rows: 10% 10% 10% 10%;
   grid-column-gap:200px;
-  grid-row-gap :10px; 
- //margin-left: 2px;
-  
+  grid-row-gap: 10px; 
 }
  ol {
     //counter-reset: li; /* Initiate a counter */
@@ -163,7 +163,6 @@ export default {
     text-shadow: 0 1px 0 rgba(187, 184, 184, 0.5);
   }
 
- 
   .rounded-list span{
     position: relative;
     display: grid;
@@ -211,11 +210,9 @@ export default {
   .config-border {
     border: 1px solid #ada4a4;
     background: #FFF;
-    text-color: #0000;
   }
   .font-text{
     font-size: 20px;
-    
   }
   .div-back {
     background: #eae1e1;

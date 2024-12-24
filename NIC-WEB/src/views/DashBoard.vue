@@ -79,7 +79,7 @@ ul {
 }
 .div-contact {
   position: absolute;
-  bottom: 20px;
+  bottom: 25px;
 }
 .div-content {
   min-height: 95vh;

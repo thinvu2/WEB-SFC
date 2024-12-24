@@ -165,8 +165,8 @@ export default {
   left: 18px;
   right: 0;
   background: #fff;
-  width: 100%;
-  max-width: 100%;
+  //width: 100%;
+  //max-width: 100%;
   padding: 5px;
   visibility: hidden;
   transition: all 0.1s linear;
