@@ -119,7 +119,7 @@
           v-model="model.AIRWAYBILL"
         />
       </div>
-      <div class="form-row">
+      <!-- <div class="form-row">
         <label for="lot-no">Lot No:</label>
         <input
           type="text"
@@ -129,7 +129,7 @@
           readonly
           v-model="model.LOT_NO"
         />
-      </div>
+      </div> -->
       <div class="actual-ship-from">
         <!-- <span class="title-actual-ship">Actual ship from</span> -->
         <div class="form-row-actual">
@@ -287,7 +287,118 @@
       <!-- end -->
       <div class="form-row-table">
         <table class="table-form">
-          <template v-for="(item, index) in ShowDataTableOuterLPN" :key="index">
+          
+            <thead>
+              <tr>
+                <template v-for="(item, index) in ShowDataTableOuterLpnHeader" :key="index"> 
+                  <th v-if="item == 'LOT_NO' || 
+                    item == 'OUTERBOX' ||
+                    item == 'INNERBOX' ||
+                    item == 'SHIPPEDQTY' ||
+                    item == 'RECEIVEQTY' ||
+                    item == 'REJECTQTY' ||
+                    item == 'REASON'
+                  ">
+                  {{ item }}
+                  </th>
+                </template>
+                  <!-- <th>Receive Quantity</th>
+                  <th>Reject Quantity</th>
+                  <th>Reason</th> -->
+              </tr>
+            </thead>
+            <tbody v-if="isShowSubmitForm === false">
+              <tr
+                v-for="(item, index) in ShowDataTableOuterLpn" :key="index">
+                <template v-for="(value, key) in item" :key="key">
+                  <td
+                    v-if="
+                      key == 'LOT_NO' ||
+                      key == 'OUTERBOX_LPN' ||
+                      key == 'INNERBOX_LPN' ||
+                      key == 'SHIPPEDQTY' ||
+                      key == 'RECEIVEQTY' || 
+                      key == 'REJECTQTY' ||
+                      key == 'REASON'
+                    "
+                  > 
+                    {{ value }}
+                  </td>
+                </template>
+                <!-- <td>
+                  <input type="text"
+                  autocomplete="off"
+                  class="class-re-qty"
+                  maxlength="5"
+                  pattern="[1-9]{1}[0-9]{9}"
+                  onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'"
+                  v-model="item.ACCEPTEDQTY"
+                  />
+                </td>
+                <td>
+                  <input type="text"
+                  autocomplete="off"
+                  class="class-re-qty"
+                  maxlength="5"
+                  pattern="[1-9]{1}[0-9]{9}"
+                  onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'"
+                  v-model="item.REJECTQTY"
+                  />
+                </td>
+                <td>
+                  <input type="text"
+                  autocomplete="off"
+                  v-model="item.REASON"
+                  />
+                </td> -->
+              </tr>
+            </tbody>
+            <tbody v-else>
+              <tr
+                v-for="(item, index) in ShowDataTableOuterLpn" :key="index">
+                <template v-for="(value, key) in item" :key="key">
+                  <td
+                    v-if="
+                      key == 'LOT_NO' ||
+                      key == 'OUTERBOX' ||
+                      key == 'INNERBOX' ||
+                      key == 'SHIPPEDQTY'
+                    "
+                  > 
+                    {{ value }}
+                  </td>
+                </template>
+                <td>
+                  <input type="text"
+                  autocomplete="off"
+                  class="class-re-qty"
+                  maxlength="5"
+                  pattern="[1-9]{1}[0-9]{9}"
+                  onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'"
+                  v-model="rowsInnerBox[index].receiveQty"
+                  />
+                </td>
+                <td>
+                  <input type="text"
+                  autocomplete="off"
+                  class="class-re-qty"
+                  maxlength="5"
+                  pattern="[1-9]{1}[0-9]{9}"
+                  onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'"
+                  v-model="rowsInnerBox[index].rejectQty"
+                  />
+                </td>
+                <td>
+                  <input type="text"
+                  autocomplete="off"
+                  v-model="rowsInnerBox[index].reason"
+                  />
+                </td>
+              </tr>
+            </tbody>
+        </table>
+        <!-- <table class="table-form">
+          <template v-for="(item, index) in ShowDataTableOuterLpn" :key="index">
             <thead>
               <tr>
                 <th>LPN</th>
@@ -309,7 +420,6 @@
                 <td></td>
                 <td></td>
               </tr>
-              <!-- Inner box -->
               <tr
                 v-for="(itemInnerLPN, indexInnerLPN) in ShowDataTableInnerLPN"
                 :key="indexInnerLPN"
@@ -329,7 +439,6 @@
                     {{ itemInnerLPN1 }}
                   </td>
                 </template>
-                <!-- Receive QTY -->
                 <td>
                   <input type="text"
                   autocomplete="off"
@@ -340,7 +449,6 @@
                   v-model="rowsInnerBox[indexInnerLPN].receiveQty"
                   />
                 </td>
-                <!-- reject qty -->
                 <td>
                   <input type="text"
                   autocomplete="off"
@@ -351,7 +459,6 @@
                   v-model="rowsInnerBox[indexInnerLPN].rejectQty"
                   />
                 </td>
-                <!-- reason -->
                 <td>
                   <input type="text"
                   autocomplete="off"
@@ -361,7 +468,7 @@
               </tr>
             </tbody>
           </template>
-        </table>
+        </table> -->
       </div>
       <div class="form-row-actual-address">
         <label for="box_received">Receive address:</label>
@@ -425,7 +532,7 @@
                 <tr v-for="(row, index) in DataTable" :key="index">
                  <template v-for="(value, key) in row" :key="key" >
                     <td
-                     @click="key === 'PACKSLIP_NO' && ShowDetail(index, row.STATUS)"
+                     @click="key === 'PACKSLIP_NO' && ShowDetail(index)"
                       :style="{ 
                         backgroundColor: key === 'STATUS' && value ==='COMPLETED' ? 'rgb(43 226 66)' 
                         :key === 'STATUS' && value ==='WAIT TO RECEIVE' ? 'rgb(224 236 12)' : ''
@@ -476,7 +583,8 @@ export default {
       DataTableHeader: [],
       DataTable: [],
       ShowDataDetail: [],
-      ShowDataTableOuterLPN: [],
+      ShowDataTableOuterLpn: [],
+      ShowDataTableOuterLpnHeader: [],
       ShowDataTableInnerLPN: [],
       ShowDataReceiveAddress: [],
       columnName: [],
@@ -540,7 +648,7 @@ export default {
     });
   },
   watch: {
-    ShowDataTableInnerLPN: {
+    ShowDataTableOuterLpn: {
       immediate: true,
       handler(newValue) {
         this.rowsInnerBox = newValue.map(() => ({
@@ -558,13 +666,15 @@ export default {
   },
   methods: {
     initializeRowsInnerBox() {
-    this.rowsInnerBox = this.ShowDataTableInnerLPN.map(item => ({
-      INNERBOX_LPN: item.INNERBOX_LPN,
-      F_ID: item.F_ID, 
+    this.rowsInnerBox = this.ShowDataTableOuterLpn.map(item => ({
+      LOT_NO: item.LOT_NO,
+      SHIPPEDQTY: item.SHIPPEDQTY,
+      //F_ID: item.F_ID,
       receiveQty: '',
       rejectQty: '',
       reason: ''
     }));
+    console.log("this.rowsInnerBox", this.rowsInnerBox);
   },
     async SubmitForm() {
         let titleValue = "";
@@ -582,12 +692,28 @@ export default {
 
           const filleredRows = this.rowsInnerBox.map((row, index) => ({
             ...row,
-            F_ID: this.ShowDataTableInnerLPN[index].F_ID,
-            INNERBOX_LPN: this.ShowDataTableInnerLPN[index].INNERBOX_LPN
+            LOT_NO: this.ShowDataTableOuterLpn[index].LOT_NO,
+            SHIPPEDQTY: this.ShowDataTableOuterLpn[index].SHIPPEDQTY
           })).filter(row => row.receivedQty || row.rejectQty || row.reason);
           if(filleredRows.length === 0) {
             this.$swal("", "No data to submit", "warning");
             return;
+          }
+          console.log("this.ShowDataTableOuterLpn: ", this.ShowDataTableOuterLpn.length);
+          console.log("filleredRows: ", filleredRows.length);
+          //check length enter
+          if(this.ShowDataTableOuterLpn.length !== filleredRows.length) {
+            this.$swal("", "Please enter enough data.", "warning");
+              return;
+          }
+          //logic: receivedQty + rejectQty == SHIPPEDQTY
+          const invalidRows = filleredRows.filter(row => 
+          (parseInt(row.receivedQty, 10) || 0) + (parseInt(row.rejectQty, 10) || 0) !== row.SHIPPEDQTY
+          );
+
+          if (invalidRows.length > 0) {
+              this.$swal("", "Please check receivedQty and rejectQty.", "warning");
+              return;
           }
           let payload = {
             EMP_NO: localStorage.username,
@@ -612,7 +738,7 @@ export default {
                 SHIP_MCMN_LOCATIONNAME: this.model.SHIP_MCMN_LOCATIONNAME,
                 SHIP_MCMN_CITY: this.model.SHIP_MCMN_CITY,
                 PO_NO: this.model.PO_NO,
-                LOT_NO: this.model.LOT_NO,
+                //LOT_NO: this.model.LOT_NO,
                 LAST_EDIT_TIME: this.model.LAST_EDIT_TIME,
                 SHIP_MCMN_AIRWAYBILL: this.model.AIRWAYBILL,
                 SHIP_MCMN_FREIGHT_CARRIER_CODE: this.model.SHIP_MCMN_FREIGHT_CARRIER_CODE,
@@ -696,23 +822,29 @@ export default {
         }
       }
     },
-    async ShowDetail(index, value) {
+    async ShowDetail(index) {
       let databaseName = localStorage.databaseName;
       let PACKSLIP_NO = this.DataTable[index].PACKSLIP_NO;
       let FLAG = this.DataTable[index].FLAG;
-      let F_ID = this.DataTable[index].F_ID;
+      //let F_ID = this.DataTable[index].F_ID;
       if (FLAG != "0") {
         this.isShowSubmitForm = false;
       }
       try {
         let responseData = await Repository.getApiServer(
-          `GetShowDetailQReceipt?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}&FLAG=${FLAG}&F_ID=${F_ID}&value=${value}`
+          `GetShowDetailQReceipt?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}`
         );
         this.ShowDataDetail = [];
         this.ShowDataDetail = responseData.data.data;
-        this.ShowDataTableOuterLPN = responseData.data.dataTableOuterLPN;
-        this.ShowDataTableInnerLPN = responseData.data.dataTableInnerLPN;
-        console.log("ShowDataTableInnerLPN: ", this.ShowDataTableInnerLPN);
+        this.ShowDataTableOuterLpn = responseData.data.dataTableOuterLPN;
+
+        console.log("ShowDataTableOuterLpn: ", this.ShowDataTableOuterLpn);
+
+        if(this.ShowDataTableOuterLpn.length > 0) {
+          this.ShowDataTableOuterLpnHeader = Object.keys(this.ShowDataTableOuterLpn[0]);
+        }
+        //this.ShowDataTableInnerLPN = responseData.data.dataTableInnerLPN;
+        //console.log("ShowDataTableInnerLPN: ", this.ShowDataTableInnerLPN);
         this.ShowDataReceiveAddress = responseData.data.dataReceiveAddress;
         if (this.ShowDataDetail.length > 0) {
           let firstItem = this.ShowDataDetail[0];
@@ -1115,11 +1247,11 @@ input#return-form {
 }
 
 .form-row-table {
- // overflow-x: auto;
-  display: grid;
-  grid-template-rows: auto;
-  grid-column-start: 1;
-  grid-column-end: 4;
+    //overflow: auto;
+    //height: 250px;
+    grid-column-start: 1;
+    grid-column-end: 4;
+    margin-bottom: 20px;
 }
 .class-hr{
     grid-column: 1/4;
@@ -1131,14 +1263,14 @@ input#return-form {
     color: #000;
 }
 .table-form {
-  width: 100%;
+  //width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
+  //margin-bottom: 20px;
   //overflow: auto;
+  height: auto;
 }
 
-.table-form th,
-td {
+.table-form th, td {
   border: 1px solid #0f0f0f;
   padding: 5px;
   //text-align: center;
@@ -1149,6 +1281,10 @@ td {
   color: #0f0f0f;
   font-weight: bold;
   background-color: #bbbb9c;
+  top: 0;
+  position: sticky;
+  z-index: 2;
+  //padding: 0.5rem 1.5rem;
 }
 .class-re-qty {
   width: 100px;

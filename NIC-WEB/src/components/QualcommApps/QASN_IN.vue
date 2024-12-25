@@ -73,7 +73,7 @@
         <label for="msg_sender_name">From:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="msg_sender_name"
           name="msg_sender_name"
           readonly
@@ -84,7 +84,7 @@
         <label for="msg_receiver_name">To:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="msg_receiver_name"
           name="msg_receiver_name"
           readonly
@@ -95,7 +95,7 @@
         <label for="ship_mcmn_creattime">Time:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="ship_mcmn_creattime"
           name="ship_mcmn_creattime"
           readonly
@@ -106,7 +106,7 @@
         <label for="packslip_no">Pack Slip No:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="packslip_no"
           name="packslip_no"
           readonly
@@ -117,7 +117,7 @@
         <label for="airwaybill">Airway Bill:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="airwaybill"
           name="airwaybill"
           readonly
@@ -128,29 +128,29 @@
         <label for="freightcarrier">FreightCarrier:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="freightcarrier"
           name="freightcarrier"
           readonly
           v-model="model.FREIGHT_CARRIER_CODE"
         />
       </div>
-      <div class="form-row">
+      <!-- <div class="form-row">
         <label for="shipment">Shipment:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="shipment"
           name="shipment"
           readonly
           v-model="model.SHIP_MCMN_CREATTIME"
         />
-      </div>
+      </div> -->
       <div class="form-row">
         <label for="estimate-dock">Estimate Dock:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="estimate-dock"
           name="estimate-dock"
           readonly
@@ -161,7 +161,7 @@
         <label for="supplier">Supplier:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="supplier"
           name="supplier"
           readonly
@@ -173,7 +173,7 @@
         <label for="gross-weight">Gross Weight:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="gross-weight"
           name="gross-weight"
           readonly
@@ -185,7 +185,7 @@
         <label for="net-weight">Net Weight:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="net-weight"
           name="net-weight"
           readonly
@@ -197,7 +197,7 @@
         <label for="outer-container">Outer Container:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="outer-container"
           name="outer-container"
           readonly
@@ -216,14 +216,25 @@
                 </div> -->
 
       <div class="actual-ship-from">
-        <span class="title-actual-ship"
+        <div class="title-actual-ship">
+          <label for="supplier-name">Actual ship from:</label>
+          <input
+            type="text"
+            class="text-input"
+            id="supplier-name"
+            name="supplier-name"
+            readonly
+            v-model="model.SHIP_MCMN_LOCATIONNAME"
+          />
+        </div>
+        <!-- <span class="title-actual-ship"
           >Actual ship from: {{ model.SHIP_MCMN_LOCATIONNAME }}</span
-        >
+        > -->
         <div class="form-row-actual">
           <label for="country-code">Country Code:</label>
           <input
             type="text"
-            class="text-input"
+            class="text-input-over"
             id="country-code"
             name="country-code"
             readonly
@@ -234,7 +245,7 @@
           <label for="ship-mcmn-city">City:</label>
           <input
             type="text"
-            class="text-input"
+            class="text-input-over"
             id="ship-mcmn-city"
             name="ship-mcmn-city"
             readonly
@@ -245,7 +256,7 @@
           <label for="postal-code">Postal Code:</label>
           <input
             type="text"
-            class="text-input"
+            class="text-input-over"
             id="postal-code"
             name="postal-code"
             readonly
@@ -275,7 +286,7 @@
         <label for="ship-mcmn-lpn">Pallet No:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="ship-mcmn-lpn"
           name="ship-mcmn-lpn"
           readonly
@@ -286,7 +297,7 @@
         <label for="pal-grossweight">GrossWeight:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="pal-grossweight"
           name="pal-grossweight"
           readonly
@@ -297,7 +308,7 @@
         <label for="pal-netweight">NetWeight:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="pal-netweight"
           name="pal-netweight"
           readonly
@@ -309,7 +320,7 @@
         <input
           type="text"
           id="pal-width"
-          class="text-input"
+          class="text-input-over"
           name="pal-width"
           readonly
           v-model="model.PAL_WIDTH"
@@ -320,7 +331,7 @@
         <label for="pal-length">Length:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="pal-length"
           name="pal-length"
           readonly
@@ -331,7 +342,7 @@
         <label for="pal-height">Height:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="pal-height"
           name="pal-height"
           readonly
@@ -343,7 +354,7 @@
         <label for="po-no">Po No:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="po-no"
           name="po-no"
           readonly
@@ -354,7 +365,7 @@
         <label for="po-line">Po Line:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="po-line"
           name="po-line"
           readonly
@@ -377,7 +388,7 @@
         <input
           type="text"
           id="item-no"
-          class="text-input"
+          class="text-input-over"
           name="item-no"
           readonly
           v-model="model.ITEM_NO"
@@ -387,7 +398,7 @@
         <label for="item-shipped-qty">QTY:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="item-shipped-qty"
           name="item-shipped-qty"
           readonly
@@ -398,7 +409,7 @@
         <label for="item-mpn">MPN:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-over"
           id="item-mpn"
           name="item-mpn"
           readonly
@@ -407,10 +418,40 @@
       </div>
       <div class="form-row-table">
         <table class="table-form">
-          <template v-for="(item, index) in ShowDataTableOuterLPN" :key="index">
             <thead>
               <tr>
-                <!-- <th></th> -->
+                <template v-for="(item, index) in ShowDataTableOuterLpnHeader" :key="index">
+                  <th v-if="item == 'LOT_NO' || 
+                            item == 'OUTERBOX_LPN' ||
+                            item == 'INNERBOX_LPN' ||
+                            item == 'INNERBOX_SHIPPEDQTY'
+                   ">
+                   {{ item }}
+                  </th>
+                </template>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in ShowDataTableOuterLpn" :key="index">
+                <template v-for="(value, key) in item" :key="key">
+                  <td
+                    v-if="key == 'LOT_NO' || 
+                          key == 'OUTERBOX_LPN' ||
+                          key == 'INNERBOX_LPN' ||
+                          key == 'INNERBOX_SHIPPEDQTY'
+                    "
+                  >
+                    {{ value }}
+                  </td>
+                </template>
+              </tr>
+            </tbody>
+        </table>
+        <!-- backup table -->
+        <!-- <table class="table-form">
+          <template v-for="(item, index) in ShowDataTableOuterLpn" :key="index">
+            <thead>
+              <tr>
                 <th>LPN</th>
                 <th>Gross Weight({{ item.OUTERBOX_WEIGHTUNITOFMEASURE }})</th>
                 <th>Net Weight({{ item.INNERBOX_WEIGHTUNITOFMEASURE }})</th>
@@ -420,7 +461,6 @@
             <tbody>
               <tr>
                 <td>{{ item.OUTERBOX_LPN }}</td>
-                <!-- <td>LPN</td> -->
                 <td>{{ item.OUTERBOX_GROSSWEIGHT }}</td>
                 <td>{{ item.OUTERBOX_NETWEIGHT }}</td>
                 <td>{{ item.OUTERBOX_QTY }}</td>
@@ -437,7 +477,6 @@
                   <td
                     v-if="
                       indexInnerLPN1 == 'INNERBOX_LPN' ||
-                        // indexInnerLPN1 == 'LPN' ||
                         indexInnerLPN1 == 'INNERBOX_GROSSWEIGHT' ||
                         indexInnerLPN1 == 'INNERBOX_NETWEIGHT' ||
                         indexInnerLPN1 == 'INNERBOX_QTY'
@@ -449,7 +488,7 @@
               </tr>
             </tbody>
           </template>
-        </table>
+        </table> -->
       </div>
 
       <div class="form-row">
@@ -699,7 +738,6 @@
                       item == 'ITEM_SHIPPEDQTY' ||
                       item == 'ITEM_MPN' ||
                       item == 'ITEM_DESCRIPTION' ||
-                      item == 'LOT_NO' ||
                       item == 'RECEIVER_LOCATION' ||
                       item == 'RECEIVER_NAME' ||
                       item == 'PALLET_LPN' ||
@@ -733,7 +771,6 @@
                         index1 == 'ITEM_SHIPPEDQTY' ||
                         index1 == 'ITEM_MPN' ||
                         index1 == 'ITEM_DESCRIPTION' ||
-                        index1 == 'LOT_NO' ||
                         index1 == 'RECEIVER_LOCATION' ||
                         index1 == 'RECEIVER_NAME' ||
                         index1 == 'PALLET_LPN' ||
@@ -769,9 +806,9 @@ export default {
       DataTableHeader: [],
       DataTable: [],
       ShowDataDetail: [],
-      ShowDataTableOuterLPN: [],
-      ShowDataTableInnerLPN: [],
-      columnName: [],
+      ShowDataTableOuterLpn: [],
+      ShowDataTableOuterLpnHeader: [],
+      //ShowDataTableInnerLPN: [],
       valueSearch: "",
       model: {
         database_name: localStorage.databaseName,
@@ -952,25 +989,37 @@ export default {
       let databaseName = localStorage.databaseName;
       let PACKSLIP_NO = this.DataTable[index].PACKSLIP_NO;
       let FLAG = this.DataTable[index].FLAG;
-      let F_ID = this.DataTable[index].F_ID;
+      // let F_ID = this.DataTable[index].F_ID;
       if (FLAG == "2") {
         this.isShowSubmitForm = true;
       }
       try {
         let responseData = await Repository.getApiServer(
-          `GetShowDetail?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}&FLAG=${FLAG}&F_ID=${F_ID}`
+          `GetShowDetail?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}`
         );
         this.ShowDataDetail = [];
+        this.ShowDataTableOuterLpn = [];
         this.ShowDataDetail = responseData.data.data;
-        this.ShowDataTableOuterLPN = responseData.data.dataTableOuterLPN;
-        this.ShowDataTableInnerLPN = responseData.data.dataTableInnerLPN;
-        console.log("ShowDataTableOuterLPN: ", this.ShowDataTableOuterLPN);
+        console.log("ShowDataDetail: ", this.ShowDataDetail);
+
+        this.ShowDataTableOuterLpn = responseData.data.dataTableOuterLPN;
+
+        console.log("ShowDataTableOuterLpn: ", this.ShowDataTableOuterLpn);
+
+        if(this.ShowDataTableOuterLpn.length > 0) {
+          this.ShowDataTableOuterLpnHeader = Object.keys(this.ShowDataTableOuterLpn[0]);
+          console.log("ShowDataTableOuterLpnHeader: ", this.ShowDataTableOuterLpnHeader);
+        }
+        //this.ShowDataTableInnerLPN = responseData.data.dataTableInnerLPN;
+        //console.log("ShowDataTableOuterLpn: ", this.ShowDataTableOuterLpn);
         if (this.ShowDataDetail.length > 0) {
           let firstItem = this.ShowDataDetail[0];
           this.model.PACKSLIP_NO = firstItem.PACKSLIP_NO;
           this.model.FLAG = firstItem.FLAG;
           this.model.F_ID = firstItem.F_ID;
-          this.model.SHIP_MCMN_CREATTIME = firstItem.SHIP_MCMN_CREATTIME;
+          const date = new Date(firstItem.SHIP_MCMN_CREATTIME);
+          const formattedDate = date.toLocaleString('en-US', { timeZone: 'UTC' });
+          this.model.SHIP_MCMN_CREATTIME = formattedDate;
           this.model.MSG_SENDER_NAME = firstItem.MSG_SENDER_NAME;
           this.model.MSG_RECEIVER_NAME = firstItem.MSG_RECEIVER_NAME;
           this.model.PO_NO = firstItem.PO_NO;
@@ -1009,8 +1058,9 @@ export default {
           this.model.COUNTRY_OF_FABRICATION = firstItem.COUNTRY_OF_FABRICATION;
           this.model.COUNTRY_OF_ASSEMBLY = firstItem.COUNTRY_OF_ASSEMBLY;
           this.model.COUNTRY_OF_ORIGIN = firstItem.COUNTRY_OF_ORIGIN;
-          this.model.SHIP_MCMN_ESTIMATEDDOCKTIME =
-            firstItem.SHIP_MCMN_ESTIMATEDDOCKTIME;
+          const ESTIMATEDDOCKTIME = new Date(firstItem.SHIP_MCMN_ESTIMATEDDOCKTIME);
+          const formattedDateESTIMATEDDOCKTIME = ESTIMATEDDOCKTIME.toLocaleString('en-US', { timeZone: 'UTC' });
+          this.model.SHIP_MCMN_ESTIMATEDDOCKTIME = formattedDateESTIMATEDDOCKTIME;
           this.model.SHIP_MCMN_TOTALOUTERCONTAINERS =
             firstItem.SHIP_MCMN_TOTALOUTERCONTAINERS;
           this.model.FREIGHT_CARRIER_CODE = firstItem.FREIGHT_CARRIER_CODE;
@@ -1104,7 +1154,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .div-all {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -1141,10 +1191,10 @@ export default {
   background: #f18436;
   color: #fff;
   box-sizing: 0;
-  &:hover {
-    background: #ec690c;
-    transition: 0.5s;
-  }
+}
+.btn-button:hover {
+  background: #ec690c;
+  transition: 0.5s;
 }
 .searchbox-content {
   display: flex;
@@ -1187,24 +1237,35 @@ export default {
   width: 85%;
   row-gap: 5px;
   height: 600px;
-  .text-input {
-    width: 50%;
-    padding: 5px;
-    border: none;
-    box-sizing: border-box;
-    border: none;
-    resize: vertical;
-    background-color: #e6e6e2;
-  }
-  label {
-    font-size: 16px;
-    font-weight: 555;
-    color: #141414;
-    margin-left: 15px;
-  }
-  p {
-    color: #141414;
-  }
+}
+.text-input-over {
+  width: 60%;
+  padding: 5px;
+  border: none;
+  box-sizing: border-box;
+  border: none;
+  resize: vertical;
+  background-color: #e6e6e2;
+}
+.text-input {
+  width: 50%;
+  padding: 5px;
+  border: none;
+  box-sizing: border-box;
+  border: none;
+  resize: vertical;
+  background-color: #e6e6e2;
+}
+label {
+  font-size: 16px;
+  font-weight: 555;
+  color: #141414;
+  margin: 0;
+  margin-left: 15px;
+}
+p {
+  color: #141414;
+  margin: 0;
 }
 .title-class {
   grid-column-start: 1;
@@ -1218,16 +1279,16 @@ export default {
 .title-class p {
   margin: 0;
 }
-//submit-form
+/* submit-form */
 .button-areas {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 45px;
 }
-// .submit-btn .reject-btn {
-//   text-align: center;
-// }
+ /* .submit-btn .reject-btn {
+   text-align: center;
+ } */
 .submit-btn input {
   margin-right: 5px;
 }
@@ -1254,7 +1315,7 @@ export default {
   box-shadow: 0 5px #666;
   transform: translateY(4px);
 }
-//reject -button
+/* reject -button */
 #reject-btn {
   font-weight: 555;
   margin-top: 5px;
@@ -1286,9 +1347,9 @@ input#clear-form {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  &:hover {
-    background-color: #e0a800;
-  }
+}
+input#clear-form:hover {
+  background-color: #e0a800;
 }
 input#return-form {
   background-color: #f77225;
@@ -1297,40 +1358,45 @@ input#return-form {
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  &:hover {
+}
+input#return-form:hover {
     background-color: #f76613;
-  }
 }
 .form-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .actual-ship-from {
   display: grid;
-  grid-template-rows: repeat(4, 35px);
+  grid-template-rows: repeat(5, 35px);
   grid-template-columns: 1fr 1fr 1fr;
   grid-column-start: 1;
   grid-column-end: 4;
   border-radius: 5px;
   position: relative;
   align-content: space-around;
-  //border: 2px solid #9f998b;
   margin-top: 10px;
-  padding: 10px 0px 5px 0px;
-  .form-row-actual {
+}
+.form-row-actual {
     display: flex;
     justify-content: space-between;
   }
-}
+  .form-row-actual label{
+    display: flex;
+    align-items: center;
+    margin: 0;
+    margin-left: 15px;
+  }
 .title-actual-ship {
-  position: absolute;
-  top: -12px;
-  left: 20%;
-  transform: translateX(-50%);
+  grid-row-start: 1;
+  grid-row-end: 2;
+  grid-column-start: 1;
+  grid-column-end: 4;
   background-color: #e6e6e2;
   font-size: 16px;
-  font-style: italic;
+  /* font-style: italic; */
   color: #565353;
   font-weight: 555;
   padding: 0 5px;
@@ -1339,8 +1405,8 @@ input#return-form {
   display: grid;
   grid-template-rows: 40px 40px 40px;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-  grid-row-start: 2;
-  grid-row-end: 5;
+  grid-row-start: 3;
+  grid-row-end: 6;
   grid-column-start: 1;
   grid-column-end: 4;
 }
@@ -1360,6 +1426,7 @@ input#return-form {
   grid-column-end: 6;
   display: flex;
   justify-content: flex-start;
+  align-items: center;
 }
 .form-row-actual-all-input input {
   width: 80%;
@@ -1389,11 +1456,10 @@ input#return-form {
   margin-bottom: 5px;
 }
 
-.table-form th,
-td {
+.table-form th,td {
   border: 1px solid #0f0f0f;
   padding: 5px;
-  //text-align: center;
+  /* text-align: center; */
   color: #424040;
 }
 
@@ -1413,10 +1479,10 @@ td {
   align-content: center;
   cursor: pointer;
   margin: 10px;
-  &:hover {
+}
+.td-show:hover {
     background: #db6008;
   }
-}
 .div-searchbox {
   margin-bottom: 5px;
   margin-top: 15px;
@@ -1424,7 +1490,8 @@ td {
   display: flex;
   align-content: center;
   justify-content: left;
-  .div-searchbox-content {
+}
+.div-searchbox-content {
     display: flex;
     margin-bottom: 10px;
     text-align: center;
@@ -1442,19 +1509,18 @@ td {
     background: #ff7a1c;
     color: #fff;
     box-sizing: 0;
-    &:hover {
+  }
+  .div-searchbox-content button:hover {
       background: #f88838;
     }
-  }
-}
 .div-config-name {
   margin-left: 20px;
   line-height: 50px;
-  span {
+}
+.div-config-name span {
     font-weight: 555;
     font-size: 17px;
   }
-}
 .main-contain {
   height: 500px;
   overflow: auto;
@@ -1469,53 +1535,49 @@ td {
   align-items: center;
   width: 3%;
   border-radius: 10%;
-  &:hover {
+}
+.div-back:hover {
     background: #b7b7b7;
   }
   .back-icon {
     height: 20px;
     width: 20px;
   }
-}
 
 .mytable {
   margin-top: 0px;
   overflow: auto;
-  thead {
-    th:first {
-      border-radius: 20%;
-    }
-    th {
-      background-color: #024873;
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      color: #fff;
-      min-width: 60px;
-      padding: 3px;
-      font-size: 16px;
-      padding: 0.5rem 0.5rem;
-    }
-  }
-  tr {
-    &:hover {
-      background: #89cfed;
-    }
-    td:nth-child(1) {
-      cursor: pointer;
-      text-decoration: underline;
-
-    }
-    td {
-      overflow-x: auto;
-      white-space: nowrap;
-      z-index: 1;
-      padding: 2px;
-      min-width: 60px;
-      border: 0.5px solid #cdc;
-      font-size: 17px;
-      color: #000;
-    }
-  }
 }
+.mytable th:first {
+    border-radius: 20%;
+  }
+  .mytable th {
+    background-color: #024873;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    color: #fff;
+    min-width: 60px;
+    padding: 3px;
+    font-size: 16px;
+    padding: 0.5rem 0.5rem;
+  }
+
+  .mytable tr:hover {
+    background: #89cfed;
+  }
+  .mytable td:nth-child(1) {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .mytable td {
+    overflow-x: auto;
+    white-space: nowrap;
+    z-index: 1;
+    padding: 2px;
+    min-width: 60px;
+    border: 0.5px solid #cdc;
+    font-size: 17px;
+    color: #000;
+  }
 </style>

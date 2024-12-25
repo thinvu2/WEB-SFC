@@ -128,7 +128,7 @@ export default {
   font-size: 15px;
 }
 .container {
-  margin-bottom: 45px;
+  margin-bottom: 50px;
 }
 
 </style>

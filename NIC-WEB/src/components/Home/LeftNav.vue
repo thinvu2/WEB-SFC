@@ -51,6 +51,13 @@
                 <span class="fa fa-chevron-right"></span
               ></router-link>
             </li>
+
+            <li>
+              <router-link to="/Home/TelitEDI_Application">
+                <i class="fa fa-space-shuttle"></i>TelitEDI
+                <span class="fa fa-chevron-right"></span
+              ></router-link>
+            </li>
           </ul>
         </div>
       </div>
