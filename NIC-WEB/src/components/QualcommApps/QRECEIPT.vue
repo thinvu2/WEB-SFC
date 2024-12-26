@@ -674,7 +674,7 @@ export default {
       rejectQty: '',
       reason: ''
     }));
-    console.log("this.rowsInnerBox", this.rowsInnerBox);
+    //console.log("this.rowsInnerBox", this.rowsInnerBox);
   },
     async SubmitForm() {
         let titleValue = "";
@@ -694,27 +694,34 @@ export default {
             ...row,
             LOT_NO: this.ShowDataTableOuterLpn[index].LOT_NO,
             SHIPPEDQTY: this.ShowDataTableOuterLpn[index].SHIPPEDQTY
-          })).filter(row => row.receivedQty || row.rejectQty || row.reason);
+          })).filter(row => row.receiveQty || row.rejectQty || row.reason);
           if(filleredRows.length === 0) {
             this.$swal("", "No data to submit", "warning");
             return;
           }
-          console.log("this.ShowDataTableOuterLpn: ", this.ShowDataTableOuterLpn.length);
-          console.log("filleredRows: ", filleredRows.length);
+          // console.log("this.ShowDataTableOuterLpn: ", this.ShowDataTableOuterLpn.length);
+          // console.log("filleredRows: ", filleredRows.length);
           //check length enter
           if(this.ShowDataTableOuterLpn.length !== filleredRows.length) {
             this.$swal("", "Please enter enough data.", "warning");
               return;
           }
-          //logic: receivedQty + rejectQty == SHIPPEDQTY
-          const invalidRows = filleredRows.filter(row => 
-          (parseInt(row.receivedQty, 10) || 0) + (parseInt(row.rejectQty, 10) || 0) !== row.SHIPPEDQTY
-          );
+          //logic: receiveQty + rejectQty == SHIPPEDQTY
+          const invalidRows = filleredRows.filter(row => {
 
-          if (invalidRows.length > 0) {
-              this.$swal("", "Please check receivedQty and rejectQty.", "warning");
-              return;
+            const receiveQty = parseInt(row.receiveQty) || 0;
+            const rejectQty = parseInt(row.rejectQty) || 0;
+            const SHIPPEDQTY = parseInt(row.SHIPPEDQTY) || 0;
+            //const lot_no = row.LOT_NO;
+           // console.log("result: ", receiveQty, rejectQty, SHIPPEDQTY, lot_no);
+            return receiveQty + rejectQty !== SHIPPEDQTY;
+          });
+          console.log(invalidRows)
+         if (invalidRows.length > 0) {
+            this.$swal("", `ReceiveQty + RejectQty must equal ShippedQty, Lot no: ${invalidRows[0].LOT_NO}`, "warning");
+            return;
           }
+
           let payload = {
             EMP_NO: localStorage.username,
             database_name: localStorage.databaseName,

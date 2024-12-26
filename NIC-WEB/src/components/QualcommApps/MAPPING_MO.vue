@@ -1,5 +1,13 @@
 <template>
   <div class="div-all">
+    <div class="row">
+      <div class="div-back" @click="BackToParent()">
+        <Icon icon="chevron-left" class="back-icon sidenav-icon" />
+      </div>
+      <div class="div-config-name row">
+        <span>MAPPING MO</span>
+      </div>
+    </div>
     <header>
       <h1>MAPPING MO</h1>
     </header>
@@ -222,6 +230,9 @@ export default {
       this.model.LOT_NO = "";
       this.loadDataTable();
     },
+    BackToParent() {
+      this.$router.push({ path: "/Home/Qualcomm_Application" })
+    },
   },
 };
 </script>
@@ -236,6 +247,32 @@ body {
 .div-all {
   //background-color: rgb(235 235 235);
   padding: 50px 0 80px 0;
+}
+.div-back {
+  float: left;
+  background: #eae1e1;
+  cursor: pointer;
+  margin: 10px 0;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  width: 3%;
+  border-radius: 10%;
+  &:hover {
+    background: #b7b7b7;
+  }
+  .back-icon {
+    height: 20px;
+    width: 20px;
+  }
+}
+.div-config-name {
+  margin-left: 20px;
+  line-height: 50px;
+  span {
+    font-weight: 555;
+    font-size: 17px;
+  }
 }
 
 h1 {

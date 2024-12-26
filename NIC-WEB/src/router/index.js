@@ -19,6 +19,11 @@ const routes = [{
                 import('../views/Qualcomm_Application.vue')
         },
         {
+            path: '/Home/Telit_Apps',
+            component: () =>
+                import('../views/Telit_Apps.vue')
+        },
+        {
         path: '/Home/QM',
         component: () =>
             import('../views/QM.vue')

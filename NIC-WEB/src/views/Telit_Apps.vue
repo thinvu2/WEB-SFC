@@ -6,26 +6,18 @@
                         : "Kho ứng dụng"
                     }}</div>
       <div class="div-app col-md-12 row">
-        <template v-if="CheckPrivilege == 'INSERT'">
-          <template v-for="(item, index) in dataInsert" :key="index">
+          <template v-for="(item, index) in dataApp" :key="index">
             <div class="icon-app col-sm-2" :title="item.Name">
-              <div class="icon-content" :style="item.Style" @click="GotoRoute(item.Route)">
+              <div
+                class="icon-content"
+                :style="item.Style"
+                @click="GotoRoute(item.Route)"
+              >
                 <img :src="item.Image" class="image-app" alt="" />
               </div>
               <span class="text-config-name">{{ item.Name }}</span>
-            </div>
+            </div> 
           </template>
-        </template>
-        <template v-if="CheckPrivilege == 'QUERY'">
-        <template v-for="(item, index) in dataQuery" :key="index">
-          <div class="icon-app col-sm-2" :title="item.Name">
-            <div class="icon-content" :style="item.Style" @click="GotoRoute(item.Route)">
-              <img :src="item.Image" class="image-app" alt="" />
-            </div>
-            <span class="text-config-name">{{ item.Name }}</span>
-          </div>
-        </template>
-        </template>
       </div>
     </div>
   </template>
@@ -36,41 +28,33 @@
   export default {
     data() {
       return {
-        dataInsert: [],
-        dataQuery: [],
-        CheckPrivilege: "QUERY",
+        dataApp: [],      
+        CheckEmp: false,
       };
     },
-    mounted() { 
-      this.CheckEmpClass();
+    mounted() {
+      this.dataApp = telitApps;
+      //this.CheckEmpClass();
     },
     methods: {
       GotoRoute(route) {
         this.$router.push({ path: route });
       },
       async CheckEmpClass(){
-        let databaseName = localStorage.databaseName;
-        let emp_no = localStorage.username;
-        try{
-          let {data } = await Repository.getApiServer(`GetPrivilegeShowIcon?database_name=${databaseName}&emp_no=${emp_no}`);
-          if (data.result == "ok" && data.data.length > 0) {
-            this.CheckPrivilege = "INSERT";
-            this.dataInsert = QualcommApplications[1].Applications;
-          }else {
-            this.dataQuery = QualcommApplications[0].Applications;
-          }
-        }catch(error) {
-          if(error.response && error.response.data) {
-            this.$swal("", error.response.data.error, "error");
-            }else {
-            this.$swal ("", error.Message, "error")
-          }
+        let payload = {
+          database_name: localStorage.databaseName,
+          emp_no: localStorage.username,
+        };
+        let {data } = await Repository.getRepo("GetEmp_ClassName", payload);
+        if(data.result == "ok"){
+          this.CheckEmp = true;
+        }else{
+          this.CheckEmp = false;
         }
-      }
-    }
-  }
+      },
+    },
+  };
   </script>
-  
   <style scoped lang="scss">
   @media only screen and (hover: none) and (pointer: coarse) {
     .text-config-name {
@@ -94,6 +78,7 @@
     min-height: 95vh;
     background: url("../../public/assets/img/background.jpg");
     background-size: 100% auto;
+    //background: #eef1ff;
   }
   .div-app {
     padding-top: 20px;
@@ -101,11 +86,11 @@
   .image-app {
     height: 100%;
     width: 100%;
-    border-radius: 15px;
   }
   .div-top {
     font-size: 1.1rem;
     color: rgb(43, 42, 42);
+    //   margin: 10px;
   }
   .div-main {
     padding-left: 20px;
@@ -127,6 +112,7 @@
         cursor: default;
       }
       span {
+        // color: #000;
         color: #737677;
         margin: auto;
         text-align: center;
@@ -154,6 +140,7 @@
     border-radius: 20%;
     border: 3px solid #0ac9ff;
     span {
+      // color: #000;
       color: #0ac9ff;
       margin: auto;
       text-align: center;

@@ -53,7 +53,7 @@
             </li>
 
             <li>
-              <router-link to="/Home/TelitEDI_Application">
+              <router-link to="/Home/Telit_Apps">
                 <i class="fa fa-space-shuttle"></i>TelitEDI
                 <span class="fa fa-chevron-right"></span
               ></router-link>

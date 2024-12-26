@@ -225,6 +225,7 @@
     <Compile Include="Controllers\QualcommApps\QASN_INController.cs" />
     <Compile Include="Controllers\QualcommApps\QReceiptController.cs" />
     <Compile Include="Controllers\ShippingDataController.cs" />
+    <Compile Include="Controllers\Telit\TelitEDIController.cs" />
     <Compile Include="Controllers\TrapTestController.cs" />
     <Compile Include="Controllers\Config\Config23Controller.cs" />
     <Compile Include="Controllers\Config\Config67Controller.cs" />
