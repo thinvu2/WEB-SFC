@@ -65,18 +65,7 @@
         <p>Shipment Receipt Notice</p>
       </div>
       <div class="form-row">
-        <label for="msg_sender_name">To:</label>
-        <input
-          type="text"
-          class="text-input"
-          id="msg_sender_name"
-          name="msg_sender_name"
-          readonly
-          v-model="model.MSG_RECEIVER_NAME"
-        />
-      </div>
-      <div class="form-row">
-        <label for="ship_mcmn_creattime">From:</label>
+        <label for="ship_mcmn_creattime">To:</label>
         <input
           type="text"
           class="text-input"
@@ -84,6 +73,17 @@
           name="ship_mcmn_creattime"
           readonly
           v-model="model.MSG_SENDER_NAME"
+        />
+      </div>
+      <div class="form-row">
+        <label for="msg_sender_name">From:</label>
+        <input
+          type="text"
+          class="text-input"
+          id="msg_sender_name"
+          name="msg_sender_name"
+          readonly
+          v-model="model.MSG_RECEIVER_NAME"
         />
       </div>
       <div class="form-row">
@@ -116,22 +116,10 @@
           id="poline_no"
           name="poline_no"
           readonly
-          v-model="model.AIRWAYBILL"
+          v-model="model.SHIP_MCMN_AIRWAYBILL"
         />
       </div>
-      <!-- <div class="form-row">
-        <label for="lot-no">Lot No:</label>
-        <input
-          type="text"
-          class="text-input"
-          id="lot-no"
-          name="lot-no"
-          readonly
-          v-model="model.LOT_NO"
-        />
-      </div> -->
       <div class="actual-ship-from">
-        <!-- <span class="title-actual-ship">Actual ship from</span> -->
         <div class="form-row-actual">
           <label for="item_shippedqty">Country Code:</label>
           <input
@@ -171,13 +159,13 @@
             <label for="packslip_no">Address:</label>
           </div>
           <div class="form-row-actual-all-input">
-            <p>{{ model.SHIP_MCMN_STREET1 }}</p>
+            <p>{{ model.SHIP_MCMN_ADDR1 }}</p>
           </div>
           <div class="form-row-actual-all-input">
-            <p>{{ model.SHIP_MCMN_STREET2 }}</p>
+            <p>{{ model.SHIP_MCMN_ADDR2 }}</p>
           </div>
           <div class="form-row-actual-all-input">
-            <p>{{ model.SHIP_MCMN_STREET3 }}</p>
+            <p>{{ model.SHIP_MCMN_ADDR3 }}</p>
           </div>
         </div>
       </div>
@@ -256,7 +244,7 @@
         <input
           type="text"
           id="lot_no"
-          class="text-input"
+          class="text-input-width"
           name="lot_no"
           readonly
           v-model="model.ITEM_NO"
@@ -266,7 +254,7 @@
         <label for="receiver_locationname">QTY:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-width"
           id="receiver_locationname"
           name="receiver_locationname"
           readonly
@@ -277,7 +265,7 @@
         <label for="receiver_name">MPN:</label>
         <input
           type="text"
-          class="text-input"
+          class="text-input-width"
           id="receiver_name"
           name="receiver_name"
           readonly
@@ -314,8 +302,8 @@
                   <td
                     v-if="
                       key == 'LOT_NO' ||
-                      key == 'OUTERBOX_LPN' ||
-                      key == 'INNERBOX_LPN' ||
+                      key == 'OUTERBOX' ||
+                      key == 'INNERBOX' ||
                       key == 'SHIPPEDQTY' ||
                       key == 'RECEIVEQTY' || 
                       key == 'REJECTQTY' ||
@@ -397,87 +385,15 @@
               </tr>
             </tbody>
         </table>
-        <!-- <table class="table-form">
-          <template v-for="(item, index) in ShowDataTableOuterLpn" :key="index">
-            <thead>
-              <tr>
-                <th>LPN</th>
-                <th>Gross Weight({{ item.OUTERBOX_WEIGHTUNITOFMEASURE }})</th>
-                <th>Net Weight({{ item.INNERBOX_WEIGHTUNITOFMEASURE }})</th>
-                <th>Quantity</th>
-                <th>Receive Quantity</th>
-                <th>Reject Quantity</th>
-                <th>Reason</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{{ item.OUTERBOX_LPN }}</td>
-                <td>{{ item.OUTERBOX_GROSSWEIGHT }}</td>
-                <td>{{ item.OUTERBOX_NETWEIGHT }}</td>
-                <td>{{ item.OUTERBOX_QTY }}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              <tr
-                v-for="(itemInnerLPN, indexInnerLPN) in ShowDataTableInnerLPN"
-                :key="indexInnerLPN"
-              >
-                <template
-                  v-for="(itemInnerLPN1, indexInnerLPN1) in itemInnerLPN"
-                  :key="indexInnerLPN1"
-                >
-                  <td
-                    v-if="
-                      indexInnerLPN1 == 'INNERBOX_LPN' ||
-                        indexInnerLPN1 == 'INNERBOX_GROSSWEIGHT' ||
-                        indexInnerLPN1 == 'INNERBOX_NETWEIGHT' ||
-                        indexInnerLPN1 == 'INNERBOX_QTY'
-                    "
-                  > 
-                    {{ itemInnerLPN1 }}
-                  </td>
-                </template>
-                <td>
-                  <input type="text"
-                  autocomplete="off"
-                  class="class-re-qty"
-                  maxlength="3"
-                  pattern="[1-9]{1}[0-9]{9}"
-                  onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'"
-                  v-model="rowsInnerBox[indexInnerLPN].receiveQty"
-                  />
-                </td>
-                <td>
-                  <input type="text"
-                  autocomplete="off"
-                  class="class-re-qty"
-                  maxlength="3"
-                  pattern="[1-9]{1}[0-9]{9}"
-                  onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'"
-                  v-model="rowsInnerBox[indexInnerLPN].rejectQty"
-                  />
-                </td>
-                <td>
-                  <input type="text"
-                  autocomplete="off"
-                  v-model="rowsInnerBox[indexInnerLPN].reason"
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </template>
-        </table> -->
       </div>
-      <div class="form-row-actual-address">
+      <!-- <div class="form-row-actual-address">
         <label for="box_received">Receive address:</label>
         <select>
           <option v-for="(item, index) in ShowDataReceiveAddress" :key="index">
             {{ item.SHIP_ADDRESS }}
           </option>
         </select>
-      </div>
+      </div> -->
       <div class="form-row-center">
         <p>Country: Viet Nam, City: Bac Giang, Postal Code: 230000</p>
       </div>
@@ -585,58 +501,59 @@ export default {
       ShowDataDetail: [],
       ShowDataTableOuterLpn: [],
       ShowDataTableOuterLpnHeader: [],
-      ShowDataTableInnerLPN: [],
       ShowDataReceiveAddress: [],
       columnName: [],
       valueSearch: "",
       model: {
         database_name: localStorage.databaseName,
         EMP_NO: localStorage.username,
-        PACKSLIP_NO: "",
-        FLAG_RECEIPT: "",
-        F_ID_RECEIPT: "",
         SITE: "",
         PIP_TYPE: "",
         PO_TYPE: "",
         CREAT_TIME: "",
         MSG_ID: "",
+        MSG_SENDER_NAME: "",
         MSG_SENDER_DUNS: "",
+        MSG_RECEIVER_NAME: "",
         MSG_RECEIVER_DUNS: "",
+        PACKSLIP_NO: "",
+        SHIP_MCMN_AIRWAYBILL: "",
+        SHIP_MCMN_FREIGHT_CARRIER_CODE: "",
+        IMPORT_PERMIT_NO: "",
+        LOCATION_CODE: "",
+        F_NAME: "",
         RECEIVER_DUNS: "",
         RECEIVER_DUNS4: "",
+        DATE_TIME: "",
         SHIP_MCMN_LOCATIONNAME: "",
-        LAST_EDIT_TIME: "",
-        Inner_LPN: "",
-        Box_Received_Qty: "",
-        Box_Accepted_Qty: "",
-        MSG_SENDER_NAME: "",
-        MSG_RECEIVER_NAME: "",
+        SHIP_MCMN_CITY: "",
+        SHIP_MCMN_COUNTRYCODE: "",
+        SHIP_MCMN_POSTALCODE: "",
+        SHIP_MCMN_ADDR1: "",
+        SHIP_MCMN_ADDR2: "",
+        SHIP_MCMN_ADDR3: "",
         PO_NO: "",
-        POLINE_NO: "",
-        ITEM_NO: "",
-        ITEM_SHIPPEDQTY: "",
-        ITEM_UNITOFMEASURE: "",
-        ITEM_MPN: "",
-        ITEM_DESCRIPTION: "",
-        LOT_NO: "",
-        RECEIVER_LOCATIONNAME: "",
-        RECEIVER_NAME: "",
-        AIRWAYBILL: "",
+        PO_LINE: "",
+        ITEMSHIP_MCMN_UNITOFMEASURE: "",
+        ITEMSHIP_MCMN_NO: "",
+        ITEMSHIP_MCMN_RECEIVEDQTY: "",
+        ITEMSHIP_MCMN_ACCEPTEDQTY: "",
+        INNERBOX_SHIP_MCMN_LPN: "",
+        INNERBOX_SHIP_MCMN_RECEIVEDQTY: "",
+        LAST_EDIT_TIME: "",
+        GROSSWEIGHT: "",
+        NETWEIGHT: '',
         COUNTRY_CODE: "",
         POSTAL_CODE: "",
-        SHIP_MCMN_CITY: "",
-        SHIP_MCMN_STREET1: "",
-        SHIP_MCMN_STREET2: "",
-        SHIP_MCMN_STREET3: "",
         SHIP_MCMN_LPN: "",
         PAL_GROSSWEIGHT: "",
         PAL_NETWEIGHT: "",
         PAL_WIDTH: "",
         PAL_LENGTH: "",
         PAL_HEIGHT: "",
-        SHIP_MCMN_FREIGHT_CARRIER_CODE: "",
-        LOCATIONNAME: "",
-        INNERBOX_LPN: "",
+        ITEM_SHIPPEDQTY: '',
+        ITEM_MPN: "",
+        ITEM_NO: ''
       },
     };
   },
@@ -674,7 +591,6 @@ export default {
       rejectQty: '',
       reason: ''
     }));
-    //console.log("this.rowsInnerBox", this.rowsInnerBox);
   },
     async SubmitForm() {
         let titleValue = "";
@@ -728,9 +644,7 @@ export default {
             rowsInnerBox: filleredRows,
             data: [
               {
-                PACKSLIP_NO: this.model.PACKSLIP_NO,
-                FLAG: this.model.FLAG,
-                //F_ID: this.model.F_ID,
+  
                 SITE: this.model.SITE,
                 PIP_TYPE: this.model.PIP_TYPE,
                 PO_TYPE: this.model.PO_TYPE,
@@ -739,26 +653,32 @@ export default {
                 MSG_SENDER_NAME: this.model.MSG_SENDER_NAME,
                 MSG_SENDER_DUNS: this.model.MSG_SENDER_DUNS,
                 MSG_RECEIVER_NAME: this.model.MSG_RECEIVER_NAME,
-                RECEIVER_DUNS: this.model.RECEIVER_DUNS,
                 MSG_RECEIVER_DUNS: this.model.MSG_RECEIVER_DUNS,
+                PACKSLIP_NO: this.model.PACKSLIP_NO,
+                SHIP_MCMN_AIRWAYBILL: this.model.SHIP_MCMN_AIRWAYBILL,
+                SHIP_MCMN_FREIGHT_CARRIER_CODE: this.model.SHIP_MCMN_FREIGHT_CARRIER_CODE,
+                IMPORT_PERMIT_NO: this.model.IMPORT_PERMIT_NO,
+                LOCATION_CODE: this.model.LOCATION_CODE,
+                F_NAME: this.model.F_NAME,
+                RECEIVER_DUNS: this.model.RECEIVER_DUNS,
                 RECEIVER_DUNS4: this.model.RECEIVER_DUNS4,
+                DATE_TIME: this.model.DATE_TIME,
                 SHIP_MCMN_LOCATIONNAME: this.model.SHIP_MCMN_LOCATIONNAME,
                 SHIP_MCMN_CITY: this.model.SHIP_MCMN_CITY,
+                SHIP_MCMN_COUNTRYCODE: this.model.SHIP_MCMN_COUNTRYCODE,
+                SHIP_MCMN_POSTALCODE: this.model.SHIP_MCMN_POSTALCODE,
+                SHIP_MCMN_ADDR1: this.model.SHIP_MCMN_ADDR1,
+                SHIP_MCMN_ADDR2: this.model.SHIP_MCMN_ADDR2,
+                SHIP_MCMN_ADDR3: this.model.SHIP_MCMN_ADDR3,
                 PO_NO: this.model.PO_NO,
-                //LOT_NO: this.model.LOT_NO,
-                LAST_EDIT_TIME: this.model.LAST_EDIT_TIME,
-                SHIP_MCMN_AIRWAYBILL: this.model.AIRWAYBILL,
-                SHIP_MCMN_FREIGHT_CARRIER_CODE: this.model.SHIP_MCMN_FREIGHT_CARRIER_CODE,
-                LOCATION_CODE: this.model.LOCATIONNAME,
-                SHIP_MCMN_COUNTRYCODE: this.model.COUNTRY_CODE,
-                SHIP_MCMN_POSTALCODE: this.model.POSTAL_CODE,
-                SHIP_MCMN_ADDR1: this.model.SHIP_MCMN_STREET1,
-                SHIP_MCMN_ADDR2: this.model.SHIP_MCMN_STREET2,
-                SHIP_MCMN_ADDR3: this.model.SHIP_MCMN_STREET3,
-                PO_LINE: this.model.POLINE_NO,
-                ITEMSHIP_MCMN_UNITOFMEASURE: this.model.ITEM_UNITOFMEASURE,
-                ITEMSHIP_MCMN_NO: this.model.ITEM_NO,
-                INNERBOX_SHIP_MCMN_LPN: this.model.INNERBOX_LPN
+                PO_LINE: this.model.PO_LINE,
+                ITEMSHIP_MCMN_UNITOFMEASURE: this.model.ITEMSHIP_MCMN_UNITOFMEASURE,
+                ITEMSHIP_MCMN_NO: this.model.ITEMSHIP_MCMN_NO,
+                ITEMSHIP_MCMN_RECEIVEDQTY: this.model.ITEMSHIP_MCMN_RECEIVEDQTY,
+                ITEMSHIP_MCMN_ACCEPTEDQTY: this.model.ITEMSHIP_MCMN_ACCEPTEDQTY,
+                INNERBOX_SHIP_MCMN_LPN: this.model.INNERBOX_SHIP_MCMN_LPN,
+                INNERBOX_SHIP_MCMN_RECEIVEDQTY: this.model.INNERBOX_SHIP_MCMN_RECEIVEDQTY,
+                LAST_EDIT_TIME: this.model.LAST_EDIT_TIME
               }
             ]
           };
@@ -833,7 +753,6 @@ export default {
       let databaseName = localStorage.databaseName;
       let PACKSLIP_NO = this.DataTable[index].PACKSLIP_NO;
       let FLAG = this.DataTable[index].FLAG;
-      //let F_ID = this.DataTable[index].F_ID;
       if (FLAG != "0") {
         this.isShowSubmitForm = false;
       }
@@ -844,60 +763,60 @@ export default {
         this.ShowDataDetail = [];
         this.ShowDataDetail = responseData.data.data;
         this.ShowDataTableOuterLpn = responseData.data.dataTableOuterLPN;
-
-        console.log("ShowDataTableOuterLpn: ", this.ShowDataTableOuterLpn);
-
         if(this.ShowDataTableOuterLpn.length > 0) {
           this.ShowDataTableOuterLpnHeader = Object.keys(this.ShowDataTableOuterLpn[0]);
         }
-        //this.ShowDataTableInnerLPN = responseData.data.dataTableInnerLPN;
-        //console.log("ShowDataTableInnerLPN: ", this.ShowDataTableInnerLPN);
-        this.ShowDataReceiveAddress = responseData.data.dataReceiveAddress;
         if (this.ShowDataDetail.length > 0) {
-          let firstItem = this.ShowDataDetail[0];
-          this.model.PACKSLIP_NO = firstItem.PACKSLIP_NO;
-          this.model.FLAG = firstItem.FLAG;
-          this.model.F_ID = firstItem.F_ID;
+          //start insert
+let firstItem = this.ShowDataDetail[0];
           this.model.SITE = firstItem.SITE;
           this.model.PIP_TYPE = firstItem.PIP_TYPE;
           this.model.PO_TYPE = firstItem.PO_TYPE;
+          this.model.CREAT_TIME = firstItem.CREAT_TIME;
           this.model.MSG_ID = firstItem.MSG_ID;
-          this.model.LAST_EDIT_TIME = firstItem.LAST_EDIT_TIME;
+          this.model.MSG_SENDER_NAME = firstItem.MSG_SENDER_NAME;
           this.model.MSG_SENDER_DUNS = firstItem.MSG_SENDER_DUNS;
+          this.model.MSG_RECEIVER_NAME = firstItem.MSG_RECEIVER_NAME;
           this.model.MSG_RECEIVER_DUNS = firstItem.MSG_RECEIVER_DUNS;
+          this.model.PACKSLIP_NO = firstItem.PACKSLIP_NO;
+          this.model.SHIP_MCMN_AIRWAYBILL = firstItem.SHIP_MCMN_AIRWAYBILL;
+          this.model.SHIP_MCMN_FREIGHT_CARRIER_CODE = firstItem.SHIP_MCMN_FREIGHT_CARRIER_CODE;
+          this.model.IMPORT_PERMIT_NO = firstItem.IMPORT_PERMIT_NO;
+          this.model.LOCATION_CODE = firstItem.LOCATION_CODE;
+          this.model.F_NAME = firstItem.F_NAME;
           this.model.RECEIVER_DUNS = firstItem.RECEIVER_DUNS;
           this.model.RECEIVER_DUNS4 = firstItem.RECEIVER_DUNS4;
+          this.model.DATE_TIME = firstItem.DATE_TIME;
           this.model.SHIP_MCMN_LOCATIONNAME = firstItem.SHIP_MCMN_LOCATIONNAME;
-          this.model.CREAT_TIME = firstItem.CREAT_TIME;
+          this.model.SHIP_MCMN_CITY = firstItem.SHIP_MCMN_CITY;
+          this.model.SHIP_MCMN_COUNTRYCODE = firstItem.SHIP_MCMN_COUNTRYCODE;
+          this.model.SHIP_MCMN_POSTALCODE = firstItem.SHIP_MCMN_POSTALCODE;
+          this.model.SHIP_MCMN_ADDR1 = firstItem.SHIP_MCMN_ADDR1;
+          this.model.SHIP_MCMN_ADDR2 = firstItem.SHIP_MCMN_ADDR2;
+          this.model.SHIP_MCMN_ADDR3 = firstItem.SHIP_MCMN_ADDR3;
           this.model.PO_NO = firstItem.PO_NO;
-          this.model.POLINE_NO = firstItem.POLINE_NO;
-          this.model.ITEM_NO = firstItem.ITEM_NO;
-          this.model.ITEM_SHIPPEDQTY = firstItem.ITEM_SHIPPEDQTY;
-          this.model.ITEM_UNITOFMEASURE = firstItem.ITEM_UNITOFMEASURE;
-          this.model.ITEM_MPN = firstItem.ITEM_MPN;
-          this.model.ITEM_DESCRIPTION = firstItem.ITEM_DESCRIPTION;
-          this.model.LOT_NO = firstItem.LOT_NO;
-          this.model.RECEIVER_NAME = firstItem.RECEIVER_NAME;
-          this.model.INNERBOX_LPN = firstItem.INNERBOX_LPN;
-          this.model.MSG_SENDER_NAME = firstItem.MSG_SENDER_NAME;
-          this.model.MSG_RECEIVER_NAME = firstItem.MSG_RECEIVER_NAME;
-          //new
-          this.model.AIRWAYBILL = firstItem.AIRWAYBILL;
-          this.model.SHIP_MCMN_FREIGHT_CARRIER_CODE =
-            firstItem.FREIGHT_CARRIER_CODE;
-          this.model.LOCATIONNAME = firstItem.RECEIVER_LOCATIONNAME;
+          this.model.PO_LINE = firstItem.PO_LINE;
+          this.model.ITEMSHIP_MCMN_UNITOFMEASURE = firstItem.ITEMSHIP_MCMN_UNITOFMEASURE;
+          this.model.ITEMSHIP_MCMN_NO = firstItem.ITEMSHIP_MCMN_NO;
+          this.model.ITEMSHIP_MCMN_RECEIVEDQTY = firstItem.ITEMSHIP_MCMN_RECEIVEDQTY;
+          this.model.ITEMSHIP_MCMN_ACCEPTEDQTY = firstItem.ITEMSHIP_MCMN_ACCEPTEDQTY;
+          this.model.INNERBOX_SHIP_MCMN_LPN = firstItem.INNERBOX_SHIP_MCMN_LPN;
+          this.model.INNERBOX_SHIP_MCMN_RECEIVEDQTY = firstItem.INNERBOX_SHIP_MCMN_RECEIVEDQTY;
+          this.model.LAST_EDIT_TIME = firstItem.LAST_EDIT_TIME;
+          //end insert
+          this.model.GROSSWEIGHT = firstItem.GROSSWEIGHT;
+          this.model.NETWEIGHT = firstItem.NETWEIGHT;
           this.model.COUNTRY_CODE = firstItem.COUNTRY_CODE;
           this.model.POSTAL_CODE = firstItem.POSTAL_CODE;
-          this.model.SHIP_MCMN_CITY = firstItem.SHIP_MCMN_CITY;
-          this.model.SHIP_MCMN_STREET1 = firstItem.SHIP_MCMN_STREET1;
-          this.model.SHIP_MCMN_STREET2 = firstItem.SHIP_MCMN_STREET2;
-          this.model.SHIP_MCMN_STREET3 = firstItem.SHIP_MCMN_STREET3;
           this.model.SHIP_MCMN_LPN = firstItem.SHIP_MCMN_LPN;
           this.model.PAL_GROSSWEIGHT = firstItem.PAL_GROSSWEIGHT;
           this.model.PAL_NETWEIGHT = firstItem.PAL_NETWEIGHT;
           this.model.PAL_WIDTH = firstItem.PAL_WIDTH;
           this.model.PAL_LENGTH = firstItem.PAL_LENGTH;
           this.model.PAL_HEIGHT = firstItem.PAL_HEIGHT;
+          this.model.ITEM_SHIPPEDQTY = firstItem.ITEM_SHIPPEDQTY;
+          this.model.ITEM_MPN = firstItem.ITEM_MPN;
+          this.model.ITEM_NO = firstItem.ITEM_NO;
           this.isShowForm = true;
         } else {
           this.isShowForm = false;
@@ -1114,6 +1033,17 @@ export default {
     margin-left: 2px;
     resize: vertical;
   }
+  .text-input-width {
+    width: 60%;
+    padding: 5px;
+    border: 1px solid #e6e6e2;
+    background-color: #e6e6e2;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    margin-left: 2px;
+    resize: vertical;
+  }
   label {
     font-size: 16px;
     font-weight: 555;
@@ -1224,7 +1154,7 @@ input#return-form {
 }
 .form-row-actual-all {
   display: grid;
-  grid-template-rows: repeat(3, 35px);
+  grid-template-rows: 35px auto auto;
   grid-template-columns: repeat(6, 1fr);
   grid-column-start: 1;
   grid-column-end: 4;
@@ -1237,12 +1167,12 @@ input#return-form {
   grid-row-end: 4;
   display: flex;
   justify-content: flex-start;
-  align-items: center;
+  align-items: flex-start;;
 }
 
 .form-row-actual-all-input {
   grid-column-start: 2;
-  grid-column-end: 6;
+  grid-column-end: 7;
   display: flex;
   justify-content: flex-start;
 }

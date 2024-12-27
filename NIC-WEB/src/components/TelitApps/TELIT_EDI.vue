@@ -213,25 +213,51 @@
           />
         </div>
         <!-- input -->
-        <div class="form-row">
-          <label for="sched-deliv-date">Deliv_Date:</label>
-          <input
-            type="text"
-            id="sched-deliv-date"
-            class="text-input"
-            name="sched-deliv-date"
-            v-model="model.SCHED_DELIV_DATE"
-          />
-        </div>
-        <div class="form-row">
-          <label for="sched-qty">Sched_Qty:</label>
-          <input
-            type="text"
-            id="sched-qty"
-            class="text-input"
-            name="sched-qty"
-            v-model="model.SCHED_QTY"
-          />
+         <div class="form-input">
+            <span class="add-new-form" @click="handAddNewForm()">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+            </span>
+            <div class="form-row-input">
+                <label for="sched-deliv-date">Delivery Date:</label>
+                <input
+                    type="date"
+                    :min="minTime"
+                    id="sched-deliv-date"
+                    class="text-input"
+                    name="sched-deliv-date"
+                    v-model="minTime"
+                />
+            <!-- </div>
+            <div class="form-row"> -->
+                <label for="sched-qty">Schedule Qty:</label>
+                <input
+                    type="text"
+                    id="sched-qty"
+                    class="text-input"
+                    name="sched-qty"
+                    v-model="model.SCHED_QTY"
+                />
+            </div>
+            <div class="form-row-input" v-for="(row, index) in additionalRows" :key="index">
+                <label :for="`sched-deliv-date + ${index}`">Delivery Date:</label>
+                <input 
+                    type="date"
+                    :id="`sched-deliv-date + ${index}`"
+                    class="text-input"
+                    :min="minTime"
+                    :name="`sched-deliv-date + ${index}`"
+                    v-model="row.minTime"
+                />
+                <label :for="`sched-qty + ${index}`">Schedule Qty:</label>
+                <input 
+                    type="text"
+                    :id="`sched-qty + ${index}`"
+                    class="text-input"
+                    :name="`sched-qty + ${index}`"
+                    v-model="row.scheduleQty"
+                />
+                <i class="fa fa-times" aria-hidden="true" @click="handleDeleteNewForm(index)"></i>
+            </div>
         </div>
       </div>
       <div
@@ -284,7 +310,8 @@
   export default {
     data() {
       return {
-        rowsInnerBox: [],
+        minTime: this.getTodayDate(),
+        additionalRows: [],
         showTimeForm: false,
         showError: false,
         dateFrom: new Date(),
@@ -311,7 +338,9 @@
             CHANGE_ON: '',
             QUANTITY: '',
             NET_PRICE: '',
-            SHIPPING_NAME: ''
+            SHIPPING_NAME: '',
+            SCHED_DELIV_DATE: '',
+            SCHED_QTY: ''
         },
       };
     },
@@ -325,104 +354,107 @@
     computed: {},
     mounted() {
       this.LoadComponent();
+      this.getTodayDate();
     },
     methods: {
-      async SubmitForm() {
-          let titleValue = "";
-          let textValue = "";
-          titleValue = "Are you sure edit?";
-          textValue = "Once OK, data will be updated!";
-          this.$swal({
-            title: titleValue,
-            text: textValue,
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-          }).then(async (willDelete) => {
-            if (willDelete.isConfirmed == false) return;
-  
-            const filleredRows = this.rowsInnerBox.map((row, index) => ({
-              ...row,
-              LOT_NO: this.ShowDataTableOuterLpn[index].LOT_NO,
-              SHIPPEDQTY: this.ShowDataTableOuterLpn[index].SHIPPEDQTY
-            })).filter(row => row.receiveQty || row.rejectQty || row.reason);
-            if(filleredRows.length === 0) {
-              this.$swal("", "No data to submit", "warning");
-              return;
-            }
-            if(this.ShowDataTableOuterLpn.length !== filleredRows.length) {
-              this.$swal("", "Please enter enough data.", "warning");
+        getTodayDate() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`
+        },
+        handAddNewForm() {
+            this.additionalRows.push({
+                minTime: this.minTime,
+                scheduleQty: ''
+            })
+        },
+        handleDeleteNewForm(index) {
+            this.additionalRows.splice(index, 1)
+        },
+        async SubmitForm() {
+            let titleValue = "";
+            let textValue = "";
+            titleValue = "Are you sure edit?";
+            textValue = "Once OK, data will be updated!";
+            this.$swal({
+                title: titleValue,
+                text: textValue,
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then(async (willDelete) => {
+                if (willDelete.isConfirmed == false) return;
+    
+                const filleredRows = this.additionalRows.map((row) => ({
+                ...row
+                })).filter(row => row.minTime || row.scheduleQty);
+                if(filleredRows.length === 0) {
+                this.$swal("", "No data to submit", "warning");
                 return;
-            }
-            //logic: receiveQty + rejectQty == SHIPPEDQTY
-            const invalidRows = filleredRows.filter(row => {
-  
-              const receiveQty = parseInt(row.receiveQty) || 0;
-              const rejectQty = parseInt(row.rejectQty) || 0;
-              const SHIPPEDQTY = parseInt(row.SHIPPEDQTY) || 0;
-
-              return receiveQty + rejectQty !== SHIPPEDQTY;
-            });
-            console.log(invalidRows)
-           if (invalidRows.length > 0) {
-              this.$swal("", `ReceiveQty + RejectQty must equal ShippedQty, Lot no: ${invalidRows[0].LOT_NO}`, "warning");
-              return;
-            }
-  
-            let payload = {
-              EMP_NO: localStorage.username,
-              database_name: localStorage.databaseName,
-              rowsInnerBox: filleredRows,
-              data: [
-                {
-                  PURCHASE_ORDER: this.model.PURCHASE_ORDER,
-                  FLAG: this.model.FLAG,
-                  SITE: this.model.SITE,
-                  PIP_TYPE: this.model.PIP_TYPE,
-                  MSG_ID: this.model.MSG_ID,
-                  MSG_SENDER_NAME: this.model.MSG_SENDER_NAME,
-                  MSG_SENDER_DUNS: this.model.MSG_SENDER_DUNS,
-                  MSG_RECEIVER_NAME: this.model.MSG_RECEIVER_NAME,
-                  RECEIVER_DUNS: this.model.RECEIVER_DUNS,
-                  MSG_RECEIVER_DUNS: this.model.MSG_RECEIVER_DUNS,
-                  RECEIVER_DUNS4: this.model.RECEIVER_DUNS4,
-                  SHIP_MCMN_LOCATIONNAME: this.model.SHIP_MCMN_LOCATIONNAME,
-                  SHIP_MCMN_CITY: this.model.SHIP_MCMN_CITY,
-                  PO_NO: this.model.PO_NO,
-                  LAST_EDIT_TIME: this.model.LAST_EDIT_TIME,
-                  SHIP_MCMN_AIRWAYBILL: this.model.AIRWAYBILL,
-                  SHIP_MCMN_FREIGHT_CARRIER_CODE: this.model.SHIP_MCMN_FREIGHT_CARRIER_CODE,
-                  LOCATION_CODE: this.model.LOCATIONNAME,
-                  SHIP_MCMN_COUNTRYCODE: this.model.COUNTRY_CODE,
-                  SHIP_MCMN_POSTALCODE: this.model.POSTAL_CODE,
-                  SHIP_MCMN_ADDR1: this.model.SHIP_MCMN_STREET1,
-                  SHIP_MCMN_ADDR2: this.model.SHIP_MCMN_STREET2,
-                  SHIP_MCMN_ADDR3: this.model.SHIP_MCMN_STREET3,
-                  PO_LINE: this.model.POLINE_NO,
-                  ITEMSHIP_MCMN_UNITOFMEASURE: this.model.ITEM_UNITOFMEASURE,
-                  ITEMSHIP_MCMN_NO: this.model.ITEM_NO,
-                  INNERBOX_SHIP_MCMN_LPN: this.model.INNERBOX_LPN
                 }
-              ]
-            };
-            console.log("payload: ", payload);
-            try {
-              let { data } = await Repository.getRepo("InsertQReceipt", payload);
-              if (data.result == "ok") {
-                this.ClearForm();
-                this.$swal("", "Successfully applied", "success");
-              } else {
-                this.$swal("", data.result, "error");
-              }
-            } catch (error) {
-              if (error.response && error.response.data) {
-                this.$swal("", error.response.data.error, "error");
-              } else {
-                this.$swal("", error.Message, "error");
-              }
-            }
-          });
-      },
+                // if(this.ShowDataTableOuterLpn.length !== filleredRows.length) {
+                // this.$swal("", "Please enter enough data.", "warning");
+                //     return;
+                // }
+                //logic: receiveQty + rejectQty == SHIPPEDQTY
+                // const invalidRows = filleredRows.filter(row => {
+    
+                // const receiveQty = parseInt(row.receiveQty) || 0;
+                // const rejectQty = parseInt(row.rejectQty) || 0;
+                // const SHIPPEDQTY = parseInt(row.SHIPPEDQTY) || 0;
+
+                // return receiveQty + rejectQty !== SHIPPEDQTY;
+                // });
+            //     console.log(invalidRows)
+            // if (invalidRows.length > 0) {
+            //     this.$swal("", `ReceiveQty + RejectQty must equal ShippedQty, Lot no: ${invalidRows[0].LOT_NO}`, "warning");
+            //     return;
+            //     }
+    
+                let payload = {
+                EMP_NO: localStorage.username,
+                database_name: localStorage.databaseName,
+                additionalRows: filleredRows,
+                data: [
+                    {
+                    PURCHASE_ORDER: this.model.PURCHASE_ORDER,
+                    PIP_TYPE: this.model.PO_TYPE,
+                    ITEM_NO: this.model.ITEM_NO,
+                    DOC_DATE: this.model.TIME,
+                    INCOTERMS: this.model.INCOTERMS,
+                    INCO_2: this.model.INCO_2,
+                    ITEM_PO: this.model.ITEM_PO,
+                    ITEM: this.model.ITEM,
+                    DELET_IND: this.model.DELET_IND,
+                    CHANGE_ON: this.model.CHANGE_TIME,
+                    QUANTITY: this.model.QUANTITY,
+                    NET_PRICE: this.model.NET_PRICE,
+                    SHIPPING_NAME: this.model.SHIPPING_ADDRESS,
+                    SCHED_QTY: this.model.SCHED_QTY,
+                    SCHED_DELIV_DATE: this.model.SCHED_DELIV_DATE
+                    }
+                ]
+                };
+                console.log("payload: ", payload);
+                try {
+                let { data } = await Repository.getRepo("InsertQReceipt", payload);
+                if (data.result == "ok") {
+                    this.ClearForm();
+                    this.$swal("", "Successfully applied", "success");
+                } else {
+                    this.$swal("", data.result, "error");
+                }
+                } catch (error) {
+                if (error.response && error.response.data) {
+                    this.$swal("", error.response.data.error, "error");
+                } else {
+                    this.$swal("", error.Message, "error");
+                }
+                }
+            });
+        },
       async LoadComponent() {
         let databaseName = localStorage.databaseName;
         let PURCHASE_ORDER = this.valueSearch;
@@ -581,7 +613,7 @@
         this.selectedItems = [];
       },
       BackToParent() {
-        this.$router.push({ path: "/Home/Qualcomm_Application" });
+        this.$router.push({ path: "/Home/Telit_Apps" });
       },
     },
   };
@@ -689,7 +721,7 @@
   }
   .container {
     display: grid;
-    grid-template-rows: 50px repeat(2, 35px) auto 1px repeat(3, 35px) auto repeat(2, 35px);
+    grid-template-rows: 50px repeat(5, 35px) auto;
     grid-template-columns: repeat(3, 1fr);
     align-content: space-around;
     box-sizing: border-box;
@@ -724,6 +756,51 @@
       color: #141414;
     }
   }
+
+  .form-input {
+    grid-column: 1 / 4;
+    display: grid;
+    justify-items: center;
+    grid-template-rows: auto;
+    grid-template-columns: 1fr;
+    width: 100%;
+    border: 1px solid rgb(63, 62, 61);
+    position: relative;
+    border-radius: 5px;
+  }
+  .form-row-input {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+  }
+  .form-row-input .text-input {
+    width: 25%;
+  }
+  .form-row-input i {
+    margin-left: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
+  }
+  .add-new-form {
+    display: flex;
+    justify-content: flex-end;
+    position: absolute;
+    right: 0;
+    top: -12px;
+    border: 1px solid green;
+    border-radius: 5px;
+    height: 25px;
+    width: 25px;
+    cursor: pointer;
+    background-color: #800000;
+  }
+  .add-new-form i {
+    display: flex;
+    margin-right: 5px;
+    align-items: center;
+  }
+
   .form-row-address {
     grid-column: 1 / 4;
   }
@@ -772,100 +849,12 @@
     transform: translateY(4px);
   }
   
-  input#clear-form {
-    background-color: #f8c323;
-    color: #000;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    &:hover {
-      background-color: #e0a800;
-    }
-  }
-  input#return-form {
-    background-color: #f77225;
-    color: #000;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    &:hover {
-      background-color: #f76613;
-    }
-  }
   .form-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  .actual-ship-from {
-    display: grid;
-    grid-template-rows: 35px auto;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-column-start: 1;
-    grid-column-end: 4;
-    //border-radius: 5px;
-    position: relative;
-    align-content: space-around;
-    //border: 2px solid #9f998b;
-    //margin-bottom: 5px;
-    //padding: 10px 0px 5px 0px;
-    .form-row-actual {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-  }
-  .title-actual-ship {
-    position: absolute;
-    top: -12px;
-    left: 10%;
-    transform: translateX(-50%);
-    background-color: #e6e6e2;
-    font-size: 16px;
-    font-style: italic;
-    color: #4b4949;
-    font-weight: 600;
-  }
-  .form-row-actual-all {
-    display: grid;
-    grid-template-rows: repeat(3, 35px);
-    grid-template-columns: repeat(6, 1fr);
-    grid-column-start: 1;
-    grid-column-end: 4;
-  }
-  
-  .form-row-actual-all-label {
-    grid-column-start: 1;
-    grid-column-end: 2;
-    grid-row-start: 1;
-    grid-row-end: 4;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-  }
-  
-  .form-row-actual-all-input {
-    grid-column-start: 2;
-    grid-column-end: 6;
-    display: flex;
-    justify-content: flex-start;
-  }
-  .form-row-actual-all-input input {
-    width: 80%;
-    border: none;
-    margin-bottom: 2px;
-    border-radius: 5px;
-  }
-  
-  .form-row-table {
-      //overflow: auto;
-      //height: 250px;
-      grid-column-start: 1;
-      grid-column-end: 4;
-      margin-bottom: 20px;
-  }
+
   .class-hr{
       grid-column: 1/4;
   }
@@ -875,50 +864,6 @@
       width: 80%;
       color: #000;
   }
-  .table-form {
-    //width: 100%;
-    border-collapse: collapse;
-    //margin-bottom: 20px;
-    //overflow: auto;
-    height: auto;
-  }
-  
-  .table-form th, td {
-    border: 1px solid #0f0f0f;
-    padding: 5px;
-    //text-align: center;
-    color: #0f0f0f;
-  }
-  
-  .table-form th {
-    color: #0f0f0f;
-    font-weight: bold;
-    background-color: #bbbb9c;
-    top: 0;
-    position: sticky;
-    z-index: 2;
-    //padding: 0.5rem 1.5rem;
-  }
-  .class-re-qty {
-    width: 100px;
-  }
-  
-  .form-row-center {
-    grid-column-start: 1;
-    grid-column-end: 4;
-    text-align: center;
-    color: #423d3d;
-    font-size: 16px;
-  }
-  
-  .form-row-actual-address {
-    grid-column-start: 1;
-    grid-column-end: 4;
-  }
-  .form-row-actual-address select {
-    width: 80%;
-  }
-  
   .td-edit {
     text-align: center;
     justify-content: center;
