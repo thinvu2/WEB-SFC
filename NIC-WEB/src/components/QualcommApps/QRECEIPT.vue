@@ -313,32 +313,6 @@
                     {{ value }}
                   </td>
                 </template>
-                <!-- <td>
-                  <input type="text"
-                  autocomplete="off"
-                  class="class-re-qty"
-                  maxlength="5"
-                  pattern="[1-9]{1}[0-9]{9}"
-                  onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'"
-                  v-model="item.ACCEPTEDQTY"
-                  />
-                </td>
-                <td>
-                  <input type="text"
-                  autocomplete="off"
-                  class="class-re-qty"
-                  maxlength="5"
-                  pattern="[1-9]{1}[0-9]{9}"
-                  onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'"
-                  v-model="item.REJECTQTY"
-                  />
-                </td>
-                <td>
-                  <input type="text"
-                  autocomplete="off"
-                  v-model="item.REASON"
-                  />
-                </td> -->
               </tr>
             </tbody>
             <tbody v-else>
@@ -357,29 +331,32 @@
                   </td>
                 </template>
                 <td>
-                  <input type="text"
-                  autocomplete="off"
-                  class="class-re-qty"
-                  maxlength="5"
-                  pattern="[1-9]{1}[0-9]{9}"
-                  onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'"
-                  v-model="rowsInnerBox[index].receiveQty"
+                  <input 
+                    type="number"
+                    autocomplete="off"
+                    class="class-re-qty"
+                    max="99999"
+                    min="0"
+                    v-model="rowsInnerBox[index].receiveQty"
+                    @input="limitInputLength($event, 5)"
                   />
                 </td>
                 <td>
-                  <input type="text"
-                  autocomplete="off"
-                  class="class-re-qty"
-                  maxlength="5"
-                  pattern="[1-9]{1}[0-9]{9}"
-                  onkeydown="javascript: return ['Backspace','Delete','ArrowLeft','ArrowRight'].includes(event.code) ? true : !isNaN(Number(event.key)) && event.code!=='Space'"
-                  v-model="rowsInnerBox[index].rejectQty"
+                  <input 
+                    type="number"
+                    autocomplete="off"
+                    class="class-re-qty"
+                    max="99999"
+                    min="0"
+                    v-model="rowsInnerBox[index].rejectQty"
+                    @input="limitInputLength($event, 5)"
                   />
                 </td>
                 <td>
-                  <input type="text"
-                  autocomplete="off"
-                  v-model="rowsInnerBox[index].reason"
+                  <input 
+                    type="text"
+                    autocomplete="off"
+                    v-model="rowsInnerBox[index].reason"
                   />
                 </td>
               </tr>
@@ -582,124 +559,6 @@ export default {
     this.initializeRowsInnerBox();
   },
   methods: {
-    initializeRowsInnerBox() {
-    this.rowsInnerBox = this.ShowDataTableOuterLpn.map(item => ({
-      LOT_NO: item.LOT_NO,
-      SHIPPEDQTY: item.SHIPPEDQTY,
-      //F_ID: item.F_ID,
-      receiveQty: '',
-      rejectQty: '',
-      reason: ''
-    }));
-  },
-    async SubmitForm() {
-        let titleValue = "";
-        let textValue = "";
-        titleValue = "Are you sure edit?";
-        textValue = "Once OK, data will be updated!";
-        this.$swal({
-          title: titleValue,
-          text: textValue,
-          icon: "warning",
-          buttons: true,
-          dangerMode: true,
-        }).then(async (willDelete) => {
-          if (willDelete.isConfirmed == false) return;
-
-          const filleredRows = this.rowsInnerBox.map((row, index) => ({
-            ...row,
-            LOT_NO: this.ShowDataTableOuterLpn[index].LOT_NO,
-            SHIPPEDQTY: this.ShowDataTableOuterLpn[index].SHIPPEDQTY
-          })).filter(row => row.receiveQty || row.rejectQty || row.reason);
-          if(filleredRows.length === 0) {
-            this.$swal("", "No data to submit", "warning");
-            return;
-          }
-          // console.log("this.ShowDataTableOuterLpn: ", this.ShowDataTableOuterLpn.length);
-          // console.log("filleredRows: ", filleredRows.length);
-          //check length enter
-          if(this.ShowDataTableOuterLpn.length !== filleredRows.length) {
-            this.$swal("", "Please enter enough data.", "warning");
-              return;
-          }
-          //logic: receiveQty + rejectQty == SHIPPEDQTY
-          const invalidRows = filleredRows.filter(row => {
-
-            const receiveQty = parseInt(row.receiveQty) || 0;
-            const rejectQty = parseInt(row.rejectQty) || 0;
-            const SHIPPEDQTY = parseInt(row.SHIPPEDQTY) || 0;
-            //const lot_no = row.LOT_NO;
-           // console.log("result: ", receiveQty, rejectQty, SHIPPEDQTY, lot_no);
-            return receiveQty + rejectQty !== SHIPPEDQTY;
-          });
-          console.log(invalidRows)
-         if (invalidRows.length > 0) {
-            this.$swal("", `ReceiveQty + RejectQty must equal ShippedQty, Lot no: ${invalidRows[0].LOT_NO}`, "warning");
-            return;
-          }
-
-          let payload = {
-            EMP_NO: localStorage.username,
-            database_name: localStorage.databaseName,
-            rowsInnerBox: filleredRows,
-            data: [
-              {
-  
-                SITE: this.model.SITE,
-                PIP_TYPE: this.model.PIP_TYPE,
-                PO_TYPE: this.model.PO_TYPE,
-                CREAT_TIME: this.model.CREAT_TIME,
-                MSG_ID: this.model.MSG_ID,
-                MSG_SENDER_NAME: this.model.MSG_SENDER_NAME,
-                MSG_SENDER_DUNS: this.model.MSG_SENDER_DUNS,
-                MSG_RECEIVER_NAME: this.model.MSG_RECEIVER_NAME,
-                MSG_RECEIVER_DUNS: this.model.MSG_RECEIVER_DUNS,
-                PACKSLIP_NO: this.model.PACKSLIP_NO,
-                SHIP_MCMN_AIRWAYBILL: this.model.SHIP_MCMN_AIRWAYBILL,
-                SHIP_MCMN_FREIGHT_CARRIER_CODE: this.model.SHIP_MCMN_FREIGHT_CARRIER_CODE,
-                IMPORT_PERMIT_NO: this.model.IMPORT_PERMIT_NO,
-                LOCATION_CODE: this.model.LOCATION_CODE,
-                F_NAME: this.model.F_NAME,
-                RECEIVER_DUNS: this.model.RECEIVER_DUNS,
-                RECEIVER_DUNS4: this.model.RECEIVER_DUNS4,
-                DATE_TIME: this.model.DATE_TIME,
-                SHIP_MCMN_LOCATIONNAME: this.model.SHIP_MCMN_LOCATIONNAME,
-                SHIP_MCMN_CITY: this.model.SHIP_MCMN_CITY,
-                SHIP_MCMN_COUNTRYCODE: this.model.SHIP_MCMN_COUNTRYCODE,
-                SHIP_MCMN_POSTALCODE: this.model.SHIP_MCMN_POSTALCODE,
-                SHIP_MCMN_ADDR1: this.model.SHIP_MCMN_ADDR1,
-                SHIP_MCMN_ADDR2: this.model.SHIP_MCMN_ADDR2,
-                SHIP_MCMN_ADDR3: this.model.SHIP_MCMN_ADDR3,
-                PO_NO: this.model.PO_NO,
-                PO_LINE: this.model.PO_LINE,
-                ITEMSHIP_MCMN_UNITOFMEASURE: this.model.ITEMSHIP_MCMN_UNITOFMEASURE,
-                ITEMSHIP_MCMN_NO: this.model.ITEMSHIP_MCMN_NO,
-                ITEMSHIP_MCMN_RECEIVEDQTY: this.model.ITEMSHIP_MCMN_RECEIVEDQTY,
-                ITEMSHIP_MCMN_ACCEPTEDQTY: this.model.ITEMSHIP_MCMN_ACCEPTEDQTY,
-                INNERBOX_SHIP_MCMN_LPN: this.model.INNERBOX_SHIP_MCMN_LPN,
-                INNERBOX_SHIP_MCMN_RECEIVEDQTY: this.model.INNERBOX_SHIP_MCMN_RECEIVEDQTY,
-                LAST_EDIT_TIME: this.model.LAST_EDIT_TIME
-              }
-            ]
-          };
-          console.log("payload: ", payload);
-          try {
-            let { data } = await Repository.getRepo("InsertQReceipt", payload);
-            if (data.result == "ok") {
-              this.ClearForm();
-              this.$swal("", "Successfully applied", "success");
-            } else {
-              this.$swal("", data.result, "error");
-            }
-          } catch (error) {
-            if (error.response && error.response.data) {
-              this.$swal("", error.response.data.error, "error");
-            } else {
-              this.$swal("", error.Message, "error");
-            }
-          }
-        });
-    },
     async LoadComponent() {
       let databaseName = localStorage.databaseName;
       try {
@@ -768,7 +627,7 @@ export default {
         }
         if (this.ShowDataDetail.length > 0) {
           //start insert
-let firstItem = this.ShowDataDetail[0];
+          let firstItem = this.ShowDataDetail[0];
           this.model.SITE = firstItem.SITE;
           this.model.PIP_TYPE = firstItem.PIP_TYPE;
           this.model.PO_TYPE = firstItem.PO_TYPE;
@@ -829,6 +688,128 @@ let firstItem = this.ShowDataDetail[0];
         }
       }
     },
+    async SubmitForm() {
+        let titleValue = "";
+        let textValue = "";
+        titleValue = "Are you sure edit?";
+        textValue = "Once OK, data will be updated!";
+        this.$swal({
+          title: titleValue,
+          text: textValue,
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        }).then(async (willDelete) => {
+          if (willDelete.isConfirmed == false) return;
+
+          const ahihi = this.rowsInnerBox.forEach((item) => {
+             if(item.rejectQty > 0 && item.reason ==='') {
+              return
+             }
+          })
+
+          const filleredRows = this.rowsInnerBox.map((row, index) => ({
+            ...row,
+            LOT_NO: this.ShowDataTableOuterLpn[index].LOT_NO,
+            SHIPPEDQTY: this.ShowDataTableOuterLpn[index].SHIPPEDQTY
+          })).filter(row => row.receiveQty || row.rejectQty || row.reason);
+         // console.log(filleredRows);
+          if(filleredRows.length === 0) {
+            this.$swal("", "No data to submit", "warning");
+            return;
+          }
+          if(this.ShowDataTableOuterLpn.length !== filleredRows.length) {
+            this.$swal("", "Please enter enough data.", "warning");
+              return;
+          }
+          const invalidRows = filleredRows.filter(row => {
+            const receiveQty = row.receiveQty;
+            const rejectQty = row.rejectQty;
+            const SHIPPEDQTY = parseInt(row.SHIPPEDQTY);
+            return receiveQty + rejectQty !== SHIPPEDQTY;
+          });
+          //console.log(invalidRows)
+
+         if (invalidRows.length > 0) {
+            this.$swal("", `ReceiveQty + RejectQty must equal ShippedQty, Lot no: ${invalidRows[0].LOT_NO}`, "warning");
+            return;
+          }
+          let payload = {
+            EMP_NO: localStorage.username,
+            database_name: localStorage.databaseName,
+            rowsInnerBox: filleredRows,
+            data: [
+              {
+                SITE: this.model.SITE,
+                PIP_TYPE: this.model.PIP_TYPE,
+                PO_TYPE: this.model.PO_TYPE,
+                CREAT_TIME: this.model.CREAT_TIME,
+                MSG_ID: this.model.MSG_ID,
+                MSG_SENDER_NAME: this.model.MSG_SENDER_NAME,
+                MSG_SENDER_DUNS: this.model.MSG_SENDER_DUNS,
+                MSG_RECEIVER_NAME: this.model.MSG_RECEIVER_NAME,
+                MSG_RECEIVER_DUNS: this.model.MSG_RECEIVER_DUNS,
+                PACKSLIP_NO: this.model.PACKSLIP_NO,
+                SHIP_MCMN_AIRWAYBILL: this.model.SHIP_MCMN_AIRWAYBILL,
+                SHIP_MCMN_FREIGHT_CARRIER_CODE: this.model.SHIP_MCMN_FREIGHT_CARRIER_CODE,
+                IMPORT_PERMIT_NO: this.model.IMPORT_PERMIT_NO,
+                LOCATION_CODE: this.model.LOCATION_CODE,
+                F_NAME: this.model.F_NAME,
+                RECEIVER_DUNS: this.model.RECEIVER_DUNS,
+                RECEIVER_DUNS4: this.model.RECEIVER_DUNS4,
+                DATE_TIME: this.model.DATE_TIME,
+                SHIP_MCMN_LOCATIONNAME: this.model.SHIP_MCMN_LOCATIONNAME,
+                SHIP_MCMN_CITY: this.model.SHIP_MCMN_CITY,
+                SHIP_MCMN_COUNTRYCODE: this.model.SHIP_MCMN_COUNTRYCODE,
+                SHIP_MCMN_POSTALCODE: this.model.SHIP_MCMN_POSTALCODE,
+                SHIP_MCMN_ADDR1: this.model.SHIP_MCMN_ADDR1,
+                SHIP_MCMN_ADDR2: this.model.SHIP_MCMN_ADDR2,
+                SHIP_MCMN_ADDR3: this.model.SHIP_MCMN_ADDR3,
+                PO_NO: this.model.PO_NO,
+                PO_LINE: this.model.PO_LINE,
+                ITEMSHIP_MCMN_UNITOFMEASURE: this.model.ITEMSHIP_MCMN_UNITOFMEASURE,
+                ITEMSHIP_MCMN_NO: this.model.ITEMSHIP_MCMN_NO,
+                ITEMSHIP_MCMN_RECEIVEDQTY: this.model.ITEMSHIP_MCMN_RECEIVEDQTY,
+                ITEMSHIP_MCMN_ACCEPTEDQTY: this.model.ITEMSHIP_MCMN_ACCEPTEDQTY,
+                INNERBOX_SHIP_MCMN_LPN: this.model.INNERBOX_SHIP_MCMN_LPN,
+                INNERBOX_SHIP_MCMN_RECEIVEDQTY: this.model.INNERBOX_SHIP_MCMN_RECEIVEDQTY,
+                LAST_EDIT_TIME: this.model.LAST_EDIT_TIME
+              }
+            ]
+          };
+          console.log("payload: ", payload);
+          try {
+            let { data } = await Repository.getRepo("InsertQReceipt", payload);
+            if (data.result == "ok") {
+              this.ClearForm();
+              this.$swal("", "Successfully applied", "success");
+            } else {
+              this.$swal("", data.result, "error");
+            }
+          } catch (error) {
+            if (error.response && error.response.data) {
+              this.$swal("", error.response.data.error, "error");
+            } else {
+              this.$swal("", error.Message, "error");
+            }
+          }
+        });
+    },
+    limitInputLength(event, maxLength){
+    if(event.target.value.length >= maxLength){
+      event.target.value = event.target.value.slice(0, maxLength);
+    }
+  },
+    initializeRowsInnerBox() {
+    this.rowsInnerBox = this.ShowDataTableOuterLpn.map(item => ({
+      LOT_NO: item.LOT_NO,
+      SHIPPEDQTY: item.SHIPPEDQTY,
+      //F_ID: item.F_ID,
+      receiveQty: '',
+      rejectQty: '',
+      reason: ''
+    }));
+  },
     exportexcelxlsx() {
       const filteredData = this.DataTable.map((element) => {
         return Object.keys(element).reduce((acc, key) => {
@@ -1008,7 +989,7 @@ let firstItem = this.ShowDataDetail[0];
 }
 .container {
   display: grid;
-  grid-template-rows: 50px repeat(2, 35px) auto 1px repeat(3, 35px) auto repeat(2, 35px);
+  grid-template-rows: 50px repeat(2, 35px) auto 1px repeat(3, 35px) auto 35px;
   grid-template-columns: repeat(3, 1fr);
   align-content: space-around;
   box-sizing: border-box;

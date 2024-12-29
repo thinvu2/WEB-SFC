@@ -40,15 +40,6 @@ namespace SN_API.Controllers.QualcommApps
         {
             try
             {
-                //if (string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
-                //{
-                //    dateFrom = "19000101";
-                //}
-
-                //if (string.IsNullOrEmpty(dateTo) && !string.IsNullOrEmpty(dateFrom))
-                //{
-                //    dateTo = DateTime.Now.ToString("yyyyMMdd");
-                //}
                 string strGetData = "";
                 if(string.IsNullOrEmpty(PACKSLIP_NO) && showTimeForm == "false")
                 {
@@ -129,7 +120,7 @@ namespace SN_API.Controllers.QualcommApps
             try
             {
                 //check privilege
-                string strPrivilege = $"SELECT EMP FROM  sfis1.C_PRIVILEGE  where PRG_NAME = 'CONFIGWEB' and fun = 'QASN_IN' and PRIVILEGE = '0' and EMP = '{model.EMP_NO}'";
+                string strPrivilege = $"SELECT EMP FROM  sfis1.C_PRIVILEGE  where PRG_NAME = 'WEB_CONFIG' and fun = 'QASN_IN' and PRIVILEGE = '0' and EMP = '{model.EMP_NO}'";
                 if (DBConnect.GetData(strPrivilege, model.database_name).Rows.Count <= 0)
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, new { result = "notPrivilege" });

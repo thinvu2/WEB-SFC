@@ -140,7 +140,7 @@ namespace SN_API.Controllers.QualcommApps
             {
                 string emp_no = model["EMP_NO"].ToString();
                 string databaseName = model["database_name"].ToString();
-                string strPrivilege = $" SELECT emp FROM  SFIS1.C_PRIVILEGE  WHERE PRG_NAME='CONFIG'  AND FUN = 'MODEL_EDIT' AND EMP='{emp_no}'";
+                string strPrivilege = $"SELECT emp FROM SFIS1.C_PRIVILEGE WHERE PRG_NAME='WEB_CONFIG' AND FUN = 'QRECEIPT_INSERT' AND EMP = '{emp_no}'";
 
                 if (DBConnect.GetData(strPrivilege, databaseName).Rows.Count <= 0)
                 {
@@ -159,8 +159,8 @@ namespace SN_API.Controllers.QualcommApps
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine($"Error: {ex.Message}");
-                            Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
+                            //Debug.WriteLine($"Error: {ex.Message}");
+                            //Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
                         }
                     }
                 }
@@ -169,8 +169,6 @@ namespace SN_API.Controllers.QualcommApps
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error: {ex.Message}");
-                Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new { result = ex.Message });
             }
         }
@@ -181,51 +179,48 @@ namespace SN_API.Controllers.QualcommApps
                 var site = item["SITE"]?.ToString() ?? string.Empty;
                 var pipType = item["PIP_TYPE"]?.ToString() ?? string.Empty;
                 var poType = item["PO_TYPE"]?.ToString() ?? string.Empty;
-                var creatTime = item["CREAT_TIME"]?.ToString() ?? string.Empty;
+                var creatTime = item["CREAT_TIME"]?.ToString();
                 var msgId = item["MSG_ID"]?.ToString() ?? string.Empty;
                 var msgSenderName = item["MSG_SENDER_NAME"]?.ToString() ?? string.Empty;
                 var msgSenderDuns = item["MSG_SENDER_DUNS"]?.ToString() ?? string.Empty;
                 var msgReceiverName = item["MSG_RECEIVER_NAME"]?.ToString() ?? string.Empty;
                 var msgReceiverDuns = item["MSG_RECEIVER_DUNS"]?.ToString() ?? string.Empty;
-                var packSlipNo = item["PACKSLIP_NO"]?.ToString();
-                var shipmcmnAirwayBill = item["SHIP_MCMN_AIRWAYBILL"]?.ToString();
-                var shipmcmnFreightCarrierCode = item["SHIP_MCMN_FREIGHT_CARRIER_CODE"]?.ToString();
-                var importPermitNo = item["IMPORT_PERMIT_NO"]?.ToString();
-                var locationCode = item["LOCATION_CODE"]?.ToString();
-                var fName = item["F_NAME"]?.ToString();
-                var receiverDuns = item["RECEIVER_DUNS"]?.ToString();
-                var receiverDuns4 = item["RECEIVER_DUNS4"]?.ToString();
+                var packSlipNo = item["PACKSLIP_NO"]?.ToString() ?? string.Empty;
+                var shipmcmnAirwayBill = item["SHIP_MCMN_AIRWAYBILL"]?.ToString() ?? string.Empty;
+                var shipmcmnFreightCarrierCode = item["SHIP_MCMN_FREIGHT_CARRIER_CODE"]?.ToString() ?? string.Empty;
+                var importPermitNo = item["IMPORT_PERMIT_NO"]?.ToString() ?? string.Empty;
+                var locationCode = item["LOCATION_CODE"]?.ToString() ?? string.Empty;
+                var fName = item["F_NAME"]?.ToString() ?? string.Empty;
+                var receiverDuns = item["RECEIVER_DUNS"]?.ToString() ?? string.Empty;
+                var receiverDuns4 = item["RECEIVER_DUNS4"]?.ToString() ?? string.Empty;
                 var dateTime = item["DATE_TIME"]?.ToString();
-                var shipmcmnLocationName = item["SHIP_MCMN_LOCATIONNAME"]?.ToString();
-                var shipmcmnCity = item["SHIP_MCMN_CITY"]?.ToString();
-                var shipmcmnCountryCode = item["SHIP_MCMN_COUNTRYCODE"]?.ToString();
-                var shipmcmnPostalCode = item["SHIP_MCMN_POSTALCODE"]?.ToString();
-                var shipmcmnAddr1 = item["SHIP_MCMN_ADDR1"]?.ToString();
-                var shipmcmnAddr2 = item["SHIP_MCMN_ADDR2"]?.ToString();
-                var shipmcmnAddr3 = item["SHIP_MCMN_ADDR3"]?.ToString();
-                var poNo = item["PO_NO"]?.ToString();
-                var poLine = item["PO_LINE"]?.ToString();
-                var itemShipmcmnUnitOfMeasure = item["ITEMSHIP_MCMN_UNITOFMEASURE"]?.ToString();
-                var itemShipmcmnNo = item["ITEMSHIP_MCMN_NO"]?.ToString();
+                var shipmcmnLocationName = item["SHIP_MCMN_LOCATIONNAME"]?.ToString() ?? string.Empty;
+                var shipmcmnCity = item["SHIP_MCMN_CITY"]?.ToString() ?? string.Empty;
+                var shipmcmnCountryCode = item["SHIP_MCMN_COUNTRYCODE"]?.ToString() ?? string.Empty;
+                var shipmcmnPostalCode = item["SHIP_MCMN_POSTALCODE"]?.ToString() ?? string.Empty;
+                var shipmcmnAddr1 = item["SHIP_MCMN_ADDR1"]?.ToString() ?? string.Empty;
+                var shipmcmnAddr2 = item["SHIP_MCMN_ADDR2"]?.ToString() ?? string.Empty;
+                var shipmcmnAddr3 = item["SHIP_MCMN_ADDR3"]?.ToString() ?? string.Empty;
+                var poNo = item["PO_NO"]?.ToString() ?? string.Empty;
+                var poLine = item["PO_LINE"]?.ToString() ?? string.Empty;
+                var itemShipmcmnUnitOfMeasure = item["ITEMSHIP_MCMN_UNITOFMEASURE"]?.ToString() ?? string.Empty;
+                var itemShipmcmnNo = item["ITEMSHIP_MCMN_NO"]?.ToString() ?? string.Empty;
                 var itemShipmcmnReceivedQty = item["ITEMSHIP_MCMN_RECEIVEDQTY"]?.ToString();
                 var itemShipmcmnAcceptedQty = item["ITEMSHIP_MCMN_ACCEPTEDQTY"]?.ToString();
-                var innerBoxShipmcmnLpn = item["INNERBOX_SHIP_MCMN_LPN"]?.ToString();
+                var innerBoxShipmcmnLpn = item["INNERBOX_SHIP_MCMN_LPN"]?.ToString() ?? string.Empty;
                 var innerBoxShipmcmnReceivedQty = item["INNERBOX_SHIP_MCMN_RECEIVEDQTY"]?.ToString();
                 var lastEditTime = item["LAST_EDIT_TIME"]?.ToString();
-                var lotNo = rows["LOT_NO"]?.ToString();
+                var lotNo = rows["LOT_NO"]?.ToString() ?? string.Empty;
                 var innerBoxShipmcmnAcceptedQty = rows["receiveQty"]?.ToString();
                 var innerBoxmcmnRejectQty = rows["rejectQty"]?.ToString();
-                var reason = rows["reason"]?.ToString();
-                string updateQAsn_in = $"update SFISM4.R_QASN_IN set flag = '1' where PACKSLIP_NO = :packSlipNo and LOT_NO = :lotNo ";
-                string insertQReceipt = $@" INSERT INTO SFISM4.R_QRECEIPT_OUT (
-                                        SITE, PIP_TYPE, PO_TYPE, CREAT_TIME, MSG_ID, MSG_SENDER_NAME, MSG_SENDER_DUNS, MSG_RECEIVER_NAME, MSG_RECEIVER_DUNS, PACKSLIP_NO, SHIP_MCMN_AIRWAYBILL, SHIP_MCMN_FREIGHT_CARRIER_CODE, IMPORT_PERMIT_NO, 
-                                        LOCATION_CODE, F_NAME, RECEIVER_DUNS, RECEIVER_DUNS4, DATE_TIME, SHIP_MCMN_LOCATIONNAME, SHIP_MCMN_CITY, SHIP_MCMN_COUNTRYCODE, SHIP_MCMN_POSTALCODE, SHIP_MCMN_ADDR1, SHIP_MCMN_ADDR2, SHIP_MCMN_ADDR3, 
-                                        PO_NO, PO_LINE, ITEMSHIP_MCMN_UNITOFMEASURE, ITEMSHIP_MCMN_NO, ITEMSHIP_MCMN_RECEIVEDQTY, ITEMSHIP_MCMN_ACCEPTEDQTY, INNERBOX_SHIP_MCMN_LPN, INNERBOX_SHIP_MCMN_RECEIVEDQTY, LAST_EDIT_TIME, LOT_NO, INNERBOX_SHIP_MCMN_ACCEPTEDQTY, INNERBOX_MCMN_REJECTQTY, REASON                           
-                                        ) 
-                                VALUES (:site, :pipType, :poType, to_date(:creatTime,'YYYY/MM/DD HH24:MI:SS'), :msgId, :msgSenderName, :msgSenderDuns, :msgReceiverName, :msgReceiverDuns, :packSlipNo,  :shipmcmnAirwayBill, :shipmcmnFreightCarrierCode,importPermitNo,
-                                         :locationCode, :f_Name, :receiverDuns, :receiverDuns4, :dateTime, :shipmcmnLocationName, :shipmcmnCity, :shipmcmnCountryCode, :shipmcmnPostalCode, :shipmcmnAddr1, :shipmcmnAddr2, :shipmcmnAddr3, 
-                                        :poNo, :poLine, :itemShipmcmnUnitOfMeasure, :itemShipmcmnNo, :itemShipmcmnReceivedQty, :itemShipmcmnAcceptedQty, :innerBoxShipmcmnLpn, :innerBoxShipmcmnReceivedQty, to_date(:lastEditTime,'YYYY/MM/DD HH24:MI:SS'), :lotNo, :innerBoxShipmcmnAcceptedQty, :innerBoxmcmnRejectQty, :reason
-                                )";
+                var reason = rows["reason"]?.ToString() ?? string.Empty;
+                string updateQAsn_in = $"update SFISM4.R_QASN_IN set flag = '1' where PACKSLIP_NO = :packSlipNo";
+                string insertQReceipt = $@"INSERT INTO SFISM4.R_QRECEIPT_OUT (SITE, PIP_TYPE, PO_TYPE, CREAT_TIME, MSG_ID, MSG_SENDER_NAME, MSG_SENDER_DUNS, MSG_RECEIVER_NAME, MSG_RECEIVER_DUNS, PACKSLIP_NO, SHIP_MCMN_AIRWAYBILL, SHIP_MCMN_FREIGHT_CARRIER_CODE, IMPORT_PERMIT_NO, 
+                                                LOCATION_CODE, F_NAME, RECEIVER_DUNS, RECEIVER_DUNS4, DATE_TIME, SHIP_MCMN_LOCATIONNAME, SHIP_MCMN_CITY, SHIP_MCMN_COUNTRYCODE, SHIP_MCMN_POSTALCODE, SHIP_MCMN_ADDR1, SHIP_MCMN_ADDR2, SHIP_MCMN_ADDR3, 
+                                                PO_NO, PO_LINE, ITEMSHIP_MCMN_UNITOFMEASURE, ITEMSHIP_MCMN_NO, ITEMSHIP_MCMN_RECEIVEDQTY, ITEMSHIP_MCMN_ACCEPTEDQTY, INNERBOX_SHIP_MCMN_LPN, INNERBOX_SHIP_MCMN_RECEIVEDQTY, LAST_EDIT_TIME, LOT_NO, INNERBOX_SHIP_MCMN_ACCEPTEDQTY, INNERBOX_MCMN_REJECTQTY, REASON) 
+                                           VALUES (:site, :pipType, :poType, to_date(:creatTime,'YYYY/MM/DD HH24:MI:SS'), :msgId, :msgSenderName, :msgSenderDuns, :msgReceiverName, :msgReceiverDuns, :packSlipNo, :shipmcmnAirwayBill, :shipmcmnFreightCarrierCode, :importPermitNo,
+                                                :locationCode, :fName, :receiverDuns, :receiverDuns4, to_date(:dateTime,'YYYY/MM/DD HH24:MI:SS'), :shipmcmnLocationName, :shipmcmnCity, :shipmcmnCountryCode, :shipmcmnPostalCode, :shipmcmnAddr1, :shipmcmnAddr2, :shipmcmnAddr3, 
+                                                :poNo, :poLine, :itemShipmcmnUnitOfMeasure, :itemShipmcmnNo, :itemShipmcmnReceivedQty, :itemShipmcmnAcceptedQty, :innerBoxShipmcmnLpn, :innerBoxShipmcmnReceivedQty, to_date(:lastEditTime,'YYYY/MM/DD HH24:MI:SS'), :lotNo, :innerBoxShipmcmnAcceptedQty, :innerBoxmcmnRejectQty, :reason)";
                 var connectionString = new GetString().Get()[databaseName];
                 using (var connection = new OracleConnection(connectionString))
                 {
@@ -234,12 +229,10 @@ namespace SN_API.Controllers.QualcommApps
                     using (var commandQAsn = new OracleCommand(updateQAsn_in, connection))
                     {
                         commandQAsn.Parameters.Add(new OracleParameter("packSlipNo", packSlipNo));
-                        commandQAsn.Parameters.Add(new OracleParameter("lotNo", lotNo));
                         await commandQAsn.ExecuteNonQueryAsync();
                     }
                     using (var command = new OracleCommand(insertQReceipt, connection))
                     {
-//, LAST_EDIT_TIME
                         command.Parameters.Add(new OracleParameter("site", site));
                         command.Parameters.Add(new OracleParameter("pipType", pipType));
                         command.Parameters.Add(new OracleParameter("poType", poType));
@@ -284,51 +277,8 @@ namespace SN_API.Controllers.QualcommApps
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Error: {ex.Message}");
-                Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
                 throw;
             }
         }
-        public class QReceipt_Element
-            {
-                public string database_name { get; set; }
-                public string EMP_NO { get; set; }
-                public string SITE { get; set; }
-                public string PIP_TYPE { get; set; }
-                public string PO_TYPE { get; set; }
-                public string CREAT_TIME { get; set; }
-                public string MSG_ID { get; set; }
-                public string MSG_SENDER_NAME { get; set; }
-                public string MSG_SENDER_DUNS { get; set; }
-                public string MSG_RECEIVER_NAME { get; set; }
-                public string MSG_RECEIVER_DUNS { get; set; }
-                public string PACKSLIP_NO { get; set; }
-                public string RECEIVER_DUNS { get; set; }
-                public string RECEIVER_DUNS4 { get; set; }
-                public string SHIP_MCMN_LOCATIONNAME { get; set; }
-                public string SHIP_MCMN_CITY { get; set; }
-                public string PO_NO { get; set; }
-                public string LOT_NO { get; set; }
-                public string AIRWAYBILL { get; set; }
-                public string SHIP_MCMN_FREIGHT_CARRIER_CODE { get; set; }
-                public string LOCATIONNAME { get; set; }
-                public string SHIP_MCMN_COUNTRYCODE { get; set; }
-                public string SHIP_MCMN_POSTALCODE { get; set; }
-                public string SHIP_MCMN_ADDR1 { get; set; }
-                public string SHIP_MCMN_ADDR2 { get; set; }
-                public string SHIP_MCMN_ADDR3 { get; set; }
-                public string LAST_EDIT_TIME { get; set; }
-                public string FLAG { get; set; }
-                public string F_ID { get; set; }
-                public string POLINE_NO { get; set; }
-                public string ITEM_UNITOFMEASURE { get; set; }
-                public string ITEM_NO { get; set; }
-                public string INNERBOX_LPN { get; set; }
-                public string selectOptions{ get; set; }
-                public string selectReceiveQty { get; set; }
-                public string selectRejectQty { get; set; }
-                public string selectReason{ get; set; }
-                public string selectedItems{ get; set; }
-       }
     }
 }

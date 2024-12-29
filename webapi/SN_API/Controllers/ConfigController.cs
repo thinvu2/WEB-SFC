@@ -92,7 +92,7 @@ namespace SN_API.Controllers
         {
             try
             {
-                string strGetData = $"SELECT FUN FROM SFIS1.C_PRIVILEGE WHERE PRG_NAME ='CONFIGWEB' AND FUN = 'INSERT' AND EMP ='{emp_no}' and rownum =1";
+                string strGetData = $"SELECT FUN FROM SFIS1.C_PRIVILEGE WHERE PRG_NAME ='WEB_CONFIG' AND FUN = 'INSERT' AND EMP ='{emp_no}' and rownum =1";
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 //if (dtCheck.Rows.Count == 0)
                 //{

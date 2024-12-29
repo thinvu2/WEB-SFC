@@ -10,9 +10,9 @@ function comparer(otherArray) {
 export default createStore({
     state: {
        //apiAddress: "https://sfcnic-cns.myfiinet.com/websfcapi",
-       apiAddress: "http://localhost:55829/",
+       //apiAddress: "http://localhost:55829/",
        //apiAddress: "http://localhost:81/SFCAPI/",
-       //apiAddress: "http://10.220.15.158/API",
+       apiAddress: "http://10.220.15.158/API",
        
         language: 'En',
         isShowModal: false,
