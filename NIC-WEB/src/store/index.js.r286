@@ -9,11 +9,20 @@ function comparer(otherArray) {
 }
 export default createStore({
     state: {
-       //apiAddress: "https://sfcnic-cns.myfiinet.com/websfcapi",
-       apiAddress: "http://localhost:55829/",
-       //apiAddress: "http://localhost:81/SFCAPI/",
-       //apiAddress: "http://10.220.15.158/API",
-       
+        //apiAddress: "https://sfc.efoxconn.com/api/",
+
+        //apiAddress: "http://10.224.130.70/api/",
+        //apiAddress : "http://10.224.81.154/api/",
+        //const apiAddress = "http://10.225.35.123/myapi/";
+        //apiAddress: '',
+         //apiAddress: "http://localhost:55829/",     
+        //apiAddress: 'http://localhost:55829/',
+        apiAddress: 'http://10.220.96.223:8080/webquerysfcapi',
+
+
+       //apiAddress: "http://localhost:55829/",
+       //apiAddress: "http://10.220.15.89:55829/",    
+        
         language: 'En',
         isShowModal: false,
         listDetailClick: [],
@@ -22,11 +31,9 @@ export default createStore({
         isPayLoad: false,
         isLoadingAxios: false,
         isShowQMModel: false,
-        isShowModalConfig7: false,
         isShowQMMO: false,
         isShowQMLine: false,
         isShowQMGroup: false,
-        isShowConfig43: false,
         isShowModelLock: false,
         isShowLockEmpPass: false,
         isDisableLockElement: false,
@@ -110,32 +117,26 @@ export default createStore({
         isShowQ6Route: false,
         isShowQ6Element: false,
         Q6ElementNameEn: 'Enter element',
-        Q6ElementNameVi: 'Nh?p thu?c tính',
+        Q6ElementNameVi: 'Nhập thuộc tính',
         routeCode: '',
         routeName: '',
         titleTextChart: 'DemoChart',
 
         listSelectDualModel: [],
-        listSelectDualModelConfig7: [],
         listAvaiDualModel: [],
-        listAvaiDualModelConfig7: [],
         listSelectDualMO: [],
         listAvaiDualMO: [],
         listSelectDualLine: [],
         listAvaiDualLine: [],
         listSelectDualGroup: [],
-        listSelectDualConfig43: [],
         listAvaiDualGroup: [],
-        listAvaiDualConfig43: [],
         listLock: [],
         dateTimeFromQM: '',
         dateTimeToQM: '',
         listAvaiDualModelSearch: [],
-        listAvaiDualModelSearchConfig7: [],
         listAvaiDualMOSearch: [],
         listAvaiDualLineSearch: [],
         listAvaiDualGroupSearch: [],
-        listAvaiDualGroupSearchConfig43: [],
         lock_emp_pass: '',
         lock_model_name: '',
         lock_group_name: '',
@@ -172,12 +173,10 @@ export default createStore({
         },
         closeModal(state) {
             state.isShowModal = false;
-            state.isShowModalConfig7 = false;
             state.isShowQMModel = false;
             state.isShowQMMO = false;
             state.isShowQMLine = false;
             state.isShowQMGroup = false;
-            state.isShowConfig43 = false;
             state.isShowModelLock = false;
             state.isShowLockEmpPass = false;
             state.isDisableLockElement = false;
@@ -195,7 +194,7 @@ export default createStore({
             state.isSelectOne = false;
             state.isShowQ6Element = false;
             state.Q6ElementNameEn = 'Enter element';
-            state.Q6ElementNameVi = 'Nh?p thu?c tính';
+            state.Q6ElementNameVi = 'Nhập thuộc tính';
             state.elementQ6 = '';
             state.isShowPieChart = false;
             state.isShowMixChart = false;
@@ -248,11 +247,9 @@ export default createStore({
         RefreshState(state) {
             state.isLoadingAxios = false;
             state.isShowQMModel = false;
-            state.isShowModelConfig7 = false;//dung cho config 7
             state.isShowQMMO = false;
             state.isShowQMLine = false;
             state.isShowQMGroup = false;
-            state.isShowConfig43 = false;//dung cho config 43
             state.isShowModelLock = false;
             state.isDisableLockElement = false;
             state.isLockStation = false;
@@ -281,11 +278,7 @@ export default createStore({
             state.listSelectDualLine = [];
             state.listAvaiDualLine = [];
             state.listSelectDualGroup = [];
-            state.listSelectDualGroupConfig7 = [];//dung cho config 7
-            state.listSelectDualConfig43 = [];//dung cho config43
             state.listAvaiDualGroup = [];
-            state.listAvaiDualGroupConfig7 = [],//dung cho config 7
-            state.listAvaiDualConfig43 = [];//dung cho config 43
             state.listLock = [],
 
                 state.dateTimeFromQM = '';
@@ -295,8 +288,6 @@ export default createStore({
             state.listAvaiDualMOSearch = [];
             state.listAvaiDualLineSearch = [];
             state.listAvaiDualGroupSearch = [];
-            state.listAvaiDualGroupConfig7Search = [];//dung cho config 7
-            state.listAvaiDualGroupSearchConfig43 = [];//dung cho config 43
         },
         setListAll(state, arr) {
             state.listDetailClickAll = arr;
@@ -333,14 +324,6 @@ export default createStore({
             state.isShowQMGroup = true;
             $("body").addClass("modal-open");
         },
-        showModalModelConfig7(state) {
-            state.isShowModalConfig7 = true;
-            $("body").addClass("modal-open");
-        },
-        showConfig43(state) {//dung cho config43
-            state.isShowConfig43 = true;
-            $("body").addClass("modal-open");
-        },
         //--start--QM-select-Model
         UpdateListSelectModel(state, list) {
             if (!state.isSelectOne) {
@@ -366,8 +349,7 @@ export default createStore({
                     }
                 }
             }
-        },
-        QMListSearchEqualAvaiModel(state) {
+        }, QMListSearchEqualAvaiModel(state) {
             var array = state.listAvaiDualModel;
             var listSelect = state.listSelectDualModel;
             array = array.filter(comparer(listSelect));
@@ -534,147 +516,6 @@ export default createStore({
             catalogs = catalogs.filter((p) => p.VALUE != item.VALUE);
             state.listSelectDualGroup = catalogs;
         },
-                //______________Config7
-        //--start--Config7
-        // UpdateListSelectConfig7Group(state, list) {
-        //     if (list.length == 0) {
-        //         state.listAvaiDualGroupConfig7 = [];
-        //     } else {
-        //         var array = list;
-        //         var listSelect = state.listSelectDualGroupConfig7;
-        //         array = list.filter(comparer(listSelect));
-        //         state.listAvaiDualGroupConfig7 = array;
-        //         state.listAvaiDualGroupConfig7Search = array;
-        //     }
-        // },
-
-        UpdateListSelectModelConfig7(state, list){
-            if (!state.isSelectOne) {
-                if (list.length == 0) {
-                    state.listAvaiDualModelConfig7 = [];
-                } else {
-                    var array = list;
-                    var listSelect = state.listSelectDualModelConfig7;
-                    array = list.filter(comparer(listSelect));
-                    state.listAvaiDualModelConfig7 = array;
-                    state.listAvaiDualModelSearchConfig7 = array;
-                }
-            } else {
-                if (list.length == 0) {
-                    state.listAvaiDualModelConfig7 = [];
-                } else {
-                    if (state.listSelectDualModelConfig7.length == 0) {
-                        array = list;
-                        listSelect = state.listSelectDualModelConfig7;
-                        array = list.filter(comparer(listSelect));
-                        state.listAvaiDualModelConfig7 = array;
-                        state.listAvaiDualModelSearchConfig7 = array;
-                    }
-                }
-            }
-        },
-
-        Config7ListSearchEqualAvaiGroup(state) {
-            var array = state.listAvaiDualModelConfig7;
-            var listSelect = state.listSelectDualModelConfig7;
-            array = array.filter(comparer(listSelect));
-            state.listAvaiDualModelSearchConfig7 = array;
-        },
-        Config7FilterGroup(state, text) {
-            var catalogs = state.listAvaiDualModelConfig7;
-            catalogs = catalogs.filter(comparer(this.state.listSelectDualModelConfig7));
-            catalogs = catalogs.filter((p) => { if (p.VALUE.includes(text)) { return true; } return false; });
-            state.listAvaiDualModelSearchConfig7 = catalogs;
-        },
-        moveAllListAvaiToSelectGroupConfig7(state){
-            state.listSelectDualModelConfig7.push.apply(state.listSelectDualModelConfig7, state.listAvaiDualModelSearchConfig7);
-            state.listAvaiDualModelSearchConfig7 = [];
-        },
-        moveAllListSelectToAvaiGroupConfig7(state) {
-            state.listAvaiDualModelSearchConfig7.push.apply(state.listAvaiDualModelSearchConfig7, state.listSelectDualModelConfig7);
-            state.listSelectDualModelConfig7 = [];
-        },
-        moveItemToSelectGroupConfig7(state, item) {
-            state.listSelectDualModelConfig7.push(item);
-            var catalogs = state.listAvaiDualModelSearchConfig7;
-            catalogs = catalogs.filter((p) => p.VALUE != item.VALUE);
-            state.listAvaiDualModelSearchConfig7 = catalogs;
-        },
-        moveItemToAvaiGroupConfig7(state, item) {
-            state.listAvaiDualModelSearchConfig7.push(item);
-            var catalogs = state.listSelectDualModelConfig7;
-            catalogs = catalogs.filter((p) => p.VALUE != item.VALUE);
-            state.listSelectDualModelConfig7 = catalogs;
-        },
-        //dung cho config 43
-        UpdateListSelectConfig43(state, list) {
-            // if (list.length == 0) {
-            //     state.listAvaiDualConfig43 = [];
-            // } else {
-            //     var array = list;
-            //     var listSelect = state.listSelectDualConfig43;
-            //     array = list.filter(comparer(listSelect));
-            //     state.listAvaiDualConfig43 = array;
-            //     state.listAvaiDualGroupSearchConfig43 = array;
-            // }
-
-            if (!state.isSelectOne) {
-                if (list.length == 0) {
-                    state.listAvaiDualConfig43 = [];
-                } else {
-                    var array = list;
-                    var listSelect = state.listAvaiDualConfig43;
-                    array = list.filter(comparer(listSelect));
-                    state.listAvaiDualConfig43 = array;
-                    state.listAvaiDualGroupSearchConfig43 = array;
-                }
-            } else {
-                if (list.length == 0) {
-                    state.listAvaiDualConfig43 = [];
-                } else {
-                    if (state.listAvaiDualConfig43.length == 0) {
-                        array = list;
-                        listSelect = state.listAvaiDualConfig43;
-                        array = list.filter(comparer(listSelect));
-                        state.listAvaiDualConfig43 = array;
-                        state.listAvaiDualGroupSearchConfig43 = array;
-                    }
-                }
-            }
-        },
-        Config43ListSearchEqualAvaiGroup(state) {
-            var array = state.listAvaiDualConfig43;
-            var listSelect = state.listSelectDualConfig43;
-            array = array.filter(comparer(listSelect));
-            state.listAvaiDualGroupSearchConfig43 = array;
-        },
-        Config43FilterGroup(state, text) {
-            var catalogs = state.listAvaiDualConfig43;
-            catalogs = catalogs.filter(comparer(this.state.listSelectDualConfig43));
-            catalogs = catalogs.filter((p) => { if (p.VALUE.includes(text)) { return true; } return false; });
-            state.listAvaiDualGroupSearchConfig43 = catalogs;
-        },
-        moveAllListAvaiToSelectConfig43(state) {
-            state.listSelectDualConfig43.push.apply(state.listSelectDualConfig43, state.listAvaiDualGroupSearchConfig43);
-            state.listAvaiDualGroupSearchConfig43 = [];
-        },
-        moveAllListSelectToAvaiConfig43(state) {
-            state.listAvaiDualGroupSearchConfig43.push.apply(state.listAvaiDualGroupSearchConfig43, state.listSelectDualConfig43);
-            state.listSelectDualGroupConfig7 = [];
-        },
-        moveItemToSelectConfig43(state, item) {
-            state.listSelectDualConfig43.push(item);
-            var catalogs = state.listAvaiDualGroupSearchConfig43;
-            catalogs = catalogs.filter((p) => p.VALUE != item.VALUE);
-            state.listAvaiDualGroupSearchConfig43 = catalogs;
-        },
-        moveItemToAvaiConfig43(state, item) {
-            state.listAvaiDualGroupSearchConfig43.push(item);
-            var catalogs = state.listSelectDualConfig43;
-            catalogs = catalogs.filter((p) => p.VALUE != item.VALUE);
-            state.listSelectDualConfig43 = catalogs;
-        },
-        //end dung cho config 43
     },
     actions: {},
     modules: {}

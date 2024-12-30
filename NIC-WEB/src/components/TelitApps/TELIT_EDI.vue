@@ -72,7 +72,7 @@
             id="purchase-order"
             name="purchase-order"
             readonly
-            v-model="model.PURCHASE_ORDER"
+            v-model="model.F_PO"
           />
         </div>
         <div class="form-row">
@@ -83,7 +83,7 @@
             id="pip-type"
             name="pip-type"
             readonly
-            v-model="model.PIP_TYPE"
+            v-model="model.F_PIP_TYPE"
           />
         </div>
         <div class="form-row">
@@ -94,7 +94,7 @@
             id="item-no"
             name="item-no"
             readonly
-            v-model="model.ITEM_NO"
+            v-model="model.ITEM_INT"
           />
         </div>
         <div class="form-row">
@@ -150,7 +150,7 @@
               id="item"
               name="item"
               readonly
-              v-model="model.ITEM"
+              v-model="model.F_PO_ITEM"
             />
           </div>
           <div class="form-row">
@@ -176,7 +176,7 @@
             id="changed-on"
             name="changed-on"
             readonly
-            v-model="model.CHANGE_ON"
+            v-model="model.CHANGED_ON"
           />
         </div>
         <div class="form-row">
@@ -240,7 +240,7 @@
             </div>
             <div class="form-row-input" v-for="(row, index) in additionalRows" :key="index">
                 <label :for="`sched-deliv-date + ${index}`">Delivery Date:</label>
-                <input 
+                <input
                     type="date"
                     :id="`sched-deliv-date + ${index}`"
                     class="text-input"
@@ -249,7 +249,7 @@
                     v-model="row.minTime"
                 />
                 <label :for="`sched-qty + ${index}`">Schedule Qty:</label>
-                <input 
+                <input
                     type="text"
                     :id="`sched-qty + ${index}`"
                     class="text-input"
@@ -326,19 +326,31 @@
         model: {
             database_name: localStorage.databaseName,
             EMP_NO: localStorage.username,
-            PURCHASE_ORDER: '',
-            PIP_TYPE: '',
-            ITEM_NO: '',
+             F_ID: '', 
+             F_SITE: '', 
+             F_PIP_TYPE: '', 
+             F_MSGID: '', 
+             F_TIMESTAMP: '', 
+             F_VENDOR: '', 
+             F_PO: '', 
+             F_PO_ITEM: '', 
+             F_CONF_CTG: '',
+             F_REFERENCE: '', 
+             F_CREATION_DATE: '', 
+             F_LASTEDIT_DT: '', 
+             F_FILENAME: '', 
+            F_TIMES: '',
+            ITEM_INT: '',
             DOC_DATE: '',
             INCOTERMS: '',
             INCO_2: '',
             ITEM_PO: '',
-            ITEM: '',
             DELET_IND: '',
-            CHANGE_ON: '',
+            CHANGED_ON: '',
             QUANTITY: '',
             NET_PRICE: '',
             SHIPPING_NAME: '',
+            ///input
             SCHED_DELIV_DATE: '',
             SCHED_QTY: ''
         },
@@ -387,59 +399,54 @@
             }).then(async (willDelete) => {
                 if (willDelete.isConfirmed == false) return;
     
+                console.log("model.SCHED_QTY: ", this.model.SCHED_QTY, 'minTime: ', this.minTime);
+                const addRows = {minTime: this.minTime, scheduleQty: this.model.SCHED_QTY};
+
+                //console.log(this.additionalRows)
+              this.additionalRows.push(addRows);
+              console.log(this.additionalRows)
+
                 const filleredRows = this.additionalRows.map((row) => ({
                 ...row
                 })).filter(row => row.minTime || row.scheduleQty);
+
+
                 if(filleredRows.length === 0) {
                 this.$swal("", "No data to submit", "warning");
                 return;
                 }
-                // if(this.ShowDataTableOuterLpn.length !== filleredRows.length) {
-                // this.$swal("", "Please enter enough data.", "warning");
-                //     return;
-                // }
-                //logic: receiveQty + rejectQty == SHIPPEDQTY
-                // const invalidRows = filleredRows.filter(row => {
-    
-                // const receiveQty = parseInt(row.receiveQty) || 0;
-                // const rejectQty = parseInt(row.rejectQty) || 0;
-                // const SHIPPEDQTY = parseInt(row.SHIPPEDQTY) || 0;
+                console.log(filleredRows);
 
-                // return receiveQty + rejectQty !== SHIPPEDQTY;
-                // });
-            //     console.log(invalidRows)
-            // if (invalidRows.length > 0) {
-            //     this.$swal("", `ReceiveQty + RejectQty must equal ShippedQty, Lot no: ${invalidRows[0].LOT_NO}`, "warning");
-            //     return;
-            //     }
-    
+                // if(filleredRows.length > 0) {
+                //   console.log("ahihi;")
+                //   return;
+                // }
                 let payload = {
                 EMP_NO: localStorage.username,
                 database_name: localStorage.databaseName,
                 additionalRows: filleredRows,
                 data: [
                     {
-                    PURCHASE_ORDER: this.model.PURCHASE_ORDER,
-                    PIP_TYPE: this.model.PO_TYPE,
-                    ITEM_NO: this.model.ITEM_NO,
-                    DOC_DATE: this.model.TIME,
-                    INCOTERMS: this.model.INCOTERMS,
-                    INCO_2: this.model.INCO_2,
-                    ITEM_PO: this.model.ITEM_PO,
-                    ITEM: this.model.ITEM,
-                    DELET_IND: this.model.DELET_IND,
-                    CHANGE_ON: this.model.CHANGE_TIME,
-                    QUANTITY: this.model.QUANTITY,
-                    NET_PRICE: this.model.NET_PRICE,
-                    SHIPPING_NAME: this.model.SHIPPING_ADDRESS,
-                    SCHED_QTY: this.model.SCHED_QTY,
-                    SCHED_DELIV_DATE: this.model.SCHED_DELIV_DATE
+                      F_ID: this.model.F_ID, 
+                      F_SITE: this.model.F_SITE, 
+                      F_PIP_TYPE: this.model.F_PIP_TYPE, 
+                      F_MSGID: this.model.F_MSGID, 
+                      F_TIMESTAMP: this.model.F_TIMESTAMP, 
+                      F_VENDOR: this.model.F_VENDOR, 
+                      F_PO: this.model.F_PO, 
+                      F_PO_ITEM: this.model.F_PO_ITEM, 
+                      F_CONF_CTG: this.model.F_CONF_CTG, 
+                      F_REFERENCE: this.model.F_REFERENCE, 
+                      F_CREATION_DATE: this.model.F_CREATION_DATE, 
+                      F_LASTEDIT_DT: this.model.F_LASTEDIT_DT, 
+                      F_FILENAME: this.model.F_FILENAME, 
+                      F_TIMES: this.model.F_TIMES
                     }
                 ]
                 };
                 console.log("payload: ", payload);
                 try {
-                let { data } = await Repository.getRepo("InsertQReceipt", payload);
+                let { data } = await Repository.getRepo("InsertTelitEDI", payload);
                 if (data.result == "ok") {
                     this.ClearForm();
                     this.$swal("", "Successfully applied", "success");
@@ -457,13 +464,13 @@
         },
       async LoadComponent() {
         let databaseName = localStorage.databaseName;
-        let PURCHASE_ORDER = this.valueSearch;
+        let F_PO = this.valueSearch;
         let showTimeForm = this.showTimeForm;
         const dateFrom = new Date;
         const dateTo = new Date;
         try {
           let { data } = await Repository.getApiServer(
-           `GetDataTelitEDI?database_name=${databaseName}&PURCHASE_ORDER=${PURCHASE_ORDER}&dateFrom=${dateFrom}&dateTo=${dateTo}&showTimeForm=${showTimeForm}`
+           `GetDataTelitEDI?database_name=${databaseName}&F_PO=${F_PO}&dateFrom=${dateFrom}&dateTo=${dateTo}&showTimeForm=${showTimeForm}`
           );
           this.DataTable = [];
           this.DataTable = data.data;
@@ -488,11 +495,11 @@
         const dateFrom = formatDate(this.dateFrom);
         const dateTo = formatDate(this.dateTo);
         let databaseName = localStorage.databaseName;
-        let PURCHASE_ORDER = this.valueSearch;
+        let F_PO = this.valueSearch;
         let showTimeForm = this.showTimeForm;
         try {
           let { data } = await Repository.getApiServer(
-            `GetDataTelitEDI?database_name=${databaseName}&PURCHASE_ORDER=${PURCHASE_ORDER}&dateFrom=${dateFrom}&dateTo=${dateTo}&showTimeForm=${showTimeForm}`
+            `GetDataTelitEDI?database_name=${databaseName}&F_PO=${F_PO}&dateFrom=${dateFrom}&dateTo=${dateTo}&showTimeForm=${showTimeForm}`
           );
           this.DataTable = [];
           this.DataTableHeader = [];
@@ -510,28 +517,38 @@
       },
       async ShowDetail(index) {
         let databaseName = localStorage.databaseName;
-        let PURCHASE_ORDER = this.DataTable[index].PURCHASE_ORDER;
+        let F_PO = this.DataTable[index].PURCHASE_ORDER;
         try {
           let responseData = await Repository.getApiServer(
-            `GetShowDetailTelitEDI?database_name=${databaseName}&PURCHASE_ORDER=${PURCHASE_ORDER}`
+            `GetShowDetailTelitEDI?database_name=${databaseName}&F_PO=${F_PO}`
           );
-          this.ShowDataDetail = [];
           this.ShowDataDetail = responseData.data.data;
           if (this.ShowDataDetail.length > 0) {
             let firstItem = this.ShowDataDetail[0];
-            this.model.PURCHASE_ORDER = firstItem.PURCHASE_ORDER;
-            this.model.PIP_TYPE = firstItem.PO_TYPE;
-            this.model.ITEM_NO = firstItem.ITEM_NO;
-            this.model.DOC_DATE = firstItem.TIME;
-            this.model.INCOTERMS = firstItem.INCOTERMS;
-            this.model.INCO_2 = firstItem.INCO_2;
-            this.model.ITEM_PO = firstItem.ITEM_PO;
-            this.model.ITEM = firstItem.ITEM;
-            this.model.DELET_IND = firstItem.DELET_IND;
-            this.model.CHANGE_ON = firstItem.CHANGE_TIME;
-            this.model.QUANTITY = firstItem.QUANTITY;
-            this.model.NET_PRICE = firstItem.NET_PRICE;
-            this.model.SHIPPING_NAME = firstItem.SHIPPING_ADDRESS;
+            this.model.F_ID = firstItem.F_ID;
+            this.model.F_SITE = firstItem.F_SITE
+            this.model.F_PIP_TYPE = firstItem.F_PIP_TYPE
+            this.model.F_MSGID = firstItem.F_MSGID
+            this.model.F_TIMESTAMP = firstItem.F_TIMESTAMP
+            this.model.F_VENDOR = firstItem.F_VENDOR
+            this.model.F_PO = firstItem.F_PO
+            this.model.F_PO_ITEM = firstItem.F_PO_ITEM
+            this.model.F_CONF_CTG = firstItem.F_CONF_CTG
+            this.model.F_REFERENCE = firstItem.F_REFERENCE
+            this.model.F_CREATION_DATE = firstItem.F_CREATION_DATE
+            this.model.F_LASTEDIT_DT = firstItem.F_LASTEDIT_DT
+            this.model.F_FILENAME = firstItem.F_FILENAME
+            this.model.F_TIMES = firstItem.F_TIMES
+            this.model.ITEM_INT = firstItem.ITEM_INT
+            this.model.DOC_DATE = firstItem.DOC_DATE
+            this.model.INCOTERMS = firstItem.INCOTERMS
+            this.model.INCO_2 = firstItem.INCO_2
+            this.model.ITEM_PO = firstItem.ITEM_PO
+            this.model.DELET_IND = firstItem.DELET_IND
+            this.model.CHANGED_ON = firstItem.CHANGED_ON
+            this.model.QUANTITY = firstItem.QUANTITY
+            this.model.NET_PRICE = firstItem.NET_PRICE
+            this.model.SHIPPING_NAME = firstItem.SHIPPING_NAME
             this.isShowForm = true;
           } else {
             this.isShowForm = false;
@@ -594,7 +611,7 @@
       },
       ClearForm() {
         this.isShowForm = false;
-        this.model.PURCHASE_ORDER = "";
+        this.model.F_PO = "";
         this.isShowSubmitForm = true;
         this.selectOptions = [];
         this.selectReceiveQty = [];

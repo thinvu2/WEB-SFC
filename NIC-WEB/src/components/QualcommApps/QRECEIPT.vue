@@ -702,12 +702,6 @@ export default {
         }).then(async (willDelete) => {
           if (willDelete.isConfirmed == false) return;
 
-          const ahihi = this.rowsInnerBox.forEach((item) => {
-             if(item.rejectQty > 0 && item.reason ==='') {
-              return
-             }
-          })
-
           const filleredRows = this.rowsInnerBox.map((row, index) => ({
             ...row,
             LOT_NO: this.ShowDataTableOuterLpn[index].LOT_NO,
@@ -722,17 +716,42 @@ export default {
             this.$swal("", "Please enter enough data.", "warning");
               return;
           }
-          const invalidRows = filleredRows.filter(row => {
-            const receiveQty = row.receiveQty;
-            const rejectQty = row.rejectQty;
-            const SHIPPEDQTY = parseInt(row.SHIPPEDQTY);
-            return receiveQty + rejectQty !== SHIPPEDQTY;
+          this.isInputReason = false;
+          const invalidRows = [];
+         filleredRows.forEach(row => {
+          const receiveQty = parseInt(row.receiveQty) || 0;
+          const rejectQty = parseInt(row.rejectQty) || 0;
+          const SHIPPEDQTY = parseInt(row.SHIPPEDQTY) || 0;
+          const reason = row.reason;
+          const LOT_NO = row.LOT_NO;
+
+          row = { receiveQty, rejectQty, SHIPPEDQTY, reason, LOT_NO };
+
+          console.log(typeof(rejectQty))
+            if(rejectQty > 0 && reason ==='') {
+              this.isInputReason = true;
+              invalidRows.push({...row, errorType: 'MISSING_REASON'});
+              //return;
+             }
+             else if(receiveQty + rejectQty !== SHIPPEDQTY) {
+              console.log(receiveQty, rejectQty, parseInt(SHIPPEDQTY));
+              //invalidRows.push(row);
+              invalidRows.push({...row, errorType: 'MISMATCH_QTY'});
+             }
+            //return receiveQty + rejectQty !== SHIPPEDQTY;
           });
           //console.log(invalidRows)
-
-         if (invalidRows.length > 0) {
-            this.$swal("", `ReceiveQty + RejectQty must equal ShippedQty, Lot no: ${invalidRows[0].LOT_NO}`, "warning");
-            return;
+          if(invalidRows.length > 0) {
+            const missingReason = invalidRows.filter(row => row.errorType === 'MISSING_REASON').map(row => row.LOT_NO).join(", ");
+            if(missingReason) {
+              this.$swal("", `Reason is not null, Lot no: ${missingReason}`, "warning");
+                return;
+            }
+            const misMatchQty = invalidRows.filter(row => row.errorType === 'MISMATCH_QTY').map(row => row.LOT_NO).join(", ");
+            if(misMatchQty) {
+              this.$swal("", `ReceiveQty + RejectQty must equal ShippedQty, Lot no: ${misMatchQty}`, "warning");
+              return;
+            }
           }
           let payload = {
             EMP_NO: localStorage.username,
