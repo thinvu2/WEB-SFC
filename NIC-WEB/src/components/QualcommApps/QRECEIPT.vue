@@ -707,7 +707,7 @@ export default {
             LOT_NO: this.ShowDataTableOuterLpn[index].LOT_NO,
             SHIPPEDQTY: this.ShowDataTableOuterLpn[index].SHIPPEDQTY
           })).filter(row => row.receiveQty || row.rejectQty || row.reason);
-         // console.log(filleredRows);
+
           if(filleredRows.length === 0) {
             this.$swal("", "No data to submit", "warning");
             return;
@@ -727,20 +727,17 @@ export default {
 
           row = { receiveQty, rejectQty, SHIPPEDQTY, reason, LOT_NO };
 
-          console.log(typeof(rejectQty))
             if(rejectQty > 0 && reason ==='') {
               this.isInputReason = true;
               invalidRows.push({...row, errorType: 'MISSING_REASON'});
               //return;
              }
              else if(receiveQty + rejectQty !== SHIPPEDQTY) {
-              console.log(receiveQty, rejectQty, parseInt(SHIPPEDQTY));
-              //invalidRows.push(row);
+
               invalidRows.push({...row, errorType: 'MISMATCH_QTY'});
              }
             //return receiveQty + rejectQty !== SHIPPEDQTY;
           });
-          //console.log(invalidRows)
           if(invalidRows.length > 0) {
             const missingReason = invalidRows.filter(row => row.errorType === 'MISSING_REASON').map(row => row.LOT_NO).join(", ");
             if(missingReason) {
@@ -796,7 +793,6 @@ export default {
               }
             ]
           };
-          console.log("payload: ", payload);
           try {
             let { data } = await Repository.getRepo("InsertQReceipt", payload);
             if (data.result == "ok") {

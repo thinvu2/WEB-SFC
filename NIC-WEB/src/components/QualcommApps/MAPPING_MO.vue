@@ -13,22 +13,20 @@
     </header>
     <main>
       <div class="container">
-        <form @submit.prevent="saveData">
           <div class="div-searchbox row">
             <div class="div-searchbox-content">
               <input
-                v-on:keyup.enter="QuerySearch()"
+              v-on:keyup.enter="querySearch()"
                 v-model="valueSearch"
                 type="text"
                 class="form-control"
-                @click="selectAll"
                 :placeholder="
                   $store.state.language == 'En'
                     ? 'Enter Lot no...'
                     : 'Nhập Lot no...'
                 "
               />
-              <button @click="QuerySearch()" class="btn">
+              <button @click="querySearch()" class="btn">
                 <Icon icon="search" class="sidenav-icon" />
               </button>
             </div>
@@ -64,7 +62,7 @@
           <button @click="saveData" class="submit" type="button">Submit</button>
 
           <div class="data-table">
-            <table class="tableMain">
+            <table class="table-main">
               <thead>
                 <tr>
                   <th v-for="(item, index) in dataTableHeader" :key="index">
@@ -73,15 +71,16 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(item2, index2) in dataTable" :key="index2">
-                  <td v-for="(item3, index3) in item2" :key="index3">
-                    {{ item3 }}
+                <tr v-for="(item, index) in dataTable" :key="index" >
+                <template v-for="(value, key) in item" :key="key">
+                  <td>
+                    {{ value }}
                   </td>
-                </tr>
+                </template>
+              </tr>
               </tbody>
             </table>
           </div>
-        </form>
       </div>
     </main>
   </div>
@@ -110,10 +109,29 @@ export default {
     };
   },
 
-  mounted() {
+  // watch: {
+  //   valueSearch() {
+  //       this.loadDataTable();
+  //     }
+  //   },
+
+    mounted() {
     this.loadDataTable();
   },
+
   computed: {
+    // filteredLotNo() {
+    //     if(!Array.isArray(this.dataTable)) {
+    //       console.error('ListDataTable is not an array: ', this.dataTable);
+    //      return [];
+    //     }
+    //     const query = this.valueSearch.toLowerCase()
+    //       const result = this.dataTable.filter(listData => {
+    //        return listData.LOT_NO.toLowerCase().includes(query)
+    //       });
+    //       console.log(result)
+    //       return result;
+    //   },
     filterLotNo: function() {
       const query = this.searchText.toLowerCase();
       if (query.length < 3) return this.dataTableLotNo;
@@ -146,16 +164,42 @@ export default {
     updateMoNumber(value) {
       this.model.MO_NUMBER = value;
     },
-
+    async querySearch() {
+      let database_name = localStorage.databaseName;
+      let EMP_NO = this.model.EMP_NO;
+      let IN_ACTION_TYPE = "GET_GRID";
+      let LOT_NO = this.model.LOT_NO;
+      let MO_NUMBER = this.model.MO_NUMBER;
+      let valueSearch = this.valueSearch;
+      console.log(IN_ACTION_TYPE, "valueSearch: ",valueSearch)
+      try {
+        const { data } = await Repository.getApiServer(
+          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
+        );
+        this.dataTable = data.data;
+        if (typeof this.dataTable != "undefined") {
+          if (this.dataTable.length != 0) {
+            this.dataTableHeader = Object.keys(this.dataTable[0]);
+          }
+        }
+      } catch (error) {
+        this.$swal("error ex", error, "error");
+      }
+    },
     async saveData() {
       let database_name = localStorage.databaseName;
       let EMP_NO = this.model.EMP_NO;
       let IN_ACTION_TYPE = "LINK";
       let LOT_NO = this.model.LOT_NO;
       let MO_NUMBER = this.model.MO_NUMBER;
+      let valueSearch = this.valueSearch;
+      if(!LOT_NO || !MO_NUMBER) {
+        this.$swal("", "Please input Lot no and Mo!", "warning");
+        return;
+      }
       try {
         const { data } = await Repository.getApiServer(
-          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}`
+          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
         );
         if (data.result == "ok") {
           this.$swal("", "Successfully applied", "success");
@@ -163,7 +207,6 @@ export default {
         } else {
           this.$swal("", data.data, "error");
         }
-        await this.clearForm();
       } catch (error) {
         this.$swal("error ex", error, "error");
       }
@@ -174,9 +217,11 @@ export default {
       let IN_ACTION_TYPE = "GET_GRID";
       let LOT_NO = this.model.LOT_NO;
       let MO_NUMBER = this.model.MO_NUMBER;
+      let valueSearch = this.valueSearch;
+      console.log("valueSearch: ", valueSearch, 'MO_NUMBER: ', MO_NUMBER);
       try {
         const { data } = await Repository.getApiServer(
-          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}`
+          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
         );
         this.dataTable = data.data;
         if (typeof this.dataTable != "undefined") {
@@ -194,9 +239,10 @@ export default {
       let IN_ACTION_TYPE = "GET_LOTNO";
       let LOT_NO = this.model.LOT_NO;
       let MO_NUMBER = this.model.MO_NUMBER;
+      let valueSearch = this.valueSearch;
       try {
         const { data } = await Repository.getApiServer(
-          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}`
+          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
         );
         this.dataTableLotNo = [];
         data.data.forEach((element) => {
@@ -212,9 +258,14 @@ export default {
       let IN_ACTION_TYPE = "GET_MO";
       let LOT_NO = this.model.LOT_NO;
       let MO_NUMBER = this.model.MO_NUMBER;
+      let valueSearch = this.valueSearch;
+      if(!LOT_NO) {
+        this.$swal("", "Please input Lot no first!", "warning");
+        return;
+      }
       try {
         const { data } = await Repository.getApiServer(
-          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}`
+          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
         );
         console.log("data.data: ", data.data);
         this.dataTableMoNumber = [];
@@ -226,8 +277,10 @@ export default {
       }
     },
     clearForm() {
-      this.model.MO_NUMBER = "";
-      this.model.LOT_NO = "";
+      this.model.MO_NUMBER = '';
+      this.model.LOT_NO = '';
+      this.dataTableLotNo = [];
+      this.dataTableMoNumber = [];
       this.loadDataTable();
     },
     BackToParent() {
@@ -278,7 +331,11 @@ body {
 h1 {
   text-align: center;
   color: #333330;
-  font-weight: bold;
+  //font-weight: bold;
+  font-size: 35px;
+  font-family: serif;
+  font-style: italic;
+  margin-top: 0;
 }
 .div-searchbox {
   margin-top: 15px;
@@ -308,37 +365,23 @@ h1 {
     }
   }
 }
-/* main{
-    display: grid;
-    justify-content: center;
-    max-height: 400px;
-    grid-template-columns: 20% 40%;
-    gap: 20px;
-  
-  } */
-//   form input{
-//     width: 100%;
-//     padding: 12px;
-//     font-size: 1rem;
-//     border: 1px solid #ccc;
-//     border-radius: 4px;
-//     box-sizing: border-box;
-//     margin-top: 6px;
-//     margin-bottom: 16px;
-//     resize: vertical;
-//   }
-
 label {
   color: rgb(0, 0, 0);
   font-size: 1rem;
   font-weight: bold;
+  float: left;
+  margin-right: 5px;
+}
+
+.dropdown-wrapper {
+  z-index: 3;
 }
 
 .container {
   border-radius: 5px;
   background-color: rgb(235 235 235);;
   padding: 20px;
-  width: 70%;
+  width: 90%;
   height: auto;
 }
 
@@ -366,18 +409,20 @@ label {
 
 /* start */
 .data-table {
-  position: sticky;
-  z-index: 1;
-  margin-top: 20px;
+  //position: sticky;
+  //z-index: 1;
+  //margin-top: 20px;
   width: 100%;
+  max-height: 400px;
+  overflow-x: hidden;
 }
 
-table {
+.table-main {
   font-family: arial, sans-serif;
   border-collapse: collapse;
   width: 100%;
 }
-table td,
+.table-main td,
 th {
   text-align: left;
   padding: 8px;
