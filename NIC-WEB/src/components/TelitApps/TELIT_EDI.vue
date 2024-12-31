@@ -441,6 +441,7 @@ export default {
           this.$swal("", "No data to submit", "warning");
           return;
         }
+        //sum qty
         let sumScheduleQty = 0;
         let QUANTITY = parseInt(this.ShowDataDetail[0].QUANTITY);
         for (let item of filleredRows) {
