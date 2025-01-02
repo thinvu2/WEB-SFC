@@ -23,7 +23,7 @@
         </button>
       </div>
       <!-- datepicker -->
-      <div class="searchbox-timerange">
+      <!-- <div class="searchbox-timerange">
         <div class="showTimeForm">
           <input id="showTimeForm" type="checkbox" v-model="showTimeForm" />
         </div>
@@ -43,21 +43,7 @@
             :lowerLimit="dateFrom"
           />
         </div>
-      </div>
-    </div>
-    <div class="export-excel" v-if="!isShowForm">
-      <img
-        @click="exportexcelxlsx()"
-        class="img-excel"
-        src="assets/img/xlsx-icon.jpg"
-        alt=""
-      />
-      <img
-        @click="exportExcel()"
-        class="img-excel"
-        src="assets/img/excel_64.png"
-        alt=""
-      />
+      </div> -->
     </div>
     <!-- Form input data -->
     <div class="container" v-if="isShowForm === true">
@@ -319,7 +305,6 @@
   </div>
 </template>
 <script>
-import xlsx from "xlsx";
 import Repository from "../../services/Repository";
 export default {
   data() {
@@ -600,51 +585,6 @@ export default {
         }
       }
     },
-    exportexcelxlsx() {
-      const filteredData = this.DataTable.map((element) => {
-        return Object.keys(element).reduce((acc, key) => {
-          if (key !== "FLAG" && key !== "F_ID" && key !== "STATUS") {
-            acc[key] = element[key];
-          }
-          return acc;
-        }, {});
-      });
-      let ws = xlsx.utils.json_to_sheet(filteredData);
-      /* add to workbook */
-      let wb = xlsx.utils.book_new();
-      xlsx.utils.book_append_sheet(wb, ws, "data");
-      /* generate an XLSX file */
-      xlsx.writeFile(wb, "download.xlsx");
-    },
-    exportExcel() {
-      const filteredData = this.DataTable.map((element) => {
-        return Object.keys(element).reduce((acc, key) => {
-          if (key !== "FLAG" && key !== "F_ID" && key !== "STATUS") {
-            acc[key] = element[key];
-          }
-          return acc;
-        }, {});
-      });
-      const items = filteredData;
-      const replacer = (key, value) => (value === null ? "" : value);
-      const header = Object.keys(items[0]);
-      const csv = [
-        header.join(","), // header row first
-        ...items.map((row) =>
-          header
-            .map((fieldName) => JSON.stringify(row[fieldName], replacer))
-            .join(",")
-        ),
-      ].join("\r\n");
-      let downloadLink = document.createElement("a");
-      let blob = new Blob(["\ufeff", csv]);
-      let url = URL.createObjectURL(blob);
-      downloadLink.href = url;
-      downloadLink.download = "data.csv";
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-    },
     pad(number) {
       return number < 10 ? `0${number}` : `${number}`;
     },
@@ -771,20 +711,20 @@ export default {
 }
 .container {
   display: grid;
-  grid-template-rows: 50px repeat(5, 35px) auto;
+  grid-template-rows: 50px repeat(3, 35px) 5px repeat(2, 35px) auto;
   grid-template-columns: repeat(3, 1fr);
   align-content: space-around;
   box-sizing: border-box;
   background-color: #e6e6e2;
-  padding: 0 20px 0px 20px;
+  padding: 0 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
   font-size: 16px;
   border-radius: 5px;
   width: 80%;
   overflow: auto;
-  height: 600px;
-  row-gap: 5px;
+  max-height: 500px;
+  row-gap: 15px;
   .text-input {
     width: 50%;
     padding: 5px;
@@ -814,7 +754,7 @@ export default {
   grid-template-rows: auto;
   grid-template-columns: 1fr;
   width: 100%;
-  border: 1px solid rgb(63, 62, 61);
+  border: 1px solid #a19c9c;
   position: relative;
   border-radius: 5px;
 }
@@ -823,6 +763,7 @@ export default {
   justify-content: flex-start;
   align-items: center;
   width: 100%;
+  margin-top: 5px;
 }
 .form-row-input .text-input {
   width: 25%;

@@ -20,7 +20,10 @@ namespace SN_API.Controllers.QualcommApps
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class QReceiptController : ApiController
     {
-            [System.Web.Http.Route("GetLoadFormQReceipt")]
+        public object Z { get; private set; }
+        public object T { get; private set; }
+
+        [System.Web.Http.Route("GetLoadFormQReceipt")]
             [System.Web.Http.HttpGet]
             public async Task<HttpResponseMessage> GetLoadFormQReceipt(string database_name)
             {
@@ -82,7 +85,7 @@ namespace SN_API.Controllers.QualcommApps
                     string strGetDataTableOuterLPN = "";
                     //string strGetDataTableInnerLPN = "";
                     //string strGetDataReceiptAddress = "";
-                    strGetData = $@"select distinct SITE, PIP_TYPE,  PO_TYPE,CREAT_TIME,MSG_ID, 'FOXCONN' MSG_SENDER_NAME, MSG_RECEIVER_DUNS as MSG_SENDER_DUNS, 'QUALCOMM'MSG_RECEIVER_NAME, MSG_SENDER_DUNS as MSG_RECEIVER_DUNS,
+                    strGetData = $@"select distinct SITE, PIP_TYPE, PO_TYPE, CREAT_TIME, MSG_ID, 'FOXCONN' MSG_SENDER_NAME, MSG_RECEIVER_DUNS as MSG_SENDER_DUNS, 'QUALCOMM'MSG_RECEIVER_NAME, MSG_SENDER_DUNS as MSG_RECEIVER_DUNS,
                               PACKSLIP_NO, AIRWAYBILL as SHIP_MCMN_AIRWAYBILL, FREIGHT_CARRIER_CODE as SHIP_MCMN_FREIGHT_CARRIER_CODE, ''IMPORT_PERMIT_NO,
                              SHIP_MCMN_LOCATIONNAME as LOCATION_CODE, 'Jordan Li / 852-39749099'F_NAME,RECEIVER_DUNS, RECEIVER_DUNS4, sysdate + 1/24 as DATE_TIME, 'Bang Tai International Logistics Co., Limited' SHIP_MCMN_LOCATIONNAME,
                              'Yuen Long'SHIP_MCMN_CITY, 'HK'SHIP_MCMN_COUNTRYCODE, '000000'SHIP_MCMN_POSTALCODE, 'Ware House A, DD118, LOT 1120 RP Yau Cha Po Village, Tai Shu Ha West Road, Yuen Long, N.T., HK'SHIP_MCMN_ADDR1, 
@@ -146,7 +149,6 @@ namespace SN_API.Controllers.QualcommApps
                 {
                     return Request.CreateResponse(HttpStatusCode.OK, new { result = "This emp has no privilege" });
                 }
-
                 JArray data = (JArray)model["data"];
                 JArray rowsInnerBox = (JArray)model["rowsInnerBox"];
                 foreach (var rows in rowsInnerBox)
@@ -159,7 +161,7 @@ namespace SN_API.Controllers.QualcommApps
                         }
                         catch (Exception ex)
                         {
-                            //Debug.WriteLine($"Error: {ex.Message}");
+                            Debug.WriteLine($"Error: {ex.Message}");
                             //Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
                         }
                     }
@@ -211,16 +213,19 @@ namespace SN_API.Controllers.QualcommApps
                 var innerBoxShipmcmnReceivedQty = item["INNERBOX_SHIP_MCMN_RECEIVEDQTY"]?.ToString();
                 var lastEditTime = item["LAST_EDIT_TIME"]?.ToString();
                 var lotNo = rows["LOT_NO"]?.ToString() ?? string.Empty;
-                var innerBoxShipmcmnAcceptedQty = rows["receiveQty"]?.ToString();
-                var innerBoxmcmnRejectQty = rows["rejectQty"]?.ToString();
+                var innerBoxShipmcmnAcceptedQty = rows["receiveQty"]?.ToString() ?? string.Empty;
+                var innerBoxmcmnRejectQty = rows["rejectQty"]?.ToString() ?? string.Empty;
                 var reason = rows["reason"]?.ToString() ?? string.Empty;
+                var shippedQty = rows["SHIPPEDQTY"]?.ToString() ?? string.Empty;
                 string updateQAsn_in = $"update SFISM4.R_QASN_IN set flag = '1' where PACKSLIP_NO = :packSlipNo";
                 string insertQReceipt = $@"INSERT INTO SFISM4.R_QRECEIPT_OUT (SITE, PIP_TYPE, PO_TYPE, CREAT_TIME, MSG_ID, MSG_SENDER_NAME, MSG_SENDER_DUNS, MSG_RECEIVER_NAME, MSG_RECEIVER_DUNS, PACKSLIP_NO, SHIP_MCMN_AIRWAYBILL, SHIP_MCMN_FREIGHT_CARRIER_CODE, IMPORT_PERMIT_NO, 
                                                 LOCATION_CODE, F_NAME, RECEIVER_DUNS, RECEIVER_DUNS4, DATE_TIME, SHIP_MCMN_LOCATIONNAME, SHIP_MCMN_CITY, SHIP_MCMN_COUNTRYCODE, SHIP_MCMN_POSTALCODE, SHIP_MCMN_ADDR1, SHIP_MCMN_ADDR2, SHIP_MCMN_ADDR3, 
                                                 PO_NO, PO_LINE, ITEMSHIP_MCMN_UNITOFMEASURE, ITEMSHIP_MCMN_NO, ITEMSHIP_MCMN_RECEIVEDQTY, ITEMSHIP_MCMN_ACCEPTEDQTY, INNERBOX_SHIP_MCMN_LPN, INNERBOX_SHIP_MCMN_RECEIVEDQTY, LAST_EDIT_TIME, LOT_NO, INNERBOX_SHIP_MCMN_ACCEPTEDQTY, INNERBOX_MCMN_REJECTQTY, REASON) 
-                                           VALUES (:site, :pipType, :poType, to_date(:creatTime,'YYYY/MM/DD HH24:MI:SS'), :msgId, :msgSenderName, :msgSenderDuns, :msgReceiverName, :msgReceiverDuns, :packSlipNo, :shipmcmnAirwayBill, :shipmcmnFreightCarrierCode, :importPermitNo,
+                                           VALUES (:site, :pipType, :poType, TO_CHAR(systimestamp, 'YYYY-MM-DD""T""HH24:MI:SS.FF3""Z""'), :msgId, :msgSenderName, :msgSenderDuns, :msgReceiverName, :msgReceiverDuns, :packSlipNo, :shipmcmnAirwayBill, :shipmcmnFreightCarrierCode, :importPermitNo,
                                                 :locationCode, :fName, :receiverDuns, :receiverDuns4, to_date(:dateTime,'YYYY/MM/DD HH24:MI:SS'), :shipmcmnLocationName, :shipmcmnCity, :shipmcmnCountryCode, :shipmcmnPostalCode, :shipmcmnAddr1, :shipmcmnAddr2, :shipmcmnAddr3, 
-                                                :poNo, :poLine, :itemShipmcmnUnitOfMeasure, :itemShipmcmnNo, :itemShipmcmnReceivedQty, :itemShipmcmnAcceptedQty, :innerBoxShipmcmnLpn, :innerBoxShipmcmnReceivedQty, to_date(:lastEditTime,'YYYY/MM/DD HH24:MI:SS'), :lotNo, :innerBoxShipmcmnAcceptedQty, :innerBoxmcmnRejectQty, :reason)";
+                                                :poNo, :poLine, :itemShipmcmnUnitOfMeasure, :itemShipmcmnNo, :itemShipmcmnReceivedQty, :itemShipmcmnAcceptedQty, :innerBoxShipmcmnLpn, :innerBoxShipmcmnReceivedQty, sysdate, :lotNo, :innerBoxShipmcmnAcceptedQty, :innerBoxmcmnRejectQty, :reason)";
+                string checkExistsProcedure = "SFIS1.SP_ADD_TRANS";
+                string procedureResult = "";
                 var connectionString = new GetString().Get()[databaseName];
                 using (var connection = new OracleConnection(connectionString))
                 {
@@ -231,12 +236,28 @@ namespace SN_API.Controllers.QualcommApps
                         commandQAsn.Parameters.Add(new OracleParameter("packSlipNo", packSlipNo));
                         await commandQAsn.ExecuteNonQueryAsync();
                     }
+
+                        using (var command = new OracleCommand(checkExistsProcedure, connection))
+                        {
+                            command.CommandType = CommandType.StoredProcedure;
+                            command.Parameters.Add("IN_TRANSACTIONS", OracleDbType.Varchar2).Value = "InventoryReceiptTransaction";
+                            command.Parameters.Add("IN_REASON", OracleDbType.Varchar2).Value = null;
+                            command.Parameters.Add("IN_LOTNO", OracleDbType.Varchar2).Value = lotNo;
+                            command.Parameters.Add("IN_QTY", OracleDbType.Int32).Value = shippedQty;
+                            command.Parameters.Add("IN_STAGE_OUT", OracleDbType.Varchar2).Value = null;
+                            command.Parameters.Add("IN_STAGE_IN", OracleDbType.Varchar2).Value = null;
+                            command.Parameters.Add("RES", OracleDbType.Varchar2, 100).Direction = ParameterDirection.Output;
+                            await command.ExecuteNonQueryAsync();
+                            procedureResult = command.Parameters["RES"].Value.ToString();
+                        }
+
                     using (var command = new OracleCommand(insertQReceipt, connection))
                     {
                         command.Parameters.Add(new OracleParameter("site", site));
                         command.Parameters.Add(new OracleParameter("pipType", pipType));
                         command.Parameters.Add(new OracleParameter("poType", poType));
-                        command.Parameters.Add(new OracleParameter("creatTime", creatTime));
+                        //sysdate - 7/24
+                        //command.Parameters.Add(new OracleParameter("creatTime", creatTime));
                         command.Parameters.Add(new OracleParameter("msgId", msgId));
                         command.Parameters.Add(new OracleParameter("msgSenderName", msgSenderName));
                         command.Parameters.Add(new OracleParameter("msgSenderDuns", msgSenderDuns));
@@ -266,7 +287,8 @@ namespace SN_API.Controllers.QualcommApps
                         command.Parameters.Add(new OracleParameter("itemShipmcmnAcceptedQty", itemShipmcmnAcceptedQty));
                         command.Parameters.Add(new OracleParameter("innerBoxShipmcmnLpn", innerBoxShipmcmnLpn));
                         command.Parameters.Add(new OracleParameter("innerBoxShipmcmnReceivedQty", innerBoxShipmcmnReceivedQty));
-                        command.Parameters.Add(new OracleParameter("lastEditTime", lastEditTime));
+                        //sysdate
+                        //command.Parameters.Add(new OracleParameter("lastEditTime", lastEditTime));
                         command.Parameters.Add(new OracleParameter("lotNo", lotNo));
                         command.Parameters.Add(new OracleParameter("innerBoxShipmcmnAcceptedQty", innerBoxShipmcmnAcceptedQty));
                         command.Parameters.Add(new OracleParameter("innerBoxmcmnRejectQty", innerBoxmcmnRejectQty));

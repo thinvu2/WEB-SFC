@@ -108,5 +108,28 @@ namespace SN_API.Controllers
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
             }
         }
+        [System.Web.Http.Route("GetPrivilegeLeftNav")]
+        [System.Web.Http.HttpGet]
+        public async Task<HttpResponseMessage> GetPrivilegeLeftNav(string database_name, string emp_no)
+        {
+            try
+            {
+                string strGetData = $@"SELECT 'NIC' as value, instr(OWNER, 'NIC') as key FROM
+                                        SFIS1.C_EMP_DESC_T where emp_no = '{emp_no}'
+                                        union all
+                                        select 'TELIT' as value, instr(OWNER, 'TELIT') as key from
+                                         SFIS1.C_EMP_DESC_T  where emp_no = '{emp_no}'
+                                        union all
+                                         select 'QUALCOMM' as value, instr(OWNER, 'QUALCOMM') as key from
+                                         SFIS1.C_EMP_DESC_T  where emp_no = '{emp_no}'";
+                DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
+                return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
+            }
+        }
+
     }
 }
