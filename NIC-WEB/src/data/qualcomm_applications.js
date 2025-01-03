@@ -30,8 +30,8 @@ let QualcommApplications = [
                     Style: "background-color: rgb(255 255 255); border: 3px solid rgb(255 255 255); box-shadow: 2px 2px 2px #919191; "
                 },
                 {
-                    Name: 'BasicConfig',
-                    Route: "/Home/ConfigApp/BasicConfig",
+                    Name: 'Receipt Config',
+                    Route: "/Home/ConfigApp/ReceiptConfig",
                     Image: "assets/img/mapping.png",
                     Style: "background-color: rgb(255 255 255); border: 3px solid rgb(255 255 255); box-shadow: 2px 2px 2px #919191; "
                 }

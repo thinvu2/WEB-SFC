@@ -1016,7 +1016,7 @@ export default {
   border-radius: 5px;
   width: 80%;
   overflow: auto;
-  height: 600px;
+  //height: 600px;
   row-gap: 5px;
   .text-input {
     width: 55%;
@@ -1283,7 +1283,8 @@ input#return-form {
   }
 }
 .main-contain {
-  height: 500px;
+  //height: 500px;
+  max-height: 100vh;
   overflow: auto;
 }
 .mytable {

@@ -1094,7 +1094,7 @@ export default {
     exportexcelxlsx() {
       const filteredData = this.DataTable.map((element) => {
         return Object.keys(element).reduce((acc, key) => {
-          if (key !== "FLAG" && key !== "F_ID") {
+          if (key !== "FLAG" && key !== "ARRANGE") {
             acc[key] = element[key];
           }
           return acc;
@@ -1110,7 +1110,7 @@ export default {
     exportExcel() {
       const filteredData = this.DataTable.map((element) => {
         return Object.keys(element).reduce((acc, key) => {
-          if (key !== "FLAG" && key !== "F_ID") {
+          if (key !== "FLAG" && key !== "ARRANGE") {
             acc[key] = element[key];
           }
           return acc;
@@ -1236,7 +1236,7 @@ export default {
   overflow-x: auto;
   width: 85%;
   row-gap: 5px;
-  height: 600px;
+  /* height: 600px; */
 }
 .text-input-over {
   width: 60%;
@@ -1522,7 +1522,7 @@ input#return-form:hover {
     font-size: 17px;
   }
 .main-contain {
-  height: 500px;
+  max-height: 100vh;
   overflow: auto;
 }
 .div-back {

@@ -68,6 +68,24 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: auto;
+}
+// .body {
+//   width: 100%;
+//   height: auto;
+//   margin: 0;
+//   padding: 0;
+//   //min-height: 100vh;
+
+// }
+.right_col {
+    margin-top: 50px;
+}  
+
 #pleaserotate-graphic-login {
   width: 40%;
   top: 40%;

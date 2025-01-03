@@ -140,18 +140,40 @@
         />
       </div>
       <div class="form-row">
-        <label for="delet-ind">Delete Ind:</label>
+        <label for="delet-ind">Short Text:</label>
         <input
           type="text"
           class="text-input"
           id="delet-ind"
           name="delet-ind"
           readonly
-          v-model="model.DELET_IND"
+          v-model="model.SHORT_TEXT"
         />
       </div>
       <div class="class-hr">
         <hr />
+      </div>
+      <div class="form-row">
+        <label for="material">Material:</label>
+        <input
+          type="text"
+          class="text-input"
+          id="material"
+          name="material"
+          readonly
+          v-model="model.MATERIAL"
+        />
+      </div>
+      <div class="form-row">
+        <label for="stor-loc">Stor Loc:</label>
+        <input
+          type="text"
+          class="text-input"
+          id="stor-loc"
+          name="stor-loc"
+          readonly
+          v-model="model.STOR_LOC"
+        />
       </div>
 
       <div class="form-row">
@@ -345,7 +367,9 @@ export default {
         INCOTERMS: "",
         INCO_2: "",
         ITEM_PO: "",
-        DELET_IND: "",
+        SHORT_TEXT: "",
+        MATERIAL: '',
+        STOR_LOC: '',
         CHANGED_ON: "",
         QUANTITY: "",
         NET_PRICE: "",
@@ -568,7 +592,9 @@ export default {
           this.model.INCOTERMS = firstItem.INCOTERMS;
           this.model.INCO_2 = firstItem.INCO_2;
           this.model.ITEM_PO = firstItem.ITEM_PO;
-          this.model.DELET_IND = firstItem.DELET_IND;
+          this.model.SHORT_TEXT = firstItem.SHORT_TEXT;
+          this.model.MATERIAL = firstItem.MATERIAL;
+          this.model.STOR_LOC = firstItem.STOR_LOC;
           this.model.CHANGED_ON = firstItem.CHANGED_ON;
           this.model.QUANTITY = firstItem.QUANTITY;
           this.model.NET_PRICE = firstItem.NET_PRICE;
@@ -615,8 +641,10 @@ export default {
   margin: 0;
   padding: 0 10px;
   background-color: #f9f9f9;
+  //width: 100%;
+  //height:auto;
+  //min-height: 100vh;
 }
-/* Back Button Styles */
 .div-back {
   float: left;
   background: #eae1e1;
@@ -690,28 +718,9 @@ export default {
   gap: 5px;
   margin-bottom: 1px;
 }
-.searchbox-timerange {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-.datepicker-wrapper {
-  flex: 1;
-}
-.export-excel {
-  display: inline-block;
-  right: 25px;
-  position: absolute;
-}
-.img-excel {
-  height: 40px;
-  width: 40px;
-  cursor: pointer;
-}
 .container {
   display: grid;
-  grid-template-rows: 50px repeat(3, 35px) 5px repeat(2, 35px) auto;
+  grid-template-rows: 50px repeat(3, 35px) 5px repeat(3, 35px) auto;
   grid-template-columns: repeat(3, 1fr);
   align-content: space-around;
   box-sizing: border-box;
@@ -723,7 +732,8 @@ export default {
   border-radius: 5px;
   width: 80%;
   overflow: auto;
-  max-height: 500px;
+  //height: auto;
+  //min-height: 100vh;
   row-gap: 15px;
   .text-input {
     width: 50%;
@@ -899,7 +909,7 @@ export default {
   }
 }
 .main-contain {
-  height: 450px;
+  max-height: 100vh;
   overflow: auto;
 }
 .mytable {

@@ -494,9 +494,9 @@ const routes = [{
             import('../components/QualcommApps/MAPPING_MO.vue'),
     },
     {
-        path: '/Home/ConfigApp/BasicConfig',
+        path: '/Home/ConfigApp/ReceiptConfig',
         component: () =>
-            import('../components/QualcommApps/BasicConfig.vue'),
+            import('../components/QualcommApps/ReceiptConfig.vue'),
     },
     {
         path: '/Home/ConfigApp/TELIT_EDI',
