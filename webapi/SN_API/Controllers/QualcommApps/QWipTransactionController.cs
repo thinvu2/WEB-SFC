@@ -83,6 +83,9 @@ namespace SN_API.Controllers.QualcommApps
                         command.Parameters.Add("IN_TRANSACTIONS", OracleDbType.Varchar2).Value = model.transaction;
                         command.Parameters.Add("IN_REASON", OracleDbType.Varchar2).Value = model.reason;
                         command.Parameters.Add("IN_LOTNO", OracleDbType.Varchar2).Value = model.lot_no;
+                        command.Parameters.Add("IN_STAGE_OUT", OracleDbType.Varchar2).Value = model.IN_STAGE_OUT;
+                        command.Parameters.Add("IN_STAGE_IN", OracleDbType.Varchar2).Value = model.IN_STAGE_IN;
+                        command.Parameters.Add("IN_QTY", OracleDbType.Int32).Value = Int32.Parse(model.qty);
                         command.Parameters.Add("RES", OracleDbType.Varchar2, 4000).Direction = ParameterDirection.Output;
                         connection.Open();
                         await command.ExecuteNonQueryAsync();
@@ -117,6 +120,9 @@ namespace SN_API.Controllers.QualcommApps
             public string lot_no { get; set; }
             public string reason { get; set; }
             public string transaction { get; set; }
+            public string qty { get; set; }
+            public string IN_STAGE_OUT { get; set; }
+            public string IN_STAGE_IN { get; set; }
         }
     }
 }

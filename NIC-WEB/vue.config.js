@@ -29,5 +29,6 @@ module.exports = {
     //             args[0].title = "Smart Shopfloor System";
     //             return args;
     //         })
-    // }
+    // }  devServer: {
+
 }

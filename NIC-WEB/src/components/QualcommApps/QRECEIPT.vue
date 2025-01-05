@@ -5,7 +5,7 @@
         <Icon icon="chevron-left" class="back-icon sidenav-icon" />
       </div>
       <div class="row div-config-name">
-        <span>QRECEIPT</span>
+        <span>QReceipt</span>
       </div>
     </header>
     <div class="searchbox" v-if="!isShowForm">

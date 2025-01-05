@@ -1,54 +1,56 @@
 <template>
-  <div class="basic-config">
+  <div class="receipt-config">
     <header class="row header">
       <div class="div-back" @click="backToParent()">
         <Icon icon="chevron-left" class="back-icon sidenav-icon" />
       </div>
       <div class="row div-config-name">
-        <span>Basic Config</span>
+        <span>Receipt Config</span>
       </div>
     </header>
-    <h1>Basic Config</h1>
+    <h1>Receipt Config</h1>
     <div class="container">
       <!-- Left Section: Above -->
       <div class="section-left">
         <div class="block">
-          <h2>Foxconn</h2>
-          <label for="input-name">Supplier Name:</label>
-          <input type="text" id="input-name" placeholder="Name" />
+          <label for="msg-sender-name">Message sender name:</label>
+          <input type="text" id="msg-sender-name" placeholder="Msg sender name" autocomplete="off" />
 
-          <label for="input-duns">Supplier Duns:</label>
-          <input type="text" id="input-duns" placeholder="Duns" />
+          <label for="msg-sender-duns">Message sender Duns:</label>
+          <input type="text" id="msg-sender-duns" placeholder="Msg sender duns" autocomplete="off" />
 
-          <label for="input-duns4">Supplier Duns4:</label>
-          <input type="text" id="input-duns4" placeholder="Duns4" />
+          <label for="msg-receiver-name">Message receiver name:</label>
+          <input type="text" id="msg-receiver-name" placeholder="Msg receiver name" autocomplete="off" />
 
-          <label for="receiver-name">Receiver Name:</label>
-          <input type="text" id="receiver-name" placeholder="Receiver Name" />
-        </div>
+          <label for="msg-receiver-duns">Message receiver Duns:</label>
+          <input type="text" id="msg-receiver-duns" placeholder="Msg receiver duns" autocomplete="off" />
 
-        <!-- Left Section: Below -->
-        <div class="block">
-          <h2>QWip</h2>
-          <label for="ssm-version">Ssm Version:</label>
-          <input type="text" id="ssm-version" placeholder="Version" />
+          <label for="receiver-name">Receiver name:</label>
+          <input type="text" id="receiver-name" placeholder="Receiver name" autocomplete="off" />
 
-          <label for="ssm-item">Ssm Item:</label>
-          <input type="text" id="ssm-item" placeholder="Item" />
+          <label for="location-name">Actual receiving location name:</label>
+          <input type="text" id="location-name" placeholder="Location name" autocomplete="off" />
         </div>
       </div>
-
       <!-- Right Section -->
       <div class="section-right">
-        <h2>Qualcomm</h2>
-        <label for="customer-name">Customer Name:</label>
-        <input type="text" id="customer-name" placeholder="Customer Name" />
+        <label for="address-line1">Actual receiving address line 1:</label>
+        <input type="text" id="address-line1" placeholder="Address line 1" autocomplete="off" />
 
-        <label for="customer-duns">Customer Duns:</label>
-        <input type="text" id="customer-duns" placeholder="Customer Duns" />
+        <label for="address-line2">Actual receiving address line 2:</label>
+        <input type="text" id="address-line2" placeholder="Address line 2" autocomplete="off" />
 
-        <label for="customer-duns4">Customer Duns4:</label>
-        <input type="text" id="customer-duns4" placeholder="Customer Duns4" />
+        <label for="address-line3">Actual receiving address line 3:</label>
+        <input type="text" id="address-line3" placeholder="Address line 3" autocomplete="off" />
+
+        <label for="city-name">Actual receiving city name:</label>
+        <input type="text" id="city-name" placeholder="City name" autocomplete="off" />
+
+        <label for="country-code">Actual receiving country code:</label>
+        <input type="text" id="country-code" placeholder="Country code" autocomplete="off" />
+
+        <label for="postal-code">Actual receiving postal code:</label>
+        <input type="text" id="postal-code" placeholder="Postal code" autocomplete="off" />
       </div>
     </div>
 
@@ -156,9 +158,9 @@ export default {
 };
 </script>
 <style scoped lang="scss">
-.basic-config {
+.receipt-config {
   font-family: Arial, sans-serif;
-  margin: 20px;
+  margin: 0 20px;
 }
 
 .div-back {
@@ -213,7 +215,7 @@ h1 {
   padding: 0 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  height: 265px;
+  height: auto;
 }
 
 .block {
@@ -232,6 +234,7 @@ label {
   margin: 10px 0 5px;
   color: #555;
   font-size: 1rem;
+  font-weight: 555;
 }
 
 input[type="text"] {

@@ -20,9 +20,6 @@ namespace SN_API.Controllers.QualcommApps
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class QReceiptController : ApiController
     {
-        public object Z { get; private set; }
-        public object T { get; private set; }
-
         [System.Web.Http.Route("GetLoadFormQReceipt")]
             [System.Web.Http.HttpGet]
             public async Task<HttpResponseMessage> GetLoadFormQReceipt(string database_name)
@@ -244,8 +241,8 @@ namespace SN_API.Controllers.QualcommApps
                             command.Parameters.Add("IN_REASON", OracleDbType.Varchar2).Value = null;
                             command.Parameters.Add("IN_LOTNO", OracleDbType.Varchar2).Value = lotNo;
                             command.Parameters.Add("IN_QTY", OracleDbType.Int32).Value = shippedQty;
-                            command.Parameters.Add("IN_STAGE_OUT", OracleDbType.Varchar2).Value = null;
-                            command.Parameters.Add("IN_STAGE_IN", OracleDbType.Varchar2).Value = null;
+                            command.Parameters.Add("IN_TYPE", OracleDbType.Varchar2).Value = null;
+                            command.Parameters.Add("IN_STAGE", OracleDbType.Varchar2).Value = null;
                             command.Parameters.Add("RES", OracleDbType.Varchar2, 100).Direction = ParameterDirection.Output;
                             await command.ExecuteNonQueryAsync();
                             procedureResult = command.Parameters["RES"].Value.ToString();

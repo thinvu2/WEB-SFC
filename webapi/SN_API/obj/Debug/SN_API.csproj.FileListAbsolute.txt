@@ -1,3 +1,4 @@
+C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\WebGrease.dll
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\roslyn\csc.exe
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
@@ -42,7 +43,6 @@ C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\System.Web.WebPages.Deplo
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\System.Web.WebPages.dll
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\System.Web.WebPages.Razor.dll
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\WebActivatorEx.dll
-C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\WebGrease.dll
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\zxing.dll
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\zxing.presentation.dll
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
@@ -76,3 +76,4 @@ C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.csproj.CoreC
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.csproj.CopyComplete
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.dll
 C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.pdb
+C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\obj\Debug\SN_API.csproj.AssemblyReference.cache

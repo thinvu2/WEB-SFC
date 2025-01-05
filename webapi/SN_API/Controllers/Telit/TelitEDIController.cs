@@ -22,22 +22,18 @@ namespace SN_API.Controllers.Telit
     {
         [System.Web.Http.Route("GetDataTelitEDI")]
         [System.Web.Http.HttpGet]
-        public async Task<HttpResponseMessage> GetDataTelitEDI(string database_name, string F_PO, string dateFrom, string dateTo, string showTimeForm)
+        public async Task<HttpResponseMessage> GetDataTelitEDI(string database_name, string F_PO)
         {
             try
             {
                 string strGetData = "";
-                if (!string.IsNullOrEmpty(F_PO) && showTimeForm == "false")
+                if(string.IsNullOrEmpty(F_PO))
                 {
-                    strGetData = $"SELECT DISTINCT PO as PURCHASE_ORDER, DECODE(PIP_TYPE,'850','NEW','CHANGE') as PO_TYPE, ITEM_INT as ITEM_NO, DOC_DATE as TIME, INCOTERMS, INCO_2, ITEM_PO, ITEM, DELET_IND,CHANGED_ON as CHANGE_TIME, QUANTITY, NET_PRICE, SHIPPING_NAME as SHIPPING_ADDRESS, FILENAME FROM SFISM4.R_TB_EDI_850_860 where PO = '{F_PO}'";
+                    strGetData = $"SELECT DISTINCT PO as PURCHASE_ORDER, DECODE(PIP_TYPE,'850','NEW','CHANGE') as PO_TYPE, ITEM_INT, DOC_DATE, INCOTERMS, INCO_2, ITEM_PO, ITEM, CHANGED_ON, QUANTITY, NET_PRICE, SHIPPING_NAME as SHIPPING_ADDRESS, FILENAME FROM SFISM4.R_TB_EDI_850_860 where PO not in (select F_PO from SFISM4.R_TB_EDI_855)";
                 }
-                else if (string.IsNullOrEmpty(F_PO) && showTimeForm == "false")
+                else
                 {
-                    strGetData = $"SELECT DISTINCT PO as PURCHASE_ORDER, DECODE(PIP_TYPE,'850','NEW','CHANGE') as PO_TYPE, ITEM_INT as ITEM_NO, DOC_DATE as TIME, INCOTERMS, INCO_2, ITEM_PO, ITEM, DELET_IND,CHANGED_ON as CHANGE_TIME, QUANTITY, NET_PRICE, SHIPPING_NAME as SHIPPING_ADDRESS, FILENAME FROM SFISM4.R_TB_EDI_850_860";
-                }
-                else if (showTimeForm == "true" && !string.IsNullOrEmpty(dateFrom) && !string.IsNullOrEmpty(dateTo))
-                {
-                    strGetData = $"SELECT DISTINCT PO as PURCHASE_ORDER, DECODE(PIP_TYPE,'850','NEW','CHANGE') as PO_TYPE, ITEM_INT as ITEM_NO, DOC_DATE as TIME, INCOTERMS, INCO_2, ITEM_PO, ITEM, DELET_IND,CHANGED_ON as CHANGE_TIME, QUANTITY, NET_PRICE, SHIPPING_NAME as SHIPPING_ADDRESS, FILENAME FROM SFISM4.R_TB_EDI_850_860 WHERE to_char(F_ON,'YYYYMMDD') >= '{dateFrom}' and to_char(F_ON,'YYYYMMDD') <= '{dateTo}'";
+                    strGetData = $"SELECT DISTINCT PO as PURCHASE_ORDER, DECODE(PIP_TYPE,'850','NEW','CHANGE') as PO_TYPE, ITEM_INT, DOC_DATE, INCOTERMS, INCO_2, ITEM_PO, ITEM, CHANGED_ON, QUANTITY, NET_PRICE, SHIPPING_NAME as SHIPPING_ADDRESS, FILENAME FROM SFISM4.R_TB_EDI_850_860 WHERE PO = '{F_PO}' and PO not in (select F_PO from SFISM4.R_TB_EDI_855)";
                 }
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
@@ -47,7 +43,6 @@ namespace SN_API.Controllers.Telit
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
             }
         }
-
         [System.Web.Http.Route("GetShowDetailTelitEDI")]
         [System.Web.Http.HttpGet]
         public async Task<HttpResponseMessage> GetShowDetailTelitEDI(string database_name, string F_PO)
@@ -57,12 +52,13 @@ namespace SN_API.Controllers.Telit
                 string strGetData = "";
                 strGetData = $@"SELECT DISTINCT F_ID, SITE AS F_SITE, PIP_TYPE AS F_PIP_TYPE, '1' AS F_MSGID, SYSDATE  AS F_TIMESTAMP, VENDOR AS F_VENDOR, PO AS F_PO, ITEM AS F_PO_ITEM,
                                 '' AS F_CONF_CTG, '' AS F_REFERENCE, SYSDATE AS F_CREATION_DATE, SYSDATE AS F_LASTEDIT_DT, FILENAME AS F_FILENAME, '' AS F_TIMES, ITEM_INT, DOC_DATE,
-                                INCOTERMS, INCO_2, ITEM_PO, DELET_IND, CHANGED_ON, 
+                                INCOTERMS, INCO_2, ITEM_PO, CHANGED_ON, 
                                 CASE 
                                 WHEN substr(QUANTITY, 1, 1) = 0 then  TO_CHAR(QUANTITY, 'FM99990D99', 'NLS_NUMERIC_CHARACTERS = ''. ''' )
                                 ELSE replace(TO_CHAR(QUANTITY), '.','') 
                                 END as QUANTITY, 
-                                NET_PRICE, SHIPPING_NAME FROM SFISM4.R_TB_EDI_850_860 where PO = '{F_PO}'";
+                                NET_PRICE, SHIPPING_NAME, SHORT_TEXT, MATERIAL, STOR_LOC
+                                FROM SFISM4.R_TB_EDI_850_860 where PO = '{F_PO}'";
                
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck});
@@ -135,7 +131,7 @@ namespace SN_API.Controllers.Telit
                 var minTime = rows["minTime"]?.ToString() ?? string.Empty;
                 var scheduleQty = rows["scheduleQty"]?.ToString() ?? string.Empty;
                 string insertLog = $@"insert into SFISM4.R_SYSTEM_LOG_T
-                                    (EMP_NO, PRG_NAME, ACTION_TYPE, ACTION_DESC, TIME) 
+                                    (EMP_NO, PRG_NAME, ACTION_TYPE, ACTION_DESC, TIME)
                                     values
                                     ('{emp_no}', 'TELIT_EDI', 'INSERT', :actionDesc, sysdate)";
                 var actionDesc = $"Po: {fPo}, Del_Date: {minTime}, Schedule_qty: {scheduleQty}";

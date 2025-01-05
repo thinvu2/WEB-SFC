@@ -6,9 +6,7 @@
           ><i class="fa fa-paw"></i> <span>Shopfloor System</span></a
         >
       </div>
-
       <div class="clearfix"></div>
-
       <!-- menu profile quick info -->
       <div class="profile clearfix">
         <div class="profile_pic">
@@ -74,7 +72,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import data from "../../data/menu_data";
 import Repository from "../../services/Repository";
@@ -85,7 +82,7 @@ export default {
       listNav: [],
       DataTable: [],
       arrData: [],
-      EMP_NO: '',
+      EMP_NO: "",
       index: 0,
       index1: 0,
       index2: 9999,
@@ -124,17 +121,13 @@ export default {
         let { data } = await Repository.getApiServer(
           `GetPrivilegeLeftNav?database_name=${databaseName}&EMP_NO=${EMP_NO}`
         );
-       this.DataTable = data.data;
-
-       console.log(this.DataTable);
-
-       this.arrData =  this.DataTable.reduce((item, index) => {
-          if(parseInt(index.KEY) > 0) {
+        this.DataTable = data.data;
+        this.arrData = this.DataTable.reduce((item, index) => {
+          if (parseInt(index.KEY) > 0) {
             item.push(index.VALUE);
           }
           return item;
-        }, [])
-       console.log(this.arrData);
+        }, []);
       } catch (error) {
         if (error.response && error.response.data) {
           this.$swal("", error.response.data.error, "error");
@@ -143,7 +136,6 @@ export default {
         }
       }
     },
-
     MaximizeWindow() {
       var docElm = document.documentElement;
       if (docElm.requestFullscreen) {
@@ -155,7 +147,6 @@ export default {
       } else if (docElm.msRequestFullscreen) {
         docElm.msRequestFullscreen();
       }
-
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.mozCancelFullScreen) {
@@ -237,7 +228,7 @@ export default {
 }
 .side-menu li {
   font-size: 18px;
-  &:hover{
+  &:hover {
     background-color: #073e61;
   }
 }

@@ -94,14 +94,7 @@ namespace SN_API.Controllers
             {
                 string strGetData = $"SELECT FUN FROM SFIS1.C_PRIVILEGE WHERE PRG_NAME ='WEB_CONFIG' AND FUN = 'INSERT' AND EMP ='{emp_no}' and rownum =1";
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
-                //if (dtCheck.Rows.Count == 0)
-                //{
-                //    return Request.CreateResponse(HttpStatusCode.OK, new { result = "fail" });
-                //}
-                //else
-                //{
-                    return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
-                //}
+                return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
             }
             catch (Exception ex)
             {
