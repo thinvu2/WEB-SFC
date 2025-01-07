@@ -274,11 +274,6 @@ const routes = [{
             import('../components/ConfigComponents/Config19.vue'),
     },
     {
-        path: '/Home/ConfigApp/Config21',
-        component: () =>
-            import('../components/ConfigComponents/Config21.vue'),
-    },
-    {
         path: '/Home/ConfigApp/Config23',
         component: () =>
             import('../components/ConfigComponents/Config23.vue'),
@@ -332,22 +327,12 @@ const routes = [{
         path: '/Home/ConfigApp/Config53',
         component: () =>
             import('../components/ConfigComponents/Config53.vue'),
-    },   
-    {
-        path: '/Home/ConfigApp/Config54',
-        component: () =>
-            import('../components/ConfigComponents/Config54.vue'),
     },
     {
         path: '/Home/ConfigApp/Config60',
         component: () =>
             import('../components/ConfigComponents/Config60.vue'),
-    },
-    {
-        path: '/Home/ConfigApp/Config64',
-        component: () =>
-            import('../components/ConfigComponents/Config64.vue'),
-    },    
+    },   
     {
         path: '/Home/ConfigApp/Config65',
         component: () =>
@@ -357,11 +342,6 @@ const routes = [{
         path: '/Home/ConfigApp/Config67',
         component: () =>
             import('../components/ConfigComponents/Config67.vue'),
-    },
-    {
-        path: '/Home/ConfigApp/Config69',
-        component: () =>
-            import('../components/ConfigComponents/Config69_.vue'),
     },
     {
         path: '/Home/ConfigApp/Config76',

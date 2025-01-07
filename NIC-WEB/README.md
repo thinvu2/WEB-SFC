@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # sfc_web
 
 ## Project setup
@@ -21,9 +20,3 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
-=======
-# Web-SFC-Foxconn
-Web-SFC-Foxconn
->>>>>>> dcfdf274a2ad8f16c8a5b7b80d0b87651283815d

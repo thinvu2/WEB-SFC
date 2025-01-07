@@ -132,11 +132,11 @@ export default {
 }
 
 </style>
-<style src="../../public/template/vendors/bootstrap/dist/css/bootstrap.min.css"></style>
+<!-- <style src="../../public/template/vendors/bootstrap/dist/css/bootstrap.min.css"></style>
 <style src="../../public/template/vendors/font-awesome/css/font-awesome.min.css"></style>
 <style src="../../public/template/vendors/nprogress/nprogress.css"></style>
 <style src="../../public/template/vendors/iCheck/skins/flat/green.css"></style>
 <style src="../../public/template/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css"></style>
 <style src="../../public/template/vendors/jqvmap/dist/jqvmap.min.css"></style>
 <style src="../../public/template/vendors/bootstrap-daterangepicker/daterangepicker.css"></style>
-<style src="../../public/template/build/css/custom.min.css"></style>
+<style src="../../public/template/build/css/custom.min.css"></style> -->

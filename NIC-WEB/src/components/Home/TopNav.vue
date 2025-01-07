@@ -90,9 +90,9 @@ export default {
     };
   },
   methods: {
-    GetSOP(){
-      window.open(window.location.origin+window.location.pathname+"/file/upload/SFC-WEB-book_guide.pdf");
-    },
+    // GetSOP(){
+    //   window.open(window.location.origin+window.location.pathname+"/file/upload/SFC-WEB-book_guide.pdf");
+    // },
     MenuToggle() {
       if ($("body").attr("class") == "nav-md") {
         $("body").removeClass("nav-md");
@@ -178,11 +178,11 @@ a > span > span {
   text-align: center;
 }
 </style>
-<style src="../../../public/template/vendors/bootstrap/dist/css/bootstrap.min.css"></style>
+<!-- <style src="../../../public/template/vendors/bootstrap/dist/css/bootstrap.min.css"></style>
 <style src="../../../public/template/vendors/font-awesome/css/font-awesome.min.css"></style>
 <style src="../../../public/template/vendors/nprogress/nprogress.css"></style>
 <style src="../../../public/template/vendors/iCheck/skins/flat/green.css"></style>
 <style src="../../../public/template/vendors/bootstrap-progressbar/css/bootstrap-progressbar-3.3.4.min.css"></style>
 <style src="../../../public/template/vendors/jqvmap/dist/jqvmap.min.css"></style>
 <style src="../../../public/template/vendors/bootstrap-daterangepicker/daterangepicker.css"></style>
-<style src="../../../public/template/build/css/custom.min.css"></style>
+<style src="../../../public/template/build/css/custom.min.css"></style> -->
