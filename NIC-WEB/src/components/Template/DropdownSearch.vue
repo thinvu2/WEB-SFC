@@ -1,6 +1,6 @@
 <template>
   <section class="dropdown-wrapper">
-    <div @click="isVisible = !isVisible" class="selected-item">
+    <!-- <div @click="isVisible = !isVisible" class="selected-item">
       <span>{{ textContent }}</span>
       <svg
         :class="isVisible ? 'dropdown' : ''"
@@ -15,7 +15,25 @@
           d="M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z"
         />
       </svg>
-    </div>
+    </div> -->
+<!-- new -->
+    <div @click="handleDropdownClick" class="selected-item">
+  <span>{{ textContent }}</span>
+  <svg
+    :class="isVisible ? 'dropdown' : ''"
+    class="drop-down-icon"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width="24"
+    height="24"
+  >
+    <path fill="none" d="M0 0h24v24H0z" />
+    <path
+      d="M12 13.172l4.95-4.95 1.414 1.414L12 16 5.636 9.636 7.05 8.222z"
+    />
+  </svg>
+</div>
+
     <template v-if="type == 'model'">
       <div :class="isVisible ? 'visible' : ''" class="row dropdown-popover">
         <input
@@ -121,12 +139,28 @@ export default {
       }
     },
   },
-  mounted() {},
-  methods: {
-    SetTextDropDown(text) {
-      this.$emit("update-selected-item", text);
+  mounted() {
+  this.handleWindowClick = (e) => {
+    if (!this.$el.contains(e.target)) {
+      this.searchText = "";
       this.isVisible = false;
-    },
+    }
+  };
+  window.addEventListener("click", this.handleWindowClick);
+},
+unmounted() {
+  window.removeEventListener("click", this.handleWindowClick);
+},
+
+  methods: {
+    handleDropdownClick(event) {
+    this.isVisible = !this.isVisible;
+    this.$emit('dropdown-click', event); // Emit sự kiện
+  },
+  SetTextDropDown(text) {
+    this.$emit("update-selected-item", text);
+    this.isVisible = false;
+  },
   },
 };
 </script>
@@ -198,7 +232,8 @@ export default {
       &:hover {
         background: #70878a;
         color: #fff;
-        font-weight: bold;
+        cursor: pointer;
+        //font-weight: bold;
       }
     }
   }

@@ -104,7 +104,7 @@ namespace SN_API.Controllers
        "         A.REASON_CODE, " +
        "         A.ERROR_ITEM_CODE, " +
        "         A.LOCATION_CODE, " +
-       "         A.ATE_STATION_NO, A.SUPPLIER, A.DATE_CODE, A.DATECODE,B.ERROR_DESC,B.ERROR_DESC2 " +
+       "         A.ATE_STATION_NO, A.SUPPLIER, A.DATE_CODE, A.DATECODE,A.EC_EXT,B.ERROR_DESC,B.ERROR_DESC2 " +
        "    FROM SFISM4.R109 A, SFIS1.C_ERROR_CODE_T B,SFISM4.R_SN_TRSN_LINK_T C WHERE A.TEST_CODE = B.ERROR_CODE (+) AND A.SERIAL_NUMBER = C.SERIAL_NUMBER (+) AND TO_CHAR (A.REPAIR_TIME, 'YYYY/MM/DD HH24:MI:SS') BETWEEN '" + obj.date_from + "' " +
        "                                                                          AND '" + obj.date_to + "' " +
        "                                                                          " + _string_group_list + "  " +

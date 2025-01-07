@@ -136,13 +136,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.div-content {
-  height:700px;
-}
-.row {
-  overflow: auto;
-  height: 95%;
-}
+// .div-content {
+//   height:700px;
+// }
+// .row {
+//   overflow: auto;
+//   height: 95%;
+// }
 .config-content {
  display: grid;
   height: 90vh;

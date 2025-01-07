@@ -142,7 +142,7 @@ export default {
   },
   data() {
     return {
-      isDisabled:true,
+      isDisabled:false,
       textContent: "",      
       version: "",
       searchText: "",

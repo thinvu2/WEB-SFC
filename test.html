@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title of the document</title>
+    <style>
+
+*{
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+        }
+      .container {
+        display: grid;
+        width: 80%;
+        row-gap: 15px;
+        background-color: bisque;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      }
+      .form-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 0;
+        gap: 10px;
+      }
+      label {
+        flex: 0 0 30%;
+        text-align: right;
+      }
+      .text-input-over {
+  flex: 1;
+  padding: 5px;
+  /* background-color: #f9f9f9; */
+  border: none;
+  font-size: 14px;
+  color: #333;
+  word-wrap: break-word; /* Ngắt dòng khi văn bản dài */
+  white-space: normal; 
+  max-width: 100%; /* Hoặc giá trị cụ thể như 300px */
+  display: inline-block;
+}
+
+      .text-input-over[readonly] {
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>ahihhi</h1>
+    <div class="container">
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>      
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      <div class="form-row">
+        <label for="msg_sender_name">From:</label>
+        <span id="msg_sender_name" class="text-input-over">123</span>
+      </div>
+                                    
+        </div>
+       
+  </body>
+</html>

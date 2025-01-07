@@ -6,9 +6,7 @@
           ><i class="fa fa-paw"></i> <span>Shopfloor System</span></a
         >
       </div>
-
       <div class="clearfix"></div>
-
       <!-- menu profile quick info -->
       <div class="profile clearfix">
         <div class="profile_pic">
@@ -36,7 +34,7 @@
                 <span class="fa fa-chevron-right"></span
               ></router-link>
             </li>
-            <!-- <li>
+            <li v-if="arrData.includes('NIC')">
               <router-link to="/Home/Applications">
                 <i class="fa fa-desktop"></i>
                 {{
@@ -44,10 +42,17 @@
                 }}
                 <span class="fa fa-chevron-right"></span
               ></router-link>
-            </li> -->
-            <li>
+            </li>
+            <li v-if="arrData.includes('QUALCOMM')">
               <router-link to="/Home/Qualcomm_Application">
                 <i class="fa fa-space-shuttle"></i>Qualcomm
+                <span class="fa fa-chevron-right"></span
+              ></router-link>
+            </li>
+
+            <li v-if="arrData.includes('TELIT')">
+              <router-link to="/Home/Telit_Apps">
+                <i class="fa fa-space-shuttle"></i>Telit
                 <span class="fa fa-chevron-right"></span
               ></router-link>
             </li>
@@ -67,14 +72,17 @@
     </div>
   </div>
 </template>
-
 <script>
 import data from "../../data/menu_data";
+import Repository from "../../services/Repository";
 export default {
   name: "LeftNav",
   data() {
     return {
       listNav: [],
+      DataTable: [],
+      arrData: [],
+      EMP_NO: "",
       index: 0,
       index1: 0,
       index2: 9999,
@@ -83,6 +91,7 @@ export default {
     };
   },
   mounted() {
+    this.getPrivilege();
     this.listNav = data;
   },
   created() {
@@ -105,6 +114,28 @@ export default {
     this.databaseName = localStorage.databaseName;
   },
   methods: {
+    async getPrivilege() {
+      let databaseName = localStorage.databaseName;
+      let EMP_NO = localStorage.username;
+      try {
+        let { data } = await Repository.getApiServer(
+          `GetPrivilegeLeftNav?database_name=${databaseName}&EMP_NO=${EMP_NO}`
+        );
+        this.DataTable = data.data;
+        this.arrData = this.DataTable.reduce((item, index) => {
+          if (parseInt(index.KEY) > 0) {
+            item.push(index.VALUE);
+          }
+          return item;
+        }, []);
+      } catch (error) {
+        if (error.response && error.response.data) {
+          this.$swal("", error.response.data.error, "error");
+        } else {
+          this.$swal("", error.Message, "error");
+        }
+      }
+    },
     MaximizeWindow() {
       var docElm = document.documentElement;
       if (docElm.requestFullscreen) {
@@ -116,7 +147,6 @@ export default {
       } else if (docElm.msRequestFullscreen) {
         docElm.msRequestFullscreen();
       }
-
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.mozCancelFullScreen) {
@@ -198,7 +228,7 @@ export default {
 }
 .side-menu li {
   font-size: 18px;
-  &:hover{
+  &:hover {
     background-color: #073e61;
   }
 }

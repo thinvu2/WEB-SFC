@@ -222,9 +222,14 @@
     <Compile Include="Controllers\Config\UploadDataController.cs" />
     <Compile Include="Controllers\LINKDNController.cs" />
     <Compile Include="Controllers\QualcommApps\MappingMoController.cs" />
+    <Compile Include="Controllers\QualcommApps\QAsnOutController.cs" />
     <Compile Include="Controllers\QualcommApps\QASN_INController.cs" />
     <Compile Include="Controllers\QualcommApps\QReceiptController.cs" />
+    <Compile Include="Controllers\QualcommApps\QWipTransactionController.cs" />
+    <Compile Include="Controllers\QualcommApps\ReceiptConfigController.cs" />
+    <Compile Include="Controllers\SASLabelController.cs" />
     <Compile Include="Controllers\ShippingDataController.cs" />
+    <Compile Include="Controllers\Telit\TelitEDIController.cs" />
     <Compile Include="Controllers\TrapTestController.cs" />
     <Compile Include="Controllers\Config\Config23Controller.cs" />
     <Compile Include="Controllers\Config\Config67Controller.cs" />
@@ -423,8 +428,10 @@
     <Folder Include="Views\QueryInv2\" />
     <Folder Include="Views\QueryModel\" />
     <Folder Include="Views\QueryRepair\" />
+    <Folder Include="Views\QWipTransaction\" />
     <Folder Include="Views\RepairSearch\" />
     <Folder Include="Views\Route_Bom\" />
+    <Folder Include="Views\SASLabel\" />
     <Folder Include="Views\Setup_Route_Bom\" />
     <Folder Include="Views\ShippingData\" />
     <Folder Include="Views\TCQS\" />

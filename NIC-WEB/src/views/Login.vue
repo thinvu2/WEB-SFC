@@ -173,7 +173,7 @@ export default {
       database: "NIC",
       databaseList: [
         { text: "NIC", value: "NIC" },
-        // { text: "UBEE", value: "UBEE" },
+         { text: "UBEE", value: "UBEE" },
         { text: "TEST", value: "TEST" },
       ],
       username: "",

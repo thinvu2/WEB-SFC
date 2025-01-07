@@ -92,21 +92,37 @@ namespace SN_API.Controllers
         {
             try
             {
-                string strGetData = $"SELECT FUN FROM SFIS1.C_PRIVILEGE WHERE PRG_NAME ='CONFIGWEB' AND FUN = 'INSERT' AND EMP ='{emp_no}' and rownum =1";
+                string strGetData = $"SELECT FUN FROM SFIS1.C_PRIVILEGE WHERE PRG_NAME ='WEB_CONFIG' AND FUN = 'INSERT' AND EMP ='{emp_no}' and rownum =1";
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
-                //if (dtCheck.Rows.Count == 0)
-                //{
-                //    return Request.CreateResponse(HttpStatusCode.OK, new { result = "fail" });
-                //}
-                //else
-                //{
-                    return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
-                //}
+                return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
             }
             catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
             }
         }
+        [System.Web.Http.Route("GetPrivilegeLeftNav")]
+        [System.Web.Http.HttpGet]
+        public async Task<HttpResponseMessage> GetPrivilegeLeftNav(string database_name, string emp_no)
+        {
+            try
+            {
+                string strGetData = $@"SELECT 'NIC' as value, instr(OWNER, 'NIC') as key FROM
+                                        SFIS1.C_EMP_DESC_T where emp_no = '{emp_no}'
+                                        union all
+                                        select 'TELIT' as value, instr(OWNER, 'TELIT') as key from
+                                         SFIS1.C_EMP_DESC_T  where emp_no = '{emp_no}'
+                                        union all
+                                         select 'QUALCOMM' as value, instr(OWNER, 'QUALCOMM') as key from
+                                         SFIS1.C_EMP_DESC_T  where emp_no = '{emp_no}'";
+                DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
+                return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
+            }
+        }
+
     }
 }

@@ -19,6 +19,11 @@ const routes = [{
                 import('../views/Qualcomm_Application.vue')
         },
         {
+            path: '/Home/Telit_Apps',
+            component: () =>
+                import('../views/Telit_Apps.vue')
+        },
+        {
         path: '/Home/QM',
         component: () =>
             import('../views/QM.vue')
@@ -454,19 +459,45 @@ const routes = [{
     },
     // Quanlcomm model
     {
-        path: '/Home/ConfigApp/QASN_IN',
+        path: '/Home/ConfigApp/QAsnIn',
         component: () =>
-            import('../components/QualcommApps/QASN_IN.vue'),
+            import('../components/QualcommApps/QAsnIn.vue'),
     },
     {
-        path: '/Home/ConfigApp/QRECEIPT',
+        path: '/Home/ConfigApp/QAsnOut',
         component: () =>
-            import('../components/QualcommApps/QRECEIPT.vue'),
+            import('../components/QualcommApps/QAsnOut.vue'),
     },
     {
-        path: '/Home/ConfigApp/MAPPING_MO',
+        path: '/Home/ConfigApp/QReceipt',
         component: () =>
-            import('../components/QualcommApps/MAPPING_MO.vue'),
+            import('../components/QualcommApps/QReceipt.vue'),
+    },
+    {
+        path: '/Home/ConfigApp/MappingMo',
+        component: () =>
+            import('../components/QualcommApps/MappingMo.vue'),
+    },
+    {
+        path: '/Home/ConfigApp/AsnConfig',
+        component: () =>
+            import('../components/QualcommApps/AsnConfig.vue'),
+    },
+    {
+        path: '/Home/ConfigApp/ReceiptConfig',
+        component: () =>
+            import('../components/QualcommApps/ReceiptConfig.vue'),
+    },
+    {
+        path: '/Home/ConfigApp/QwipConfig',
+        component: () =>
+            import('../components/QualcommApps/QwipConfig.vue'),
+    },
+    // Telit model
+    {
+        path: '/Home/ConfigApp/TelitEdi',
+        component: () =>
+            import('../components/TelitApps/TelitEdi.vue'),
     }
 ]
 },

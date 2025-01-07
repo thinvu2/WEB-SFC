@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="div-searchbox row">
-      <div class="div-searchbox-content">
+<div class="div-searchbox-content">
         <input
           v-on:keyup.enter="QuerySearch()"
           v-model="valueSearch"
@@ -23,10 +23,11 @@
               : 'Nhập keypart no...'
           "
         />
-        <button @click="QuerySearch()" class="btn">
+         <button @click="QuerySearch()" class="btn">
           <Icon icon="search" class="sidenav-icon" />
-        </button>
-      </div>
+        </button> 
+    </div>
+
     </div>
     <div class="main-contain">
       <div class="row col-sm-12 div-content">
@@ -47,7 +48,7 @@
                 </template>
               </tr>
             </thead>
-            <template v-for="(item, index) in DataTable" :key="index">
+<template v-for="(item, index) in DataTable" :key="index">
               <tr>
                 <td class="td-delete" @click="DeleteRecord(item)">
                   <svg
@@ -77,14 +78,14 @@
                     />
                   </svg>
                 </td>
-                <template v-for="(item1, index1) in item" :key="index1">
+               <template v-for="(item1, index1) in item" :key="index1">
                   <td v-if="index1 != 'ID'">{{ item1 }}</td>
-                </template>
+                </template> 
               </tr>
-            </template>
+            </template> 
           </table>
         </template>
-      </div>
+       </div>
     </div>
     <div class="div-button">
       <button
@@ -119,28 +120,56 @@
       <div class="form-row">
         <div class="col-md-4 mb-3">
           <label for="validationDefault02">KEYPART NO</label>
-          <input
+          <input 
+          placeholder="Enter keypart no"
+            autocomplete="off"
             type="text"
             class="form-control form-control-sm text-element"
             id="validationDefault01"
-            v-model="model.KEY_PART_NO"
-            required
-          />
+            v-model.trim="model.KEY_PART_NO"
+            required/>
         </div>
-        <div class="col-md-4 mb-3">
-          <label for="validationDefault02">KEYPART NAME (TYPE)</label>
-          <DropdownSearch
-            class="form-control form-control-sm text-element col-md-3"
-            :listAll="filterModel"
-            @update-selected-item="UpdateKPNAMEReceive"
-            :textContent="model.KP_NAME"
-            type="model"
-            textPlaceHolder="Enter model name"
-          />
-        </div>
+
+          <!-- <div class="col-md-4 mb-3">
+            <label for="validationDefault02">KEYPART NAME (TYPE)</label>
+            <DropdownSearch
+              class="form-control form-control-sm text-element col-md-3"
+              :listAll="filter_KP"
+              @update-selected-item="UpdateKPNAMEReceive"
+              :textContent="model.KP_NAME"
+              type="model"
+              textPlaceHolder="Enter model name"/>
+          </div> -->
+
+      <div class="col-md-4 mb-3">
+            <label for="validationDefault02">KEYPART NAME (TYPE)</label>
+          <div class="input-datalist">
+            <input type="text" 
+            v-model.trim="model.KP_NAME" 
+            placeholder="Enter keypart name"
+            autocomplete="off"
+            list="datalistOptions" 
+            id="KeypartName"
+            @focus="showDropdownList" 
+            @blur="hideDropdownList" 
+            />
+            <ul v-if="isDropdownVisible">
+            <li v-for="KeypartName in filtered_KP" :key="KeypartName" @click="select_KP (KeypartName)">{{ KeypartName }}</li>
+            </ul>
+          </div>
+
+            <datalist id="datalistOptions">
+            <option v-for="(option, index) in filteredOptions" :key="index" :value="option">
+              {{ option }}
+            </option>
+            </datalist>
+          </div>
+
         <div class="col-md-4 mb-3">
           <label for="validationDefault02">KEYPART DESCRIPTION</label>
           <input
+          placeholder="Enter keypart desc"
+          autocomplete="off"
             type="text"
             class="form-control form-control-sm text-element"
             id="validationDefault01"
@@ -151,17 +180,19 @@
     </div>
   </div>
 </template>
+
+
 <script>
-//import $ from 'jquery';
-import DropdownSearch from "../Template/DropdownSearch.vue";
 import Repository from "../../services/Repository";
 export default {
   components: {
-    DropdownSearch,
   },
   data() {
     return {
-      selectedItem: null,
+      searchQuery: "",
+
+      selectedOption: '',
+        isDropdownVisible: false,
       isVisible: false,
       DataTableHeader: [],
       DataTable: [],
@@ -173,9 +204,13 @@ export default {
         KEY_PART_NO: "",
         KP_NAME: "",
         KP_DESC: "",
+        MODEL_NAME:"",
+        KP_USE_QTY:0,
       },
       ListKPName: [],
+      ListModel:[],
       searchText: "",
+
     };
   },
   created() {
@@ -184,44 +219,91 @@ export default {
         this.isVisible = false;
       }
     });
+
   },
+
+  watch: {
+    'model.KEY_PART_NO': function(newVal) {
+      this.model.KEY_PART_NO = newVal.replace(/\s/g, '');
+    },
+    'model.KP_NAME': function(newVal){
+      this.model.KP_NAME = newVal.replace(/^\s+|\s+$/gm,'');
+    }
+  },
+  
   computed: {
+    filtered_KP() {
+          return this.ListKPName.filter(KeypartName => KeypartName.toLowerCase().includes(this.model.KP_NAME.toLowerCase()));
+        },
+
+        
     filterModel: function () {
       const query = this.searchText.toLowerCase();
-      //if (query.length < 3) return this.ListKPName;
+      if (query.length < 3) return this.ListModel;
       if (this.searchText === "") {
-        console.log(this.ListKPName);
-        return this.ListKPName;
+        return this.ListModel;
       }
-      return this.ListKPName.filter((user) => {
+      return this.ListModel.filter((user) => {
         return String(user).toLowerCase().includes(query);
       });
     },
+
   },
   mounted() {
     this.CheckPrivilege();
     this.GetKPName();
+    this.GetModel();
   },
+
   methods: {
+
+    showDropdownList() {
+          this.isDropdownVisible = true;
+        },
+        hideDropdownList() {
+          setTimeout(() => {
+            this.isDropdownVisible = false;
+          }, 100);
+        },
+        select_KP(KeypartName) {
+          this.model.KP_NAME = KeypartName;
+          this.hideDropdownList();
+        },
+
     UpdateKPNAMEReceive(value) {
       this.model.KP_NAME = value;
+      this.selectedOption = value;
+    },
+    UpdateModelNameReceive(value) {
+      this.model.MODEL_NAME = value;
     },
     async GetKPName() {
       var payload = {
         database_name: localStorage.databaseName,
       };
-      var { data } = await Repository.getRepo(
-        "Config11GetKeyPartName",
-        payload
-      );
+      var { data } = await Repository.getRepo("Config11GetKeyPartName", payload);
       data.data.forEach((element) => {
         this.ListKPName.push(element.MODEL_NAME);
       });      
     },
+
+    async GetModel() {
+      var payload = {
+        database_name: localStorage.databaseName,
+      };
+      var { data } = await Repository.getRepo("Config6GetAllModel", payload);
+      data.data.forEach((element) => {
+        this.ListModel.push(element.MODEL_NAME);
+      });
+    },
+
+
+
+
     async SaveData() {
-      if (this.model.REASON_CODE == "" || this.model.REASON_DESC == "") {
+      if (this.model.KEY_PART_NO === "" || this.model.KP_NAME === "") {
         if (localStorage.language == "En") {
-          this.$swal("", "Empty fields", "error");
+          this.$swal("", "Empty fields Không được bỏ trống", "error");
         } else {
           this.$swal("", "Không được bỏ trống", "error");
         }
@@ -235,6 +317,7 @@ export default {
           titleValue = "Chắc chắn sửa/thêm?";
           textValue = "Dữ liệu sẽ được cập nhật";
         }
+        
         this.$swal({
           title: titleValue,
           text: textValue,
@@ -244,10 +327,8 @@ export default {
         }).then(async (willDelete) => {
           if (willDelete.isConfirmed == false) return;
 
-          var { data } = await Repository.getRepo(
-            "InsertUpdateConfig11",
-            this.model
-          );
+
+          var { data } = await Repository.getRepo("InsertUpdateConfig11",this.model);
           if (data.result == "privilege") {
             if (localStorage.language == "En") {
               this.$swal("", "Not privilege", "error");
@@ -267,6 +348,8 @@ export default {
         });
       }
     },
+
+
     DeleteRecord(item) {
       var titleValue = "";
       var textValue = "";
@@ -290,6 +373,10 @@ export default {
           database_name: localStorage.databaseName,
           EMP: localStorage.username,
           ID: item.ID,
+          KEY_PART_NO: item.KEY_PART_NO,
+          KP_DESC: item.KP_DESC,
+          KP_NAME: item.KP_NAME,
+
         };
         var { data } = await Repository.getRepo("DeleteConfig11", payload);
         if (data.result == "ok") {
@@ -314,13 +401,19 @@ export default {
       this.model.ID = "";
       this.model.KEY_PART_NO = "";
       this.model.KP_NAME = "";
+      this.selectedOption="";
       this.model.KP_DESC = "";
+      this.model.MODEL_NAME="";
+      this.model.KP_USE_QTY=0;
     },
     ShowDetail(detail) {
       this.model.ID = detail.ID;
       this.model.KEY_PART_NO = detail.KEY_PART_NO;
       this.model.KP_NAME = detail.KP_NAME;
+      this.selectedOption = detail.KP_NAME;
       this.model.KP_DESC = detail.KP_DESC;
+      this.model.MODEL_NAME=detail.MODEL_NAME;
+      this.model.KP_USE_QTY=detail.KP_USE_QTY;
     },
     BackToParent() {
       this.$router.push({ path: "/Home/ConfigApp" });
@@ -378,7 +471,10 @@ export default {
         }
       }
     },
+
+    
   },
+
 };
 </script>
 
@@ -432,12 +528,13 @@ export default {
   margin-top: 5px;
   background: #1c87b5;
   color: #fff;
-  padding: 15px;
+  //padding: 15px;
+  padding: 20px 20px 35px 20px;
   margin-right: 20px;
   div {
     div {
       label {
-        font-size: 13px;
+        font-size: 14px;
         font-weight: bold;
         color: #9ff9c8;
       }
@@ -460,19 +557,23 @@ export default {
     margin-bottom: 10px;
     // left: 50%;
     text-align: center;
-    input {
-      border-radius: 10px 0 0 10px;
-      // padding: 0px 5px;
-      width: 400px;
-    }
+    // input {
+    //   border-radius: 10px 0 0 10px;
+    //   // padding: 0px 5px;
+    //   width: 400px;
+
+    // }
     button {
       border-radius: 0 10px 10px 0;
       padding: 0 20px;
       background: #ff7a1c;
+      height: 35px;
       color: #fff;
       box-sizing: 0;
+      cursor: pointer;
+      transition: 0.5s;
       &:hover {
-        background: #f88838;
+        background:#db6008;
       }
     }
   }
@@ -546,4 +647,74 @@ export default {
 .lb_checked {
   color: #efef8d !important;
 }
+
+input{
+  transition: 0.2s;
+  width:300px;
+  height: 35px;
+  margin:0;
+  box-sizing:border-box;
+  padding:8px;
+  //border:1px solid #fff;
+  outline:none;
+  border-radius:4px;
+  //background:#fff;
+  color:#000;
+  position: relative;
+  z-index: 2;
+}
+
+input:focus{
+  border: 1px solid #db9c2e; 
+  box-shadow: 0px 0px 3px 0px #f2f2f2;
+  border-radius:4px 4px 0 0;}
+
+
+.input-datalist {
+      position: relative;
+      display: inline-block;
+    }
+
+    .input-datalist input[type="text"] {
+      width: 300px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin: 0;
+      box-sizing: border-box;
+ 
+    }
+
+    .input-datalist ul {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 1;
+      width: 100%;
+      padding: 0;
+      margin: 5px 0;
+      list-style: none;
+      background-color: #b7b7b7;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgb(255, 253, 253);
+      color: #000;
+      max-height: 10rem;
+      overflow: auto;
+    }
+
+    .input-datalist li {
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .input-datalist li:hover {
+      background-color: #db9c2e;
+    }
+
+    .input-datalist li:last-child {
+      border-bottom-left-radius: 4px;
+      border-bottom-right-radius: 4px;
+    }
+
 </style>
