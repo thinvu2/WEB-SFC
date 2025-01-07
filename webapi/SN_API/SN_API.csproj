@@ -222,6 +222,7 @@
     <Compile Include="Controllers\Config\UploadDataController.cs" />
     <Compile Include="Controllers\LINKDNController.cs" />
     <Compile Include="Controllers\QualcommApps\MappingMoController.cs" />
+    <Compile Include="Controllers\QualcommApps\QAsnOutController.cs" />
     <Compile Include="Controllers\QualcommApps\QASN_INController.cs" />
     <Compile Include="Controllers\QualcommApps\QReceiptController.cs" />
     <Compile Include="Controllers\QualcommApps\QWipTransactionController.cs" />

@@ -5,7 +5,7 @@
         <Icon icon="chevron-left" class="back-icon sidenav-icon" />
       </div>
       <div class="div-config-name row">
-        <span>Advance Shipment Notice</span>
+        <span>ASN IN</span>
       </div>
     </div>
     <!-- Search Box -->
@@ -1521,10 +1521,7 @@ input#return-form:hover {
     font-weight: 555;
     font-size: 17px;
   }
-.main-contain {
-  max-height: 100vh;
-  overflow: auto;
-}
+
 .div-back {
   float: left;
   background: #eae1e1;
@@ -1544,6 +1541,10 @@ input#return-form:hover {
     width: 20px;
   }
 
+.main-contain {
+  max-height: 100vh;
+  overflow: auto;
+}
 .mytable {
   margin-top: 0px;
   overflow: auto;

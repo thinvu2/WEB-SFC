@@ -18,6 +18,12 @@ let QualcommApplications = [
                     Style: "background-color: rgb(221 238 235); border: 3px solid rgb(255 255 255); box-shadow: 2px 2px 2px #919191; "
                 },
                 {
+                    Name: 'ASN OUT',
+                    Route: "/Home/ConfigApp/QAsnOut",
+                    Image: "assets/img/inputqasn.png",
+                    Style: "background-color: rgb(221 238 235); border: 3px solid rgb(255 255 255); box-shadow: 2px 2px 2px #919191; "
+                },
+                {
                     Name: 'QReceipt',
                     Route: "/Home/ConfigApp/QReceipt",
                     Image: "assets/img/receiptQ.png",
@@ -32,19 +38,19 @@ let QualcommApplications = [
                 {
                     Name: 'ASN Config',
                     Route: "/Home/ConfigApp/AsnConfig",
-                    Image: "assets/img/mapping.png",
+                    Image: "assets/img/ASNConfig.png",
                     Style: "background-color: rgb(255 255 255); border: 3px solid rgb(255 255 255); box-shadow: 2px 2px 2px #919191; "
                 },
                 {
                     Name: 'Receipt Config',
                     Route: "/Home/ConfigApp/ReceiptConfig",
-                    Image: "assets/img/mapping.png",
+                    Image: "assets/img/ReceiptConfig.png",
                     Style: "background-color: rgb(255 255 255); border: 3px solid rgb(255 255 255); box-shadow: 2px 2px 2px #919191; "
                 },
                 {
                     Name: 'Qwip Config',
                     Route: "/Home/ConfigApp/QwipConfig",
-                    Image: "assets/img/mapping.png",
+                    Image: "assets/img/QwipConfig.png",
                     Style: "background-color: rgb(255 255 255); border: 3px solid rgb(255 255 255); box-shadow: 2px 2px 2px #919191; "
                 }
             ]

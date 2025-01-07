@@ -1,261 +1,244 @@
 <template>
-    <div class="receipt-config">
-      <header class="row header">
-        <div class="div-back" @click="backToParent()">
-          <Icon icon="chevron-left" class="back-icon sidenav-icon" />
-        </div>
-        <div class="row div-config-name">
-          <span>Qwip Config</span>
-        </div>
-      </header>
-      <h1>Qwip Config</h1>
-      <div class="container">
-        <!-- Left Section: Above -->
-        <div class="section-left">
-          <div class="block">
-            <label for="sender-name">Sender name:</label>
-            <input type="text" id="sender-name" placeholder="Sender name" autocomplete="off" />
-  
-            <label for="sender-duns">Sender Duns:</label>
-            <input type="text" id="sender-duns" placeholder="Sender duns" autocomplete="off" />
-  
-            <label for="sender-duns4">Sender Duns4:</label>
-            <input type="text" id="sender-duns4" placeholder="Sender duns" autocomplete="off" />
-  
-            <label for="supplier-duns">Supplier Duns:</label>
-            <input type="text" id="supplier-duns" placeholder="Supplier duns" autocomplete="off" />
-  
-            <label for="supplier-duns4">Supplier Duns4:</label>
-            <input type="text" id="supplier-duns4" placeholder="Supplier duns4" autocomplete="off" />
-          </div>
-        </div>
-        <!-- Right Section -->
-        <div class="section-right">
-          <label for="supplier-location">Supplier location ID:</label>
-          <input type="text" id="supplier-location" placeholder="Supplier location" autocomplete="off" />
-  
-          <label for="receiver-duns4">Receiver Duns:</label>
-          <input type="text" id="receiver-duns4" placeholder="Receiver duns4" autocomplete="off" />
-  
-          <label for="ssm-item">SSM Item:</label>
-          <input type="text" id="ssm-item" placeholder="SSM item" autocomplete="off" />
-  
-          <label for="ssm-version">SSM Process Version:</label>
-          <input type="text" id="ssm-version" placeholder="SSM version" autocomplete="off" />
-        </div>
+  <div class="receipt-config">
+    <header class="row header">
+      <div class="div-back" @click="backToParent()">
+        <Icon icon="chevron-left" class="back-icon sidenav-icon" />
       </div>
-  
-      <div class="footer">
-        <input type="submit" value="Submit" id="input-submit" />
+      <div class="row div-config-name">
+        <span>Qwip Config</span>
+      </div>
+    </header>
+    <h1>Qwip Config</h1>
+
+    <div class="container">
+      <div
+        class="form-row-input"
+        v-for="(item, index) in dataTableHeader"
+        :key="index"
+      >
+        <label :for="`input-${item}`">{{ item }}:</label>
+
+        <input
+          type="text"
+          :id="`input-${item}`"
+          autocomplete="off"
+          :disabled="isDisabled"
+          v-model="objData[item]"
+        />
       </div>
     </div>
-  </template>
-  <script>
-  import Repository from "../../services/Repository";
-  export default {
-    data() {
-      return {
-        model: {
-          database_name: localStorage.databaseName,
-          empNo: localStorage.username,
-          supplierName: '',
-          supplierDuns: '',
-          supplierDuns4: '',
-          receiverName: '',
-          customerName: '',
-          customerDuns: '',
-          customerDuns4: '',
-          ssmVersion: '',
-          ssmItem: ''
+
+    <div class="footer" v-if="isDisabled">
+    <input
+      type="submit"
+      @click="toggleEdit"
+      value="Edit"
+      id="edit-button"
+    />
+  </div>
+  <div class="footer" v-else>
+    <input
+      type="submit"
+      @click="submitForm"
+      value="Save"
+      id="edit-button"
+    />
+  </div>
+  </div>
+</template>
+<script>
+import Repository from "../../services/Repository";
+export default {
+  data() {
+    return {
+      isDisabled: true,
+      dataTable: [],
+      objData: {},
+      dataTableHeader: [],
+      databaseName: localStorage.databaseName,
+      empNo: localStorage.username,
+    };
+  },
+  created() {
+    window.addEventListener("click", (e) => {
+      if (!this.$el.contains(e.target)) {
+        this.isVisible = false;
+      }
+    });
+  },
+
+  mounted() {
+    this.loadComponent();
+  },
+  computed: {},
+  methods: {
+    async loadComponent() {
+      const databaseName = this.databaseName;
+      const IN_FUNC = "QWIP";
+      const IN_SUBFUNC = "SHOWDATA";
+      const IN_DATA = null;
+      const empNo = this.empNo;
+      try {
+        const { data } = await Repository.getApiServer(
+          `QDataConfig?databaseName=${databaseName}&IN_FUNC=${IN_FUNC}&IN_SUBFUNC=${IN_SUBFUNC}&IN_DATA=${IN_DATA}&IN_EMPNO=${empNo}`
+        );
+        console.log(data.data);
+        this.dataTable = data.data;
+        if (this.dataTable.length > 0) {
+          this.objData = this.dataTable[0];
+          this.dataTableHeader = Object.keys(this.dataTable[0]);
         }
+
+      } catch (error) {
+        console.error("LoadForm Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
-    created() {
-      window.addEventListener("click", (e) => {
-        if (!this.$el.contains(e.target)) {
-          this.isVisible = false;
+    async submitForm() {
+      for(let item of this.dataTableHeader) {
+        if(!this.objData[item]) {
+          this.$swal("", `Please input data: ${item}`, "warning");
+        return;
+        }
+      }
+      let titleValue = "";
+      let textValue = "";
+      titleValue = "Are you sure edit?";
+      textValue = "Once OK, data will be updated!";
+      this.$swal({
+        title: titleValue,
+        text: textValue,
+        icon: "warning",
+        buttons: true,
+        dangerMode: true,
+      }).then(async (willDelete) => {
+        if (willDelete.isConfirmed == false) return;
+
+        const databaseName = this.databaseName;
+        const IN_FUNC = "QWIP";
+        const IN_SUBFUNC = "INSERTDATA";
+        const IN_DATA = JSON.stringify(this.objData);
+        const empNo = this.empNo;
+
+        console.log(IN_DATA)
+
+        try {
+          const { data } = await Repository.getApiServer(
+          `QDataConfig?databaseName=${databaseName}&IN_FUNC=${IN_FUNC}&IN_SUBFUNC=${IN_SUBFUNC}&IN_DATA=${IN_DATA}&IN_EMPNO=${empNo}`
+        );
+          if (data.result == "ok") {
+            this.isDisabled = !this.isDisabled;
+           await this.loadComponent();
+            this.$swal("", "Successfully applied", "success");
+          } else {
+            this.$swal("", data.result, "error");
+          }
+        } catch (error) {
+          const message =
+            error.response?.data?.error ||
+            error.message ||
+            "An unexpected error occurred.";
+          this.$swal("", message, "error");
         }
       });
     },
-  
-  //   mounted() {
-  //     this.LoadComponent();
-  //   },
-    computed: {},
-    methods: {
-      async SubmitForm() {
-        if (!this.model.SCHED_QTY) {
-          this.$swal("", "Please Schedule Qty!", "warning");
-          return;
-        }
-        let titleValue = "";
-        let textValue = "";
-        titleValue = "Are you sure edit?";
-        textValue = "Once OK, data will be updated!";
-        this.$swal({
-          title: titleValue,
-          text: textValue,
-          icon: "warning",
-          buttons: true,
-          dangerMode: true,
-        }).then(async (willDelete) => {
-          if (willDelete.isConfirmed == false) return;
-  
-          let payload = {
-              databaseName: this.database_name,
-              empNo: this.empNo,
-              supplierName: this.supplierName,
-              supplierDuns: this.supplierDuns,
-              supplierDuns4: this.supplierDuns4,
-              receiverName: this.receiverName,
-              customerName: this.customerName,
-              customerDuns: this.customerDuns,
-              customerDuns4: this.customerDuns4,
-              ssmVersion: this.ssmVersion,
-              ssmItem: this.ssmItem
-          };
-          try {
-            let { data } = await Repository.getRepo("InsertTelitEDI", payload);
-            if (data.result == "ok") {
-              this.ClearForm();
-              this.$swal("", "Successfully applied", "success");
-            } else {
-              this.$swal("", data.result, "error");
-            }
-          } catch (error) {
-            const message =
-              error.response?.data?.error ||
-              error.message ||
-              "An unexpected error occurred.";
-            this.$swal("", message, "error");
-          }
-        });
-      },
-      clearForm() {
-          this.supplierName = '',
-          this.supplierDuns = '',
-          this.supplierDuns4 = '',
-          this.receiverName = '',
-          this.customerName = '',
-          this.customerDuns = '',
-          this.customerDuns4 = '',
-          this.ssmVersion = '',
-          this.ssmItem = ''
-      },
-      backToParent() {
-        this.$router.push({ path: "/Home/Qualcomm_Application" });
-      },
+   async toggleEdit() {
+    this.isDisabled = !this.isDisabled;
+  },
+    backToParent() {
+      this.$router.push({ path: "/Home/Qualcomm_Application" });
     },
-  };
-  </script>
-  <style scoped lang="scss">
-  .receipt-config {
-    font-family: Arial, sans-serif;
-    margin: 0 20px;
+  },
+};
+</script>
+<style scoped lang="scss">
+.receipt-config {
+  font-family: Arial, sans-serif;
+  margin: 0 20px;
+}
+
+.div-back {
+  float: left;
+  background: #eae1e1;
+  cursor: pointer;
+  margin: 10px 0;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  width: 3%;
+  border-radius: 10%;
+  &:hover {
+    background: #b7b7b7;
   }
-  
-  .div-back {
-    float: left;
-    background: #eae1e1;
-    cursor: pointer;
-    margin: 10px 0;
-    display: flex;
-    align-content: center;
-    align-items: center;
-    width: 3%;
-    border-radius: 10%;
-    &:hover {
-      background: #b7b7b7;
-    }
-    .back-icon {
-      height: 20px;
-      width: 20px;
-    }
+  .back-icon {
+    height: 20px;
+    width: 20px;
   }
-  .div-config-name {
-    margin-left: 20px;
-    line-height: 45px;
-    span {
-      font-weight: 555;
-      font-size: 17px;
-    }
-  }
-  
-  h1 {
-    text-align: center;
-    color: #333;
-    margin: 0;
-  }
-  
-  .container {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
-  }
-  
-  .section-left {
-    flex: 1;
-    background-color: #f9f9f9;
-    padding: 0 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-  }
-  .section-right {
-    flex: 1;
-    background-color: #f9f9f9;
-    padding: 0 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    height: auto;
-  }
-  
-  .block {
-    margin-bottom: 10px;
-  }
-  
-  h2 {
-    color: #0056b3;
-    margin-bottom: 10px;
-    font-size: 1rem;
-    font-weight: bold;
-  }
-  
-  label {
-    display: block;
-    margin: 10px 0 5px;
-    color: #555;
-    font-size: 1rem;
+}
+.div-config-name {
+  margin-left: 20px;
+  line-height: 50px;
+  span {
     font-weight: 555;
+    font-size: 17px;
   }
-  
-  input[type="text"] {
-    width: 100%;
-    padding: 7px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-  
-  input[type="submit"] {
-    width: 100px;
-    height: 50px;
-    padding: 7px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    background-color: #0056b3;
-    color: white;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  input[type="submit"]:hover {
-    background-color: #003d82;
-  }
-  
-  .footer {
-    text-align: center;
-    margin-top: 10px;
-  }
-  </style>
-  
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin: 0;
+}
+
+.container {
+  display: grid;
+  width: 80%;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+
+label {
+  display: block;
+  margin: 10px 0 5px;
+  color: #555;
+  font-size: 1rem;
+  font-weight: 555;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 7px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type="submit"] {
+  font-size: 16px;
+    font-weight: bold;
+    width: 90px;
+    height: 45px;
+  padding: 7px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: #0056b3;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+input[type="submit"]:hover {
+  background-color: #003d82;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 10px;
+}
+</style>

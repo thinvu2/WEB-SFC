@@ -9,54 +9,41 @@
       </div>
     </header>
     <h1>Receipt Config</h1>
+
     <div class="container">
-      <!-- Left Section: Above -->
-      <div class="section-left">
-        <div class="block">
-          <label for="msg-sender-name">Message sender name:</label>
-          <input type="text" id="msg-sender-name" placeholder="Msg sender name" autocomplete="off" />
+      <div
+        class="form-row-input"
+        v-for="(item, index) in dataTableHeader"
+        :key="index"
+      >
+        <label :for="`input-${item}`">{{ item }}:</label>
 
-          <label for="msg-sender-duns">Message sender Duns:</label>
-          <input type="text" id="msg-sender-duns" placeholder="Msg sender duns" autocomplete="off" />
-
-          <label for="msg-receiver-name">Message receiver name:</label>
-          <input type="text" id="msg-receiver-name" placeholder="Msg receiver name" autocomplete="off" />
-
-          <label for="msg-receiver-duns">Message receiver Duns:</label>
-          <input type="text" id="msg-receiver-duns" placeholder="Msg receiver duns" autocomplete="off" />
-
-          <label for="receiver-name">Receiver name:</label>
-          <input type="text" id="receiver-name" placeholder="Receiver name" autocomplete="off" />
-
-          <label for="location-name">Actual receiving location name:</label>
-          <input type="text" id="location-name" placeholder="Location name" autocomplete="off" />
-        </div>
-      </div>
-      <!-- Right Section -->
-      <div class="section-right">
-        <label for="address-line1">Actual receiving address line 1:</label>
-        <input type="text" id="address-line1" placeholder="Address line 1" autocomplete="off" />
-
-        <label for="address-line2">Actual receiving address line 2:</label>
-        <input type="text" id="address-line2" placeholder="Address line 2" autocomplete="off" />
-
-        <label for="address-line3">Actual receiving address line 3:</label>
-        <input type="text" id="address-line3" placeholder="Address line 3" autocomplete="off" />
-
-        <label for="city-name">Actual receiving city name:</label>
-        <input type="text" id="city-name" placeholder="City name" autocomplete="off" />
-
-        <label for="country-code">Actual receiving country code:</label>
-        <input type="text" id="country-code" placeholder="Country code" autocomplete="off" />
-
-        <label for="postal-code">Actual receiving postal code:</label>
-        <input type="text" id="postal-code" placeholder="Postal code" autocomplete="off" />
+        <input
+          type="text"
+          :id="`input-${item}`"
+          autocomplete="off"
+          :disabled="isDisabled"
+          v-model="objData[item]"
+        />
       </div>
     </div>
 
-    <div class="footer">
-      <input type="submit" value="Submit" id="input-submit" />
-    </div>
+    <div class="footer" v-if="isDisabled">
+    <input
+      type="submit"
+      @click="toggleEdit"
+      value="Edit"
+      id="edit-button"
+    />
+  </div>
+  <div class="footer" v-else>
+    <input
+      type="submit"
+      @click="submitForm"
+      value="Save"
+      id="edit-button"
+    />
+  </div>
   </div>
 </template>
 <script>
@@ -64,20 +51,13 @@ import Repository from "../../services/Repository";
 export default {
   data() {
     return {
-      model: {
-        database_name: localStorage.databaseName,
-        empNo: localStorage.username,
-        supplierName: '',
-        supplierDuns: '',
-        supplierDuns4: '',
-        receiverName: '',
-        customerName: '',
-        customerDuns: '',
-        customerDuns4: '',
-        ssmVersion: '',
-        ssmItem: ''
-      }
-    }
+      isDisabled: true,
+      dataTable: [],
+      objData: {},
+      dataTableHeader: [],
+      databaseName: localStorage.databaseName,
+      empNo: localStorage.username,
+    };
   },
   created() {
     window.addEventListener("click", (e) => {
@@ -87,15 +67,43 @@ export default {
     });
   },
 
-//   mounted() {
-//     this.LoadComponent();
-//   },
+  mounted() {
+    this.loadComponent();
+  },
   computed: {},
   methods: {
-    async SubmitForm() {
-      if (!this.model.SCHED_QTY) {
-        this.$swal("", "Please Schedule Qty!", "warning");
+    async loadComponent() {
+      const databaseName = this.databaseName;
+      const IN_FUNC = "QRECEIPT";
+      const IN_SUBFUNC = "SHOWDATA";
+      const IN_DATA = null;
+      const empNo = this.empNo;
+      try {
+        const { data } = await Repository.getApiServer(
+          `QDataConfig?databaseName=${databaseName}&IN_FUNC=${IN_FUNC}&IN_SUBFUNC=${IN_SUBFUNC}&IN_DATA=${IN_DATA}&IN_EMPNO=${empNo}`
+        );
+        console.log(data.data);
+        this.dataTable = data.data;
+        if (this.dataTable.length > 0) {
+          this.objData = this.dataTable[0];
+          this.dataTableHeader = Object.keys(this.dataTable[0]);
+        }
+
+      } catch (error) {
+        console.error("LoadForm Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
+      }
+    },
+    async submitForm() {
+      for(let item of this.dataTableHeader) {
+        if(!this.objData[item]) {
+          this.$swal("", `Please input data: ${item}`, "warning");
         return;
+        }
       }
       let titleValue = "";
       let textValue = "";
@@ -110,23 +118,21 @@ export default {
       }).then(async (willDelete) => {
         if (willDelete.isConfirmed == false) return;
 
-        let payload = {
-            databaseName: this.database_name,
-            empNo: this.empNo,
-            supplierName: this.supplierName,
-            supplierDuns: this.supplierDuns,
-            supplierDuns4: this.supplierDuns4,
-            receiverName: this.receiverName,
-            customerName: this.customerName,
-            customerDuns: this.customerDuns,
-            customerDuns4: this.customerDuns4,
-            ssmVersion: this.ssmVersion,
-            ssmItem: this.ssmItem
-        };
+        const databaseName = this.databaseName;
+        const IN_FUNC = "QRECEIPT";
+        const IN_SUBFUNC = "INSERTDATA";
+        const IN_DATA = JSON.stringify(this.objData);
+        const empNo = this.empNo;
+
+        console.log(IN_DATA)
+
         try {
-          let { data } = await Repository.getRepo("InsertTelitEDI", payload);
+          const { data } = await Repository.getApiServer(
+          `QDataConfig?databaseName=${databaseName}&IN_FUNC=${IN_FUNC}&IN_SUBFUNC=${IN_SUBFUNC}&IN_DATA=${IN_DATA}&IN_EMPNO=${empNo}`
+        );
           if (data.result == "ok") {
-            this.ClearForm();
+            this.isDisabled = !this.isDisabled;
+           await this.loadComponent();
             this.$swal("", "Successfully applied", "success");
           } else {
             this.$swal("", data.result, "error");
@@ -140,17 +146,9 @@ export default {
         }
       });
     },
-    clearForm() {
-        this.supplierName = '',
-        this.supplierDuns = '',
-        this.supplierDuns4 = '',
-        this.receiverName = '',
-        this.customerName = '',
-        this.customerDuns = '',
-        this.customerDuns4 = '',
-        this.ssmVersion = '',
-        this.ssmItem = ''
-    },
+   async toggleEdit() {
+    this.isDisabled = !this.isDisabled;
+  },
     backToParent() {
       this.$router.push({ path: "/Home/Qualcomm_Application" });
     },
@@ -183,7 +181,7 @@ export default {
 }
 .div-config-name {
   margin-left: 20px;
-  line-height: 45px;
+  line-height: 50px;
   span {
     font-weight: 555;
     font-size: 17px;
@@ -197,37 +195,12 @@ h1 {
 }
 
 .container {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
+  display: grid;
+  width: 80%;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
-.section-left {
-  flex: 1;
-  background-color: #f9f9f9;
-  padding: 0 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-}
-.section-right {
-  flex: 1;
-  background-color: #f9f9f9;
-  padding: 0 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  height: auto;
-}
-
-.block {
-  margin-bottom: 10px;
-}
-
-h2 {
-  color: #0056b3;
-  margin-bottom: 10px;
-  font-size: 1rem;
-  font-weight: bold;
-}
 
 label {
   display: block;
@@ -246,8 +219,10 @@ input[type="text"] {
 }
 
 input[type="submit"] {
-  width: 100px;
-  height: 50px;
+  font-size: 16px;
+    font-weight: bold;
+    width: 90px;
+    height: 45px;
   padding: 7px;
   border: 1px solid #ccc;
   border-radius: 4px;

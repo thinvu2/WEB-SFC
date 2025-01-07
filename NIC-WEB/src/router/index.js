@@ -484,6 +484,11 @@ const routes = [{
             import('../components/QualcommApps/QAsnIn.vue'),
     },
     {
+        path: '/Home/ConfigApp/QAsnOut',
+        component: () =>
+            import('../components/QualcommApps/QAsnOut.vue'),
+    },
+    {
         path: '/Home/ConfigApp/QReceipt',
         component: () =>
             import('../components/QualcommApps/QReceipt.vue'),

@@ -22,7 +22,7 @@
                 class="form-control"
                 :placeholder="
                   $store.state.language == 'En'
-                    ? 'Enter Lot no...'
+                    ? 'Enter Lot no, Po no...'
                     : 'Nhập Lot no...'
                 "
               />
@@ -37,12 +37,13 @@
               class="form-control form-control-sm text-element col-md-9"
               id="lot-no"
               type="model"
-              @click="queryLotNo()"
+              @dropdown-click="queryLotNo"
               :listAll="filterLotNo"
               @update-selected-item="updateLotNo"
               :textContent="model.LOT_NO"
               textPlaceHolder="Enter Lot no"
             />
+            <p v-if="model.LOT_NO" style="display: inline-block;color: #3f3737;font-size: 13px;margin: 0;">Po No: {{ objLotNo.PO_NO }}, QTY: {{ objLotNo.QTY }}</p>
           </div>
 
           <div class="col-md-4 mb-4">
@@ -51,12 +52,13 @@
               class="form-control form-control-sm text-element col-md-9"
               id="mo-number"
               type="model"
-              @click="queryMoNumber()"
+              @dropdown-click="queryMoNumber"
               :listAll="filterMoNumber"
               @update-selected-item="updateMoNumber"
               :textContent="model.MO_NUMBER"
               textPlaceHolder="Enter Mo"
             />
+            <p v-if="model.MO_NUMBER" style="display: inline-block;color: #3f3737;font-size: 13px;margin: 0;">Model Name: {{ objMo.MODEL_NAME }}, QTY: {{ objMo.QTY }}</p>
           </div>
 
           <button @click="saveData" class="submit" type="button">Submit</button>
@@ -96,6 +98,10 @@ export default {
     return {
       searchText: "",
       valueSearch: "",
+      objLotNo: {},
+      objMo: {},
+      dataTableLotNoBellow: [],
+      dataTableMoBellow: [],
       dataTableLotNo: [],
       dataTableMoNumber: [],
       dataTable: [],
@@ -108,30 +114,11 @@ export default {
       },
     };
   },
-
-  // watch: {
-  //   valueSearch() {
-  //       this.loadDataTable();
-  //     }
-  //   },
-
     mounted() {
+      console.log("this.model.LOT_NO", this.model.LOT_NO)
     this.loadDataTable();
   },
-
   computed: {
-    // filteredLotNo() {
-    //     if(!Array.isArray(this.dataTable)) {
-    //       console.error('ListDataTable is not an array: ', this.dataTable);
-    //      return [];
-    //     }
-    //     const query = this.valueSearch.toLowerCase()
-    //       const result = this.dataTable.filter(listData => {
-    //        return listData.LOT_NO.toLowerCase().includes(query)
-    //       });
-    //       console.log(result)
-    //       return result;
-    //   },
     filterLotNo: function() {
       const query = this.searchText.toLowerCase();
       if (query.length < 3) return this.dataTableLotNo;
@@ -160,9 +147,53 @@ export default {
   methods: {
     updateLotNo(value) {
       this.model.LOT_NO = value;
+      this.queryLotNoBellow(this.model.LOT_NO);
     },
     updateMoNumber(value) {
       this.model.MO_NUMBER = value;
+      this.queryMoBellow(this.model.MO_NUMBER);
+    },
+    async queryLotNoBellow() {
+      let database_name = localStorage.databaseName;
+      let EMP_NO = this.model.EMP_NO;
+      let IN_ACTION_TYPE = "GET_LOTNO_BELLOW";
+      let LOT_NO = this.model.LOT_NO;
+      let MO_NUMBER = this.model.MO_NUMBER;
+      let valueSearch = this.valueSearch;
+      console.log("IN_ACTION_TYPE:", IN_ACTION_TYPE)
+      console.log("LOT_NO: ",LOT_NO)
+      try {
+        const { data } = await Repository.getApiServer(
+          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
+        );
+        this.dataTableLotNoBellow = data.data;
+        this.objLotNo = this.dataTableLotNoBellow[0];
+
+        console.log('this.objLotNo: ', this.objLotNo);
+
+      } catch (error) {
+        this.$swal("error ex", error, "error");
+      }
+    },
+    async queryMoBellow() {
+      let database_name = localStorage.databaseName;
+      let EMP_NO = this.model.EMP_NO;
+      let IN_ACTION_TYPE = "GET_MO_BELLOW";
+      let LOT_NO = this.model.LOT_NO;
+      let MO_NUMBER = this.model.MO_NUMBER;
+      let valueSearch = this.valueSearch;
+      try {
+        const { data } = await Repository.getApiServer(
+          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
+        );
+        this.dataTableMoBellow = data.data;
+        this.objMo = this.dataTableMoBellow[0];
+
+        console.log('this.objMo: ', this.objMo);
+
+      } catch (error) {
+        this.$swal("error ex", error, "error");
+      }
     },
     async querySearch() {
       let database_name = localStorage.databaseName;
@@ -171,7 +202,6 @@ export default {
       let LOT_NO = this.model.LOT_NO;
       let MO_NUMBER = this.model.MO_NUMBER;
       let valueSearch = this.valueSearch;
-      console.log(IN_ACTION_TYPE, "valueSearch: ",valueSearch)
       try {
         const { data } = await Repository.getApiServer(
           `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
@@ -187,16 +217,17 @@ export default {
       }
     },
     async saveData() {
+      if(!LOT_NO || !MO_NUMBER) {
+        this.$swal("", "Please input Lot no and Mo!", "warning");
+        return;
+      }
       let database_name = localStorage.databaseName;
       let EMP_NO = this.model.EMP_NO;
       let IN_ACTION_TYPE = "LINK";
       let LOT_NO = this.model.LOT_NO;
       let MO_NUMBER = this.model.MO_NUMBER;
       let valueSearch = this.valueSearch;
-      if(!LOT_NO || !MO_NUMBER) {
-        this.$swal("", "Please input Lot no and Mo!", "warning");
-        return;
-      }
+
       try {
         const { data } = await Repository.getApiServer(
           `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
@@ -218,7 +249,6 @@ export default {
       let LOT_NO = this.model.LOT_NO;
       let MO_NUMBER = this.model.MO_NUMBER;
       let valueSearch = this.valueSearch;
-      console.log("valueSearch: ", valueSearch, 'MO_NUMBER: ', MO_NUMBER);
       try {
         const { data } = await Repository.getApiServer(
           `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
@@ -244,7 +274,6 @@ export default {
         const { data } = await Repository.getApiServer(
           `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
         );
-        this.dataTableLotNo = [];
         data.data.forEach((element) => {
           this.dataTableLotNo.push(element.LOT_NO);
         });
@@ -267,7 +296,6 @@ export default {
         const { data } = await Repository.getApiServer(
           `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
         );
-        console.log("data.data: ", data.data);
         this.dataTableMoNumber = [];
         data.data.forEach((element) => {
           this.dataTableMoNumber.push(element.MO_NUMBER);
@@ -276,12 +304,18 @@ export default {
         this.$swal("error ex", error, "error");
       }
     },
-    clearForm() {
+   async clearForm() {
       this.model.MO_NUMBER = '';
       this.model.LOT_NO = '';
       this.dataTableLotNo = [];
       this.dataTableMoNumber = [];
-      this.loadDataTable();
+      this.objLotNo = {};
+      this.objMo = {};
+      this.dataTableLotNoBellow = [];
+      this.dataTableMoBellow = [];
+      this.dataTable = [];
+      this.dataTableHeader = [];
+     await this.loadDataTable();
     },
     BackToParent() {
       this.$router.push({ path: "/Home/Qualcomm_Application" })
@@ -387,7 +421,7 @@ label {
 
 .submit {
   display: inline-block;
-  background-color: #a19d9d;
+  background-color: #504f4f;
   color: rgb(255 253 253);
   padding: 8px 16px;
   border: none;
