@@ -266,13 +266,6 @@ var dataConfig = [
         IsDisable: false,
     },
     {
-        Id: '54',
-        Name: 'CARTON PREFIX',
-        ReplaceName: 'CARTON PREFIX',
-        Route: '/Home/ConfigApp/Config54',
-        IsDisable: false,
-    },
-    {
         Id: '55',
         Name: 'HOLD',
         ReplaceName:  'HOLD',
@@ -329,13 +322,6 @@ var dataConfig = [
         IsDisable: false,
     },
     {
-        Id: '64',
-        Name: 'TMM REPORT',
-        ReplaceName: 'TMM_REPORT',
-        Route: '/Home/ConfigApp/Config64',
-        IsDisable: false,
-    },
-    {
         Id: '65',
         Name: 'ATE CONFIG',
         ReplaceName: 'ATE_CONFIG',
@@ -361,13 +347,6 @@ var dataConfig = [
         Name: 'LANGUAGE SETUP',
         ReplaceName: 'LANGUAGE SETUP',
         Route: '',
-        IsDisable: false,
-    },
-    {
-        Id: '69',
-        Name: 'RULE SETUP',
-        ReplaceName: 'RULE SETUP',
-        Route: '/Home/ConfigApp/Config69',
         IsDisable: false,
     },
     {

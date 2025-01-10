@@ -135,7 +135,6 @@ const routes = [{
             component: () =>
                 import('../views/QueryModel.vue'),
         },
-
         {
             path: '/Home/PQE_NIC',
             name: 'PQE_NIC',

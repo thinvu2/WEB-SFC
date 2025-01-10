@@ -4,7 +4,7 @@
     <title>Title of the document</title>
     <style>
 
-        *{
+*{
             margin: 0 auto;
         }
         h1 {
@@ -15,291 +15,81 @@
         width: 80%;
         row-gap: 15px;
         background-color: bisque;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
       }
       .form-row {
         display: flex;
-        justify-content: flex-end;
+        justify-content: space-between;
         align-items: center;
-        font-size: 16px;
-        font-weight: 555;
-        color: #141414;
-      }
-      input {
-        width: auto;
-        padding: 5px;
-        border: 1px solid #e6e6e2;
-        border-radius: 5px;
-        box-sizing: border-box;
-        resize: vertical;
+        padding: 5px 0;
+        gap: 10px;
       }
       label {
-        display: inline-block;
-        text-align:right;
+        flex: 0 0 30%;
+        text-align: right;
+      }
+      .text-input-over {
+  flex: 1;
+  padding: 5px;
+  /* background-color: #f9f9f9; */
+  border: none;
+  font-size: 14px;
+  color: #333;
+  word-wrap: break-word; /* Ngắt dòng khi văn bản dài */
+  white-space: normal; 
+  max-width: 100%; /* Hoặc giá trị cụ thể như 300px */
+  display: inline-block;
+}
+
+      .text-input-over[readonly] {
+        color: #333;
       }
     </style>
   </head>
   <body>
     <h1>ahihhi</h1>
     <div class="container">
-        <div class="form-row">
-          <label for="msg_sender_name">From:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="msg_sender_name"
-            name="msg_sender_name"
-            readonly
-            v-model="model.MSG_SENDER_NAME"
-          />
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>      
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      <div class="form-row">
+        <label for="msg_sender_name">msg_sender_name:</label>
+        <span id="msg_sender_name" class="text-input-over">{{ model.MSG_SENDER_NAME }}</span>
+      </div>
+      <div class="form-row">
+        <label for="msg_sender_name">From:</label>
+        <span id="msg_sender_name" class="text-input-over">123</span>
+      </div>
+                                    
         </div>
-        <div class="form-row">
-          <label for="msg_receiver_name">To:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="msg_receiver_name"
-            name="msg_receiver_name"
-            readonly
-            v-model="model.MSG_RECEIVER_NAME"
-          />
-        </div>
-        <div class="form-row">
-          <label for="ship_mcmn_creattime">Time:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="ship_mcmn_creattime"
-            name="ship_mcmn_creattime"
-            readonly
-            v-model="model.SHIP_MCMN_CREATTIME"
-          />
-        </div>
-        <div class="form-row">
-          <label for="packslip_no">Pack Slip No:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="packslip_no"
-            name="packslip_no"
-            readonly
-            v-model="model.PACKSLIP_NO"
-          />
-        </div>
-        <div class="form-row">
-          <label for="airwaybill">Airway Bill:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="airwaybill"
-            name="airwaybill"
-            readonly
-            v-model="model.AIRWAYBILL"
-          />
-        </div>
-        <div class="form-row">
-          <label for="freightcarrier">FreightCarrier:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="freightcarrier"
-            name="freightcarrier"
-            readonly
-            v-model="model.FREIGHT_CARRIER_CODE"
-          />
-        </div>
-        <div class="form-row">
-          <label for="estimate-dock">Estimate Dock:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="estimate-dock"
-            name="estimate-dock"
-            readonly
-            v-model="model.SHIP_MCMN_ESTIMATEDDOCKTIME"
-          />
-        </div>
-        <div class="form-row">
-          <label for="supplier">Supplier:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="supplier"
-            name="supplier"
-            readonly
-            v-model="model.SUPPLIER_NAME"
-          />
-        </div>
-  
-        <div class="form-row">
-          <label for="gross-weight">Gross Weight:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="gross-weight"
-            name="gross-weight"
-            readonly
-            v-model="model.GROSSWEIGHT"
-          />
-        </div>
-  
-        <div class="form-row">
-          <label for="net-weight">Net Weight:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="net-weight"
-            name="net-weight"
-            readonly
-            v-model="model.NETWEIGHT"
-          />
-        </div>
-  
-        <div class="form-row">
-          <label for="outer-container">Outer Container:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="outer-container"
-            name="outer-container"
-            readonly
-            v-model="model.SHIP_MCMN_TOTALOUTERCONTAINERS"
-          />
-        </div>
-        <div class="form-row">
-          <label for="ship-mcmn-lpn">Pallet No:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="ship-mcmn-lpn"
-            name="ship-mcmn-lpn"
-            readonly
-            v-model="model.SHIP_MCMN_LPN"
-          />
-        </div>
-        <div class="form-row">
-          <label for="pal-grossweight">GrossWeight:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="pal-grossweight"
-            name="pal-grossweight"
-            readonly
-            v-model="model.PAL_GROSSWEIGHT"
-          />
-        </div>
-        <div class="form-row">
-          <label for="pal-netweight">NetWeight:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="pal-netweight"
-            name="pal-netweight"
-            readonly
-            v-model="model.PAL_NETWEIGHT"
-          />
-        </div>
-        <div class="form-row">
-          <label for="pal-width">Width:</label>
-          <input
-            type="text"
-            id="pal-width"
-            class="text-input-over"
-            name="pal-width"
-            readonly
-            v-model="model.PAL_WIDTH"
-          />
-        </div>
-  
-        <div class="form-row">
-          <label for="pal-length">Length:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="pal-length"
-            name="pal-length"
-            readonly
-            v-model="model.PAL_LENGTH"
-          />
-        </div>
-        <div class="form-row">
-          <label for="pal-height">Height:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="pal-height"
-            name="pal-height"
-            readonly
-            v-model="model.PAL_HEIGHT"
-          />
-        </div>
-  
-        <div class="form-row">
-          <label for="po-no">Po No:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="po-no"
-            name="po-no"
-            readonly
-            v-model="model.PO_NO"
-          />
-        </div>
-        <div class="form-row">
-          <label for="po-line">Po Line:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="po-line"
-            name="po-line"
-            readonly
-            v-model="model.POLINE_NO"
-          />
-        </div>
-        <div class="form-row">
-          <label for="item-no">Items No:</label>
-          <input
-            type="text"
-            id="item-no"
-            class="text-input-over"
-            name="item-no"
-            readonly
-            v-model="model.ITEM_NO"
-          />
-        </div>
-        <div class="form-row">
-          <label for="item-shipped-qty">QTY:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="item-shipped-qty"
-            name="item-shipped-qty"
-            readonly
-            v-model="model.ITEM_SHIPPEDQTY"
-          />
-        </div>
-        <div class="form-row">
-          <label for="item-mpn">MPN:</label>
-          <input
-            type="text"
-            class="text-input-over"
-            id="item-mpn"
-            name="item-mpn"
-            readonly
-            v-model="model.ITEM_MPN"
-          />
-        </div>
-        <div class="form-row">
-          <label for="fab-site">Fab Site:</label>
-          <input
-            type="text"
-            class="text-input"
-            id="fab-site"
-            name="fab-site"
-            readonly
-            v-model="model.FAB_SITE"
-          />
-        </div>
-    </div>
+       
   </body>
 </html>
