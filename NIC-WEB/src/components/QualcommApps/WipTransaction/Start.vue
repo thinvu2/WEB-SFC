@@ -24,7 +24,7 @@
           <p>What are you looking for?</p>
         </div>
         <div class="titleReceviceLot col-3">
-          <p>Choose Foxconn LOT_NO:</p>
+          <p>Choose LOT_NO:</p>
         </div>
         <div class="titleReceviceLot col-2" style="margin-left: -15px">
           <p>Input Qty:</p>
@@ -38,7 +38,7 @@
             v-model="searchKey"
             @keypress="btnSearchClick"
             type="text"
-            placeholder="Search for Foxconn LotNo, ..."
+            placeholder="Search for LotNo, ..."
           />
         </div>
 
@@ -111,7 +111,7 @@
       </div>
       <div class="div-CreateLOT" v-if="isShowCreatedLot">
         <p>
-          <span>{{ labelResult }} SUCCESSED ➪[</span> Foxconn LOT No:
+          <span>{{ labelResult }} SUCCESSED ➪[</span> LOT No:
           <b>{{ createValue }}</b
           ><span>]</span>
         </p>
@@ -225,7 +225,7 @@ export default {
     async loadCreateLot() {
       let databaseName = localStorage.databaseName;
       var { data } = await Repository.getApiServer(
-        `GetLoadLotNoQWip?database_name=${databaseName}`
+        `GetLoadLotNoQWip?database_name=${databaseName}&type=`
       );
       if (data.result == "ok") {
         this.listCreateLot = data.data;
@@ -234,7 +234,7 @@ export default {
 
     async btnClick(event) {
       if (this.createValue.length == 0) {
-        this.$swal("", "Choose Foxconn LOT_NO & LOT_OWNER Retry...", "error");
+        this.$swal("", "Choose LOT_NO & LOT_OWNER Retry...", "error");
       } else {
         var payload = {
           database_name: localStorage.databaseName,
@@ -262,7 +262,7 @@ export default {
 
           //this.createValue = "";
         } else {
-          this.$swal("", data.data, "error");
+          this.$swal("", data.result, "error");
         }
       }
     },
@@ -282,7 +282,7 @@ export default {
             this.listHeader = Object.keys(this.listResult[0]);
             this.setHeader();
           } else {
-            this.$swal("", data.data, "error");
+            this.$swal("", data.result, "error");
           }
         }
       }

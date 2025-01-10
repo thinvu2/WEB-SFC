@@ -9,11 +9,13 @@ function comparer(otherArray) {
 }
 export default createStore({
     state: {
-       //apiAddress: "https://sfcnic-cns.myfiinet.com/websfcapi",
-       //apiAddress: "http://localhost:55829/",
-       //apiAddress: "http://localhost:81/SFCAPI/",
-       apiAddress: "http://10.220.15.158/API",
-       
+        //apiAddress: "https://sfcnic-cns.myfiinet.com/websfcapi",
+        apiAddress: "http://localhost:55829/",
+        //apiAddress: "http://localhost:81/SFCAPI/",
+        //apiAddress: "http://localhost:1325/WEBAPI_NIC",
+        //apiAddress: "http://10.220.94.68:1527/API_SFC",
+        //apiAddress: "http://10.220.15.158/API",
+
         language: 'En',
         isShowModal: false,
         listDetailClick: [],
@@ -285,7 +287,7 @@ export default createStore({
             state.listSelectDualConfig43 = [];//dung cho config43
             state.listAvaiDualGroup = [];
             state.listAvaiDualGroupConfig7 = [],//dung cho config 7
-            state.listAvaiDualConfig43 = [];//dung cho config 43
+                state.listAvaiDualConfig43 = [];//dung cho config 43
             state.listLock = [],
 
                 state.dateTimeFromQM = '';
@@ -534,7 +536,7 @@ export default createStore({
             catalogs = catalogs.filter((p) => p.VALUE != item.VALUE);
             state.listSelectDualGroup = catalogs;
         },
-                //______________Config7
+        //______________Config7
         //--start--Config7
         // UpdateListSelectConfig7Group(state, list) {
         //     if (list.length == 0) {
@@ -548,7 +550,7 @@ export default createStore({
         //     }
         // },
 
-        UpdateListSelectModelConfig7(state, list){
+        UpdateListSelectModelConfig7(state, list) {
             if (!state.isSelectOne) {
                 if (list.length == 0) {
                     state.listAvaiDualModelConfig7 = [];
@@ -586,7 +588,7 @@ export default createStore({
             catalogs = catalogs.filter((p) => { if (p.VALUE.includes(text)) { return true; } return false; });
             state.listAvaiDualModelSearchConfig7 = catalogs;
         },
-        moveAllListAvaiToSelectGroupConfig7(state){
+        moveAllListAvaiToSelectGroupConfig7(state) {
             state.listSelectDualModelConfig7.push.apply(state.listSelectDualModelConfig7, state.listAvaiDualModelSearchConfig7);
             state.listAvaiDualModelSearchConfig7 = [];
         },

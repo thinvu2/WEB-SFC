@@ -13,76 +13,86 @@
     </header>
     <main>
       <div class="container">
-          <div class="div-searchbox row">
-            <div class="div-searchbox-content">
-              <input
+        <div class="div-searchbox row">
+          <div class="div-searchbox-content">
+            <input
               v-on:keyup.enter="querySearch()"
-                v-model="valueSearch"
-                type="text"
-                class="form-control"
-                :placeholder="
-                  $store.state.language == 'En'
-                    ? 'Enter Lot no, Po no...'
-                    : 'Nhập Lot no...'
-                "
-              />
-              <button @click="querySearch()" class="btn">
-                <Icon icon="search" class="sidenav-icon" />
-              </button>
-            </div>
-          </div>
-          <div class="col-md-4 mb-4">
-            <label for="lot-no">Lot no</label>
-            <DropdownSearch
-              class="form-control form-control-sm text-element col-md-9"
-              id="lot-no"
-              type="model"
-              @dropdown-click="queryLotNo"
-              :listAll="filterLotNo"
-              @update-selected-item="updateLotNo"
-              :textContent="model.LOT_NO"
-              textPlaceHolder="Enter Lot no"
+              v-model="valueSearch"
+              type="text"
+              class="form-control"
+              :placeholder="
+                $store.state.language == 'En'
+                  ? 'Enter Lot no, Po no...'
+                  : 'Nhập Lot no...'
+              "
             />
-            <p v-if="model.LOT_NO" style="display: inline-block;color: #3f3737;font-size: 13px;margin: 0;">Po No: {{ objLotNo.PO_NO }}, QTY: {{ objLotNo.QTY }}</p>
+            <button @click="querySearch()" class="btn">
+              <Icon icon="search" class="sidenav-icon" />
+            </button>
           </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <label for="lot-no">Lot no:</label>
+          <DropdownSearch
+            class="form-control form-control-sm text-element col-md-9"
+            id="lot-no"
+            type="model"
+            @dropdown-click="queryLotNo"
+            :listAll="filterLotNo"
+            @update-selected-item="updateLotNo"
+            :textContent="model.lotNo"
+            textPlaceHolder="Enter Lot no"
+          />
+          <p
+            v-if="model.lotNo"
+            style="display: inline-block;color: #3f3737;font-size: 13px;margin: 0;"
+          >
+            Po No: {{ objLotNo.PO_NO }}, QTY: {{ objLotNo.QTY }}
+          </p>
+        </div>
 
-          <div class="col-md-4 mb-4">
-            <label for="mo-number">Mo</label>
-            <DropdownSearch
-              class="form-control form-control-sm text-element col-md-9"
-              id="mo-number"
-              type="model"
-              @dropdown-click="queryMoNumber"
-              :listAll="filterMoNumber"
-              @update-selected-item="updateMoNumber"
-              :textContent="model.MO_NUMBER"
-              textPlaceHolder="Enter Mo"
-            />
-            <p v-if="model.MO_NUMBER" style="display: inline-block;color: #3f3737;font-size: 13px;margin: 0;">Model Name: {{ objMo.MODEL_NAME }}, QTY: {{ objMo.QTY }}</p>
-          </div>
+        <div class="col-md-4 mb-4">
+          <label for="mo-number">Mo:</label>
+          <DropdownSearch
+            class="form-control form-control-sm text-element col-md-9"
+            id="mo-number"
+            type="model"
+            @dropdown-click="queryMoNumber"
+            :listAll="filterMoNumber"
+            @update-selected-item="updateMoNumber"
+            :textContent="model.moNumber"
+            textPlaceHolder="Enter Mo"
+          />
+          <p
+            v-if="model.moNumber"
+            style="display: inline-block;color: #3f3737;font-size: 13px;margin: 0;"
+          >
+            Model Name: {{ objMo.MODEL_NAME }}, QTY: {{ objMo.QTY }}
+          </p>
+        </div>
 
-          <button @click="saveData" class="submit" type="button">Submit</button>
+        <button @click="saveData" class="submit" type="button">Submit</button>
 
-          <div class="data-table">
-            <table class="table-main">
-              <thead>
-                <tr>
-                  <th v-for="(item, index) in dataTableHeader" :key="index">
-                    {{ item }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(item, index) in dataTable" :key="index" >
+        <div class="data-table">
+          <table class="table-main">
+            <thead>
+              <tr>
+                <th v-for="(item, index) in dataTableHeader" :key="index">
+                  {{ item }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) in dataTable" :key="index">
                 <template v-for="(value, key) in item" :key="key">
                   <td>
                     {{ value }}
                   </td>
                 </template>
               </tr>
-              </tbody>
-            </table>
-          </div>
+            </tbody>
+          </table>
+        </div>
       </div>
     </main>
   </div>
@@ -106,16 +116,15 @@ export default {
       dataTableMoNumber: [],
       dataTable: [],
       dataTableHeader: [],
+      databaseName: localStorage.databaseName,
+      empNo: localStorage.username,
       model: {
-        database_name: localStorage.databaseName,
-        EMP_NO: localStorage.username,
-        LOT_NO: "",
-        MO_NUMBER: "",
+        lotNo: "",
+        moNumber: "",
       },
     };
   },
-    mounted() {
-      console.log("this.model.LOT_NO", this.model.LOT_NO)
+  mounted() {
     this.loadDataTable();
   },
   computed: {
@@ -146,65 +155,67 @@ export default {
   },
   methods: {
     updateLotNo(value) {
-      this.model.LOT_NO = value;
-      this.queryLotNoBellow(this.model.LOT_NO);
+      this.model.lotNo = value;
+      this.queryLotNoBellow(this.model.lotNo);
     },
     updateMoNumber(value) {
-      this.model.MO_NUMBER = value;
-      this.queryMoBellow(this.model.MO_NUMBER);
+      this.model.moNumber = value;
+      this.queryMoBellow(this.model.moNumber);
     },
     async queryLotNoBellow() {
-      let database_name = localStorage.databaseName;
-      let EMP_NO = this.model.EMP_NO;
-      let IN_ACTION_TYPE = "GET_LOTNO_BELLOW";
-      let LOT_NO = this.model.LOT_NO;
-      let MO_NUMBER = this.model.MO_NUMBER;
+      let databaseName = this.databaseName;
+      let empNo = this.empNo;
+      let inActionType = "GET_LOTNO_BELLOW";
+      let lotNo = this.model.lotNo;
+      let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
-      console.log("IN_ACTION_TYPE:", IN_ACTION_TYPE)
-      console.log("LOT_NO: ",LOT_NO)
       try {
         const { data } = await Repository.getApiServer(
-          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
+          `GetMappingMo?databaseName=${databaseName}&empNo=${empNo}&inActionType=${inActionType}&lotNo=${lotNo}&moNumber=${moNumber}&valueSearch=${valueSearch}`
         );
         this.dataTableLotNoBellow = data.data;
         this.objLotNo = this.dataTableLotNoBellow[0];
-
-        console.log('this.objLotNo: ', this.objLotNo);
-
       } catch (error) {
-        this.$swal("error ex", error, "error");
+        console.error("queryLotNoBellow Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
     async queryMoBellow() {
-      let database_name = localStorage.databaseName;
-      let EMP_NO = this.model.EMP_NO;
-      let IN_ACTION_TYPE = "GET_MO_BELLOW";
-      let LOT_NO = this.model.LOT_NO;
-      let MO_NUMBER = this.model.MO_NUMBER;
+      let databaseName = this.databaseName;
+      let empNo = this.empNo;
+      let inActionType = "GET_MO_BELLOW";
+      let lotNo = this.model.lotNo;
+      let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
       try {
         const { data } = await Repository.getApiServer(
-          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
+          `GetMappingMo?databaseName=${databaseName}&empNo=${empNo}&inActionType=${inActionType}&lotNo=${lotNo}&moNumber=${moNumber}&valueSearch=${valueSearch}`
         );
         this.dataTableMoBellow = data.data;
         this.objMo = this.dataTableMoBellow[0];
-
-        console.log('this.objMo: ', this.objMo);
-
       } catch (error) {
-        this.$swal("error ex", error, "error");
+        console.error("queryMoBellow Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
     async querySearch() {
-      let database_name = localStorage.databaseName;
-      let EMP_NO = this.model.EMP_NO;
-      let IN_ACTION_TYPE = "GET_GRID";
-      let LOT_NO = this.model.LOT_NO;
-      let MO_NUMBER = this.model.MO_NUMBER;
+      let databaseName = this.databaseName;
+      let empNo = this.empNo;
+      let inActionType = "GET_GRID";
+      let lotNo = this.model.lotNo;
+      let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
       try {
         const { data } = await Repository.getApiServer(
-          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
+          `GetMappingMo?databaseName=${databaseName}&empNo=${empNo}&inActionType=${inActionType}&lotNo=${lotNo}&moNumber=${moNumber}&valueSearch=${valueSearch}`
         );
         this.dataTable = data.data;
         if (typeof this.dataTable != "undefined") {
@@ -213,45 +224,54 @@ export default {
           }
         }
       } catch (error) {
-        this.$swal("error ex", error, "error");
+        console.error("querySearch Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
     async saveData() {
-      if(!LOT_NO || !MO_NUMBER) {
+      if (!this.model.lotNo || !this.model.moNumber) {
         this.$swal("", "Please input Lot no and Mo!", "warning");
         return;
       }
-      let database_name = localStorage.databaseName;
-      let EMP_NO = this.model.EMP_NO;
-      let IN_ACTION_TYPE = "LINK";
-      let LOT_NO = this.model.LOT_NO;
-      let MO_NUMBER = this.model.MO_NUMBER;
+      let databaseName = this.databaseName;
+      let empNo = this.empNo;
+      let inActionType = "LINK";
+      let lotNo = this.model.lotNo;
+      let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
-
       try {
         const { data } = await Repository.getApiServer(
-          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
+          `GetMappingMo?databaseName=${databaseName}&empNo=${empNo}&inActionType=${inActionType}&lotNo=${lotNo}&moNumber=${moNumber}&valueSearch=${valueSearch}`
         );
         if (data.result == "ok") {
           this.$swal("", "Successfully applied", "success");
-          await this.clearForm();
+          this.clearForm();
         } else {
-          this.$swal("", data.data, "error");
+          this.$swal("", data.data.substr(0, 100), "error");
         }
       } catch (error) {
-        this.$swal("error ex", error, "error");
+        console.error("saveData Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
     async loadDataTable() {
-      let database_name = localStorage.databaseName;
-      let EMP_NO = this.model.EMP_NO;
-      let IN_ACTION_TYPE = "GET_GRID";
-      let LOT_NO = this.model.LOT_NO;
-      let MO_NUMBER = this.model.MO_NUMBER;
+      let databaseName = this.databaseName;
+      let empNo = this.empNo;
+      let inActionType = "GET_GRID";
+      let lotNo = this.model.lotNo;
+      let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
       try {
         const { data } = await Repository.getApiServer(
-          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
+          `GetMappingMo?databaseName=${databaseName}&empNo=${empNo}&inActionType=${inActionType}&lotNo=${lotNo}&moNumber=${moNumber}&valueSearch=${valueSearch}`
         );
         this.dataTable = data.data;
         if (typeof this.dataTable != "undefined") {
@@ -260,53 +280,67 @@ export default {
           }
         }
       } catch (error) {
-        this.$swal("error ex", error, "error");
+        console.error("loadDataTable Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
     async queryLotNo() {
-      let database_name = localStorage.databaseName;
-      let EMP_NO = this.model.EMP_NO;
-      let IN_ACTION_TYPE = "GET_LOTNO";
-      let LOT_NO = this.model.LOT_NO;
-      let MO_NUMBER = this.model.MO_NUMBER;
+      let databaseName = this.databaseName;
+      let empNo = this.empNo;
+      let inActionType = "GET_LOTNO";
+      let lotNo = this.model.lotNo;
+      let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
       try {
         const { data } = await Repository.getApiServer(
-          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
+          `GetMappingMo?databaseName=${databaseName}&empNo=${empNo}&inActionType=${inActionType}&lotNo=${lotNo}&moNumber=${moNumber}&valueSearch=${valueSearch}`
         );
         data.data.forEach((element) => {
           this.dataTableLotNo.push(element.LOT_NO);
         });
       } catch (error) {
-        this.$swal("error ex", error, "error");
+        console.error("queryLotNo Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
     async queryMoNumber() {
-      let database_name = localStorage.databaseName;
-      let EMP_NO = this.model.EMP_NO;
-      let IN_ACTION_TYPE = "GET_MO";
-      let LOT_NO = this.model.LOT_NO;
-      let MO_NUMBER = this.model.MO_NUMBER;
-      let valueSearch = this.valueSearch;
-      if(!LOT_NO) {
+      if (!this.model.lotNo) {
         this.$swal("", "Please input Lot no first!", "warning");
         return;
       }
+      let databaseName = this.databaseName;
+      let empNo = this.empNo;
+      let inActionType = "GET_MO";
+      let lotNo = this.model.lotNo;
+      let moNumber = this.model.moNumber;
+      let valueSearch = this.valueSearch;
       try {
         const { data } = await Repository.getApiServer(
-          `GetMappingMo?database_name=${database_name}&EMP_NO=${EMP_NO}&IN_ACTION_TYPE=${IN_ACTION_TYPE}&LOT_NO=${LOT_NO}&MO_NUMBER=${MO_NUMBER}&valueSearch=${valueSearch}`
+          `GetMappingMo?databaseName=${databaseName}&empNo=${empNo}&inActionType=${inActionType}&lotNo=${lotNo}&moNumber=${moNumber}&valueSearch=${valueSearch}`
         );
-        this.dataTableMoNumber = [];
         data.data.forEach((element) => {
           this.dataTableMoNumber.push(element.MO_NUMBER);
         });
       } catch (error) {
-        this.$swal("error ex", error, "error");
+        console.error("queryMoNumber Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
-   async clearForm() {
-      this.model.MO_NUMBER = '';
-      this.model.LOT_NO = '';
+    clearForm() {
+      this.model.moNumber = "";
+      this.model.lotNo = "";
       this.dataTableLotNo = [];
       this.dataTableMoNumber = [];
       this.objLotNo = {};
@@ -315,24 +349,22 @@ export default {
       this.dataTableMoBellow = [];
       this.dataTable = [];
       this.dataTableHeader = [];
-     await this.loadDataTable();
+      this.loadDataTable();
     },
     BackToParent() {
-      this.$router.push({ path: "/Home/Qualcomm_Application" })
+      this.$router.push({ path: "/Home/Qualcomm_Application" });
     },
   },
 };
 </script>
 <style scoped lang="scss">
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
 * {
   box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
 }
-
 .div-all {
-  //background-color: rgb(235 235 235);
   padding: 0 20px;
 }
 .div-back {
@@ -413,7 +445,7 @@ label {
 
 .container {
   border-radius: 5px;
-  background-color: rgb(235 235 235);;
+  background-color: rgb(235 235 235);
   padding: 20px;
   width: 90%;
   height: auto;

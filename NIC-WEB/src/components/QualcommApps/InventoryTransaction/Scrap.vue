@@ -4,7 +4,7 @@
       <nav>
         <ul class="breadcrumb">
           <li class="breadcrumb-item">
-            <router-link to="/Home/Qualcomm_Aplication">Qualcomm</router-link>
+            <router-link to="/Home/Qualcomm_Application">Qualcomm</router-link>
           </li>
           <li class="breadcrumb-item">
             <router-link to="/Home/ConfigApp/QWIP_Trans"
@@ -21,10 +21,13 @@
     <div class="input-center">
       <div class="title row col-12">
         <div class="titleSearchArea col-4">
-          <p>What are you looking for?</p>
+          <p>Looking for?</p>
         </div>
         <div class="titleReceviceLot col-3">
-          <p>Choose Foxconn LOT_NO:</p>
+          <p>Choose LOT_NO:</p>
+        </div>
+        <div class="titleReceviceLot col-2" style="margin-left: -15px">
+          <p>Qty:</p>
         </div>
       </div>
       <div class="optionInput row col-12">
@@ -33,9 +36,9 @@
           <input
             class="search_input"
             v-model="searchKey"
-            @keypress="btnSearchClick"
+            @keypress="btnSearchClick1"
             type="text"
-            placeholder="Search for Foxconn LotNo, ..."
+            placeholder="Search for LotNo, ..."
           />
         </div>
 
@@ -55,6 +58,7 @@
             @focus="showDropdown = true"
             @input="filterOptions"
             @blur="hideDropdown"
+            v-on:change="UpdateQty"
           />
 
           <!-- Danh sách tùy chỉnh -->
@@ -81,6 +85,7 @@
               @mousedown="selectOption(item.RECEIVELOT)"
               style="padding: 8px; cursor: pointer"
               class="form-control"
+              v-on:change="UpdateQty"
             >
               {{ item.RECEIVELOT }}
             </li>
@@ -88,7 +93,14 @@
         </div>
 
         <span class="dropdown-icon" @click="toggleDropdown">▼</span>
-
+        <div class="valueReceviceLot col-2">
+          <input
+            class="form-control"
+            type="number"
+            v-model="Qty"
+            v-on:change="CheckQty"
+          />
+        </div>
         <div class="valueActionArea col-2">
           <button class="btn-MappingLot" @click="btnClick($event)">
             {{ action.replace("lot", "").toUpperCase() }}
@@ -105,7 +117,7 @@
       </div>
       <div class="div-CreateLOT" v-if="isShowCreatedLot">
         <p>
-          <span>{{ labelResult }} SUCCESSED ➪[</span> Foxconn LOT No:
+          <span>{{ labelResult }} SUCCESSED ➪[</span> LOT No:
           <b>{{ createValue }}</b
           ><span>]</span>
         </p>
@@ -148,6 +160,7 @@ export default {
       createValue: "",
       reasonValue: "",
       searchKey: "",
+      Qty: 0,
       action: "Scrap",
       transaction: "InventoryScrapTransaction",
       filteredList: [],
@@ -179,15 +192,28 @@ export default {
       if (this.showDropdown) this.filterOptions();
     },
     async CheckPrivilege() {
-      let { data } = await Repository.getRepo("GetLoadFormQWip1", this.model);
-      if (data.result == "ok") {
-        this.listResult = data.data;
-        this.listHeader = Object.keys(this.listResult[0]);
-        this.setHeader();
+      var payload = {
+        database_name: localStorage.databaseName,
+        emp_no: localStorage.username,
+        fun: "QWIP_SCRAP",
+      };
+      var { data } = await Repository.getRepo("CheckConfigPrivilege", payload);
+      if (data.result != "ok") {
+        if (localStorage.language == "En") {
+          this.$swal("", "Not privilege", "error");
+        } else {
+          this.$swal("", "Bạn không có quyền thêm sửa", "error");
+        }
+        this.$router.push({ path: "/Home/ConfigApp/QWIP_Trans" });
       }
+    },
+    UpdateQty: function (event) {
+      this.createValue = event.target.value;
+      this.btnSearchClick(event.target.value);
     },
 
     async loadComponents() {
+      this.CheckPrivilege();
       this.RefreshState();
       this.loadCreateLot();
       try {
@@ -218,22 +244,47 @@ export default {
     async loadCreateLot() {
       let databaseName = localStorage.databaseName;
       var { data } = await Repository.getApiServer(
-        `GetLoadLotNoQWip?database_name=${databaseName}`
+        `GetLoadLotNoQWip?database_name=${databaseName}&type=`
       );
       if (data.result == "ok") {
         this.listCreateLot = data.data;
       }
     },
+    CheckQty: function (event) {
+      if (this.Qty > 0 && this.createValue.length > 0) {
+        this.CheckQty_Qwip(event.target.value);
+      } else {
+        this.Qty = 0;
+        this.$swal("", "Lot_no cannot empty", "error");
+      }
+    },
+    async CheckQty_Qwip(qty) {
+      var payload = {
+        database_name: localStorage.databaseName,
+        lot_no: this.createValue,
+        reason: "",
+        qty: qty,
+        transaction: this.transaction,
+      };
+
+      var { data } = await Repository.getRepo("CheckQty_Qwip", payload);
+
+      if (data.result != "ok") {
+        this.Qty = 0;
+        this.$swal("", "quantity exceeds total lot_qty", "error");
+      }
+    },
 
     async btnClick(event) {
-      if (this.createValue.length == 0) {
-        this.$swal("", "Choose Foxconn LOT_NO & LOT_OWNER Retry...", "error");
+      if (this.createValue.length == 0 || this.Qty <= 0) {
+        this.$swal("", "Cannot be left blank...", "error");
       } else {
         var payload = {
           database_name: localStorage.databaseName,
           lot_no: this.createValue,
           reason: "",
           transaction: this.transaction,
+          qty: this.Qty,
         };
 
         var { data } = await Repository.getRepo("InsertQWipTrans", payload);
@@ -254,12 +305,12 @@ export default {
 
           //this.createValue = "";
         } else {
-          this.$swal("", data.data, "error");
+          this.$swal("", data.result, "error");
         }
       }
     },
 
-    async btnSearchClick(event) {
+    async btnSearchClick1(event) {
       if (event.keyCode == 13) {
         if (this.searchKey.length == 0) {
           this.$swal("", "Please input search key to continues", "error");
@@ -274,9 +325,23 @@ export default {
             this.listHeader = Object.keys(this.listResult[0]);
             this.setHeader();
           } else {
-            this.$swal("", data.data, "error");
+            this.$swal("", data.result, "error");
           }
         }
+      }
+    },
+    async btnSearchClick(event) {
+      var database_name = localStorage.databaseName;
+
+      var { data } = await Repository.getApiServer(
+        `GetLoadFormQWip?database_name=${database_name}&trans_name=${this.transaction}&lot_no=${event}`
+      );
+      if (data.result == "ok") {
+        this.listResult = data.data;
+        this.listHeader = Object.keys(this.listResult[0]);
+        this.setHeader();
+      } else {
+        this.$swal("", "LOT_NO not exists!", "error");
       }
     },
 

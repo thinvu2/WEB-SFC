@@ -18,7 +18,6 @@
         :style="item.Style"
       >
         <span class="btnGrid">{{ item.Name }}</span>
-        <!-- <span class="btnGrid">{{ item.Id + ". " + item.Name }}</span> -->
       </div>
     </div>
     <div class="content">Wip_Transaction :</div>

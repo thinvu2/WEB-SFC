@@ -1,204 +1,392 @@
 <template>
-  <div class="WOMapping-content">
-    <div class="breadcrumb-content">
-      <nav>
-        <ul class="breadcrumb">
-          <li class="breadcrumb-item">
-            <router-link to="/Home/Qualcomm_Aplication">Qualcomm</router-link>
-          </li>
-          <li class="breadcrumb-item">
-            <router-link to="/Home/ConfigApp/QWIP_Trans"
-              >Inventory_Transactions</router-link
-            >
-          </li>
-          <li class="breadcrumb-item active" id="breadcrumb-active">
-            {{ action.toUpperCase().replace("LOT", "_LOT") }}
-          </li>
-        </ul>
-      </nav>
-    </div>
-
-    <div class="input-center">
-      <div class="title row col-12">
-        <div class="titleSearchArea col-4">
-          <p>What are you looking for?</p>
-        </div>
-        <div class="titleReceviceLot col-3">
-          <p>Choose Foxconn LOT_NO:</p>
-        </div>
-      </div>
-      <div class="optionInput row col-12">
-        <div class="valueSearchArea col-4">
-          <img src="../../../assets/img/search_100px.png" alt="" />
-          <input
-            class="search_input"
-            v-model="searchKey"
-            @keypress="btnSearchClick"
-            type="text"
-            placeholder="Search for Foxconn LotNo, ..."
-          />
-        </div>
-
-        <!-- <div class="valueReceviceLot col-3">
-                    <select id="ReceviceLot" name="CreateLot" v-model="createValue">
-                        <option v-for="(item, index) in listCreateLot" :key="index">
-                            {{ item.RECEIVELOT }}
-                        </option>
-                    </select>
-                </div> -->
-        <div style="position: relative" class="valueReceviceLot col-3">
-          <input
-            class="form-control"
-            id="CreateLot"
-            name="CreateLot"
-            v-model="createValue"
-            @focus="showDropdown = true"
-            @input="filterOptions"
-            @blur="hideDropdown"
-          />
-
-          <!-- Danh sách tùy chỉnh -->
-          <ul
-            v-show="showDropdown && filteredList.length"
-            style="
-              position: absolute;
-              top: 105%;
-              left: 15px;
-              width: 90%;
-              border: 1px solid #ccc;
-              background: white;
-              max-height: 200px;
-              overflow-y: auto;
-              z-index: 1000;
-              list-style: none;
-              margin: 0;
-              padding: 0;
-            "
-          >
-            <li
-              v-for="(item, index) in filteredList"
-              :key="index"
-              @mousedown="selectOption(item.RECEIVELOT)"
-              style="padding: 8px; cursor: pointer"
-              class="form-control"
-            >
-              {{ item.RECEIVELOT }}
+  <div class="div-all">
+    <header class="row header">
+      <div class="breadcrumb-content">
+        <nav>
+          <ul class="breadcrumb">
+            <li @click="isShowForm ? ReturnForm() : BackToParent()">
+              <button class="return-btn">&#8592;</button>
             </li>
+            <li class="breadcrumb-item">
+              <router-link to="/Home/Qualcomm_Application"
+                >Qualcomm</router-link
+              >
+            </li>
+            <li class="breadcrumb-item">
+              <router-link to="/Home/ConfigApp/QWIP_Trans"
+                >Inventory_Transactions</router-link
+              >
+            </li>
+            <li class="breadcrumb-item active" id="breadcrumb-active">SPLIT</li>
           </ul>
+        </nav>
+      </div>
+    </header>
+    <div class="searchbox" v-if="!isShowForm">
+      <div class="searchbox-content">
+        <input
+          :disabled="showTimeForm"
+          v-on:keyup.enter="LoadComponent()"
+          v-model="valueSearch"
+          type="text"
+          class="form-control"
+          placeholder="Enter Po... "
+        />
+        <button @click="LoadComponent()" class="btn-button">
+          <Icon icon="search" class="sidenav-icon" />
+        </button>
+      </div>
+    </div>
+    <!-- Form input data -->
+    <div class="container" v-if="isShowForm === true">
+      <div class="title-class">
+        <p>SPLIT</p>
+      </div>
+      <div class="form-row">
+        <label for="shipping-name">LOT NO:</label>
+        <input
+          type="text"
+          class="text-input"
+          id="shipping-name"
+          name="shipping-name"
+          readonly
+          v-model="model.LOT_NO"
+        />
+      </div>
+      <div class="form-row">
+        <label for="shipping-name">LOT_NO QTY:</label>
+        <input
+          type="number"
+          class="text-input"
+          v-model="model.QTY"
+          readonly
+          v-on:change="SplitQty"
+        />
+      </div>
+      <!-- input -->
+      <div class="form-input">
+        <span class="add-new-form" @click="handAddNewForm()">
+          <i class="fa fa-plus" aria-hidden="true"></i>
+        </span>
+        <div class="form-row-input">
+          <label for="sched-deliv-date">LOT_NO 1 :</label>
+
+          <input
+            class="form-control form-control-sm text-element col-md-3 text-input"
+            :listAll="ListModel"
+            @update-selected-item="UpdateModelReceive"
+            :min="minTimeDefault"
+            id="sched-deliv-date"
+            name="sched-deliv-date"
+            v-model="minTimeDefault"
+            textPlaceHolder="Enter Model Name"
+            readonly
+          />
+          <label for="sched-qty">Schedule Qty:</label>
+          <input
+            type="number"
+            id="sched-qty"
+            class="text-input"
+            name="sched-qty"
+            autocomplete="off"
+            max="999999"
+            min="0"
+            v-model="model.SCHED_QTY"
+            @input="limitInputLength($event, 6)"
+          />
         </div>
-
-        <span class="dropdown-icon" @click="toggleDropdown">▼</span>
-
-        <div class="valueActionArea col-2">
-          <button class="btn-MappingLot" @click="btnClick($event)">
-            {{ action.replace("lot", "").toUpperCase() }}
-          </button>
+        <div
+          class="form-row-input"
+          v-for="(row, index) in additionalRows"
+          :key="index"
+        >
+          <label :for="`sched-deliv-date + ${index}`"
+            >LOT_NO {{ index + 2 }} :</label
+          >
+          <!-- <input
+            type="date"
+            :id="`sched-deliv-date + ${index}`"
+            class="text-input"
+            :min="minTime"
+            :name="`sched-deliv-date + ${index}`"
+            v-model="row.minTime"
+          /> -->
+          <input
+            class="form-control form-control-sm text-element col-md-3 text-input"
+            :listAll="ListModel"
+            @update-selected-item="UpdateModelReceive"
+            :id="`sched-deliv-date + ${index}`"
+            :min="minTime"
+            :name="`sched-deliv-date + ${index}`"
+            v-model="row.minTime"
+            readonly
+          />
+          <label :for="`sched-qty + ${index}`">Schedule Qty:</label>
+          <input
+            type="number"
+            :id="`sched-qty + ${index}`"
+            class="text-input"
+            :name="`sched-qty + ${index}`"
+            autocomplete="off"
+            max="999999"
+            min="0"
+            v-model="row.scheduleQty"
+            @input="limitInputLength($event, 6)"
+          />
+          <i
+            class="fa fa-times"
+            aria-hidden="true"
+            @click="handleDeleteNewForm(index)"
+          ></i>
         </div>
       </div>
     </div>
-    <div class="output-content">
-      <div class="row col-12">
-        <p class="card-title">
-          Output Center
-          <span> | Show result query data. </span>
-        </p>
-      </div>
-      <div class="div-CreateLOT" v-if="isShowCreatedLot">
-        <p>
-          <span>{{ labelResult }} SUCCESSED ➪[</span> Foxconn LOT No:
-          <b>{{ createValue }}</b
-          ><span>]</span>
-        </p>
-      </div>
-      <div class="div-table">
-        <table class="mytable" id="my-table">
-          <thead>
-            <tr>
-              <template v-for="(item, index) in listHeader" :key="index">
-                <th>{{ item }}</th>
-              </template>
-            </tr>
-          </thead>
-          <tr v-for="(item, index) in listResult" :key="index">
-            <template v-for="(itemContent, index1) in item" :key="index1">
-              <td>{{ itemContent }}</td>
-            </template>
-          </tr>
-        </table>
+    <div
+      class="submit-form"
+      v-if="isShowForm === true && isShowSubmitForm === true"
+    >
+      <input
+        type="button"
+        id="submit-form"
+        value="Submit"
+        @click="SubmitForm()"
+      />
+    </div>
+    <div
+      class="submit-form"
+      v-if="isShowForm === true && isShowSubmitForm === false"
+    ></div>
+    <div class="main-contain" v-if="isShowForm === false">
+      <div class="row col-sm-12 div-content">
+        <template v-if="DataTableHeader">
+          <table id="tableMain" class="table mytable">
+            <thead v-if="DataTable.length > 0">
+              <tr>
+                <template v-for="(item, index) in DataTableHeader" :key="index">
+                  <th>
+                    {{ item }}
+                  </th>
+                </template>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, index) in DataTable" :key="index">
+                <template v-for="(value, key) in row" :key="key">
+                  <td @click="key === 'LOT_NO' && ShowDetail(index)">
+                    {{ value }}
+                  </td>
+                </template>
+              </tr>
+            </tbody>
+          </table>
+        </template>
       </div>
     </div>
   </div>
 </template>
-
 <script>
 import Repository from "../../../services/Repository";
 export default {
-  name: "InventorySplit",
-  created() {
-    this.loadComponents();
-  },
   data() {
     return {
-      listResult: [],
-      listHeader: [],
-      listCreateLot: [],
-      listCreateLotOwner: [],
-      labelResult: "",
-      isShowCreatedLot: false,
-      createValue: "",
-      reasonValue: "",
-      searchKey: "",
-      action: "Split",
-      transaction: "InventorySplitTransaction",
-      filteredList: [],
-      showDropdown: false,
+      minTime: this.getTodayDate(),
+      minTimeDefault: this.getTodayDate(),
+      additionalRows: [],
+      showTimeForm: false,
+      showError: false,
+      dateFrom: new Date(),
+      dateTo: new Date(),
+      isShowSubmitForm: true,
+      isShowForm: false,
+      isVisible: false,
+      DataTableHeader: [],
+      DataTable: [],
+      ShowDataDetail: [],
+      ListModel: ["AAAA", "BBBBB", "CCCCC"],
+      valueSearch: "",
+      transaction: "WIPSplitTransaction",
+      model: {
+        database_name: localStorage.databaseName,
+        EMP_NO: localStorage.username,
+        LOT_NO: "",
+        QTY: "",
+        transaction: "WIPSplitTransaction",
+      },
     };
   },
+  created() {
+    window.addEventListener("click", (e) => {
+      if (!this.$el.contains(e.target)) {
+        this.isVisible = false;
+      }
+    });
+  },
+  computed: {},
   mounted() {
-    document.title = "WIP Transaction Report, copyright: Hip";
-    this.RefreshState();
+    this.LoadComponent();
+    //this.getTodayDate();
   },
   methods: {
-    //inputselect
-    filterOptions() {
-      this.filteredList = this.listCreateLot.filter((item) =>
-        item.RECEIVELOT.toLowerCase().includes(this.createValue.toLowerCase())
-      );
-    },
-    selectOption(value) {
-      this.createValue = value;
-      this.showDropdown = false;
-    },
-    hideDropdown() {
-      setTimeout(() => {
-        this.showDropdown = false;
-      }, 100);
-    },
-    toggleDropdown() {
-      this.showDropdown = !this.showDropdown;
-      if (this.showDropdown) this.filterOptions();
-    },
-    async CheckPrivilege() {
-      let { data } = await Repository.getRepo("GetLoadFormQWip1", this.model);
-      if (data.result == "ok") {
-        this.listResult = data.data;
-        this.listHeader = Object.keys(this.listResult[0]);
-        this.setHeader();
+    limitInputLength(event, maxLength) {
+      if (event.target.value.length >= maxLength) {
+        event.target.value = event.target.value.slice(0, maxLength);
       }
     },
-
-    async loadComponents() {
-      this.RefreshState();
-      this.loadCreateLot();
+    getTodayDate() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    },
+    SplitQty: function (event) {
+      for (let i = 0; i < parseInt(event.target.value); i++) {
+        this.handAddNewForm();
+      }
+    },
+    handAddNewForm() {
+      this.additionalRows.push({
+        minTime: this.minTime,
+        scheduleQty: "0",
+      });
+    },
+    handleDeleteNewForm(index) {
+      this.additionalRows.splice(index, 1);
+    },
+    async SubmitForm() {
+      console.log("this.model.SCHED_QTY", this.model.SCHED_QTY);
+      if (!this.model.SCHED_QTY) {
+        this.$swal("", "Please input a valid Schedule Qty!", "warning");
+        return;
+      }
+      // let titleValue = "";
+      // let textValue = "";
+      let titleValue = "Are you sure edit?";
+      let textValue = "Once OK, data will be updated!";
       try {
-        var event = "";
-        let { data } = await Repository.getApiServer(
-          `GetLoadFormQWip?database_name=${localStorage.databaseName}&trans_name=${this.transaction}&lot_no=${event}`
+        const willDelete = await this.$swal({
+          title: titleValue,
+          text: textValue,
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        });
+        if (!willDelete) return;
+      } catch (err) {
+        console.error("SweetAlert Error:", err);
+      }
+      // this.$swal({
+      //   title: titleValue,
+      //   text: textValue,
+      //   icon: "warning",
+      //   buttons: true,
+      //   dangerMode: true,
+      // }).then(async (willDelete) => {
+      //   if (willDelete.isConfirmed == false) return;
+
+      let filleredRows = [];
+      this.additionalRows.forEach((row) => {
+        if (row.minTime || row.scheduleQty) {
+          filleredRows.push({ ...row });
+        }
+      });
+      if (this.minTimeDefault || this.model.SCHED_QTY) {
+        filleredRows.push({
+          minTime: this.minTimeDefault,
+          scheduleQty: this.model.SCHED_QTY,
+        });
+      } else {
+        this.$swal("", "Invalid data, input is wrong", "warning");
+        return;
+      }
+      if (filleredRows.length === 0) {
+        this.$swal("", "No data to submit", "warning");
+        return;
+      }
+      let arr2 = filleredRows.map((item) => item.minTime);
+      const set1 = new Set(arr2);
+      if (arr2.length !== set1.size) {
+        this.$swal("", "Delivery Date can't choose the same time", "warning");
+        return;
+      }
+      //sum qty
+      let sumScheduleQty = filleredRows.reduce(
+        (sum, qty) => sum + parseInt(qty.scheduleQty),
+        0
+      );
+      // let sumScheduleQty = 0;
+      let QUANTITY = parseInt(this.ShowDataDetail[0].QUANTITY, 10);
+      // for (let item of filleredRows) {
+      //   sumScheduleQty += parseInt(item.scheduleQty, 10);
+      // }
+
+      if (Number.isNaN(sumScheduleQty) || Number.isNaN(QUANTITY)) {
+        this.$swal(
+          "",
+          `Invalid data, input is wrong: ${sumScheduleQty}, Quantity: ${QUANTITY}`,
+          "warning"
         );
+        return;
+      }
+      if (QUANTITY !== sumScheduleQty) {
+        this.$swal(
+          "",
+          `Total scheduleQty: ${sumScheduleQty} not equal Quantity: ${QUANTITY}`,
+          "warning"
+        );
+        return;
+      }
+      let payload = {
+        EMP_NO: localStorage.username,
+        database_name: localStorage.databaseName,
+        additionalRows: filleredRows,
+        data: [
+          {
+            F_ID: this.model.F_ID,
+            F_SITE: this.model.F_SITE,
+            F_PIP_TYPE: this.model.F_PIP_TYPE,
+            F_MSGID: this.model.F_MSGID,
+            F_TIMESTAMP: this.model.F_TIMESTAMP,
+            F_VENDOR: this.model.F_VENDOR,
+            F_PO: this.model.F_PO,
+            F_PO_ITEM: this.model.F_PO_ITEM,
+            F_CONF_CTG: this.model.F_CONF_CTG,
+            F_REFERENCE: this.model.F_REFERENCE,
+            F_CREATION_DATE: this.model.F_CREATION_DATE,
+            F_LASTEDIT_DT: this.model.F_LASTEDIT_DT,
+            F_FILENAME: this.model.F_FILENAME,
+            F_TIMES: this.model.F_TIMES,
+          },
+        ],
+      };
+      try {
+        let { data } = await Repository.getRepo("InsertTelitEDI", payload);
         if (data.result == "ok") {
-          this.listResult = data.data;
-          this.listHeader = Object.keys(this.listResult[0]);
-          this.setHeader();
+          this.ClearForm();
+          this.$swal("", "Successfully applied", "success");
+        } else {
+          this.$swal("", data.result, "error");
+        }
+      } catch (error) {
+        console.error("SubmitForm Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
+      }
+    },
+    async LoadComponent() {
+      let databaseName = localStorage.databaseName;
+      try {
+        var event = this.valueSearch;
+        let { data } = await Repository.getApiServer(
+          `GetLoadFormQWip?database_name=${databaseName}&trans_name=${this.transaction}&lot_no=${event}`
+        );
+        console.log(data);
+        if (data.result == "ok") {
+          this.DataTable = data.data;
+          this.DataTableHeader = Object.keys(this.DataTable[0]);
         }
       } catch (error) {
         if (error.response && error.response.data) {
@@ -208,350 +396,439 @@ export default {
         }
       }
     },
-    setHeader() {
-      const headers = document.querySelectorAll("th");
-      headers.forEach((header) => {
-        const width = header.getBoundingClientRect().width;
-        header.style.width = `${width}px`;
-      });
-    },
-    async loadCreateLot() {
+    async ShowDetail(index) {
       let databaseName = localStorage.databaseName;
-      var { data } = await Repository.getApiServer(
-        `GetLoadLotNoQWip?database_name=${databaseName}`
-      );
-      if (data.result == "ok") {
-        this.listCreateLot = data.data;
-      }
-    },
-
-    async btnClick(event) {
-      if (this.createValue.length == 0) {
-        this.$swal("", "Choose Foxconn LOT_NO & LOT_OWNER Retry...", "error");
-      } else {
-        var payload = {
-          database_name: localStorage.databaseName,
-          lot_no: this.createValue,
-          reason: "",
-          transaction: this.transaction,
-        };
-
-        var { data } = await Repository.getRepo("InsertQWipTrans", payload);
-
-        if (data.result == "ok") {
-          this.$swal({
-            title: "",
-            text: this.createValue.toLocaleUpperCase() + " SUCCESSFULLY",
-            icon: "success",
-            timer: 1000,
-            showConfirmButton: false,
-          }).then(() => {});
-          this.listResult = data.data;
-          this.listHeader = Object.keys(this.listResult[0]);
-          this.setHeader();
-          this.labelResult = event.target.innerText.trim();
-          this.isShowCreatedLot = true;
-
-          //this.createValue = "";
+      let F_PO = this.DataTable[index].LOT_NO;
+      try {
+        let responseData = await Repository.getApiServer(
+          `GetLoadFormQWip?database_name=${databaseName}&trans_name=${this.transaction}&lot_no=${F_PO}`
+        );
+        this.ShowDataDetail = responseData.data.data;
+        if (this.ShowDataDetail.length > 0) {
+          let firstItem = this.ShowDataDetail[0];
+          this.model.LOT_NO = firstItem.LOT_NO;
+          this.model.QTY = firstItem.SCHEDULE_COMPLETION_QTY;
+          this.isShowForm = true;
         } else {
-          this.$swal("", data.data, "error");
+          this.isShowForm = false;
         }
+      } catch (error) {
+        console.error("ShowForm Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
-
-    async btnSearchClick(event) {
-      if (event.keyCode == 13) {
-        if (this.searchKey.length == 0) {
-          this.$swal("", "Please input search key to continues", "error");
-        } else {
-          var database_name = localStorage.databaseName;
-
-          var { data } = await Repository.getApiServer(
-            `GetLoadFormQWip?database_name=${database_name}&trans_name=${this.transaction}&lot_no=${this.searchKey}`
-          );
-          if (data.result == "ok") {
-            this.listResult = data.data;
-            this.listHeader = Object.keys(this.listResult[0]);
-            this.setHeader();
-          } else {
-            this.$swal("", data.data, "error");
-          }
-        }
-      }
+    pad(number) {
+      return number < 10 ? `0${number}` : `${number}`;
     },
-
-    RefreshState() {
-      this.isShowCreatedLot = false;
-      this.createValue = "";
-      this.WOValue = "";
-      this.labelResult = "";
+    ClearForm() {
+      this.DataTable = [];
+      this.DataTableHeader = [];
+      this.isShowForm = false;
+      this.isShowSubmitForm = true;
+      this.additionalRows = [];
+      this.model.SCHED_QTY = "";
+      this.LoadComponent();
+    },
+    ReturnForm() {
+      this.DataTable = [];
+      this.DataTableHeader = [];
+      this.isShowForm = false;
+      this.isShowSubmitForm = true;
+      this.additionalRows = [];
+      this.model.SCHED_QTY = "";
+      this.LoadComponent();
+    },
+    BackToParent() {
+      this.$router.push({ path: "/Home/ConfigApp/QWIP_Trans" });
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.WOMapping-content {
-  width: 100%;
-  position: relative;
-  background-color: #f2f5fc;
-  border-radius: 20px;
-  border: solid 1px #e9ecef;
-  height: 90vh;
-  margin-top: 55px;
+.breadcrumb {
+  margin-top: 10px;
+  font-size: 18px;
+  background-color: transparent;
+  font-weight: 500;
+  color: #333;
+
+  .breadcrumb-item {
+    color: #adc3c9;
+  }
+
+  #breadcrumb-active {
+    color: #054a5c;
+    font-weight: 400;
+    cursor: pointer; /* Đổi con trỏ thành bàn tay */
+  }
+}
+.div-all {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: #054a5c;
-  .breadcrumb {
-    margin-top: 10px;
-    font-size: 18px;
-    background-color: transparent;
-    font-weight: 500;
-    color: #333;
-
-    .breadcrumb-item {
-      color: #adc3c9;
-    }
-
-    #breadcrumb-active {
-      color: #054a5c;
-      font-weight: 400;
-    }
+  margin: 0;
+  padding: 0 10px;
+  background-color: #f9f9f9;
+  //width: 100%;
+  //height:auto;
+  //min-height: 100vh;
+}
+.div-back {
+  float: left;
+  background: #eae1e1;
+  cursor: pointer;
+  margin: 10px 0;
+  display: flex;
+  align-content: center;
+  align-items: center;
+  width: 3%;
+  border-radius: 10%;
+  &:hover {
+    background: #b7b7b7;
   }
-
-  .pagetitle {
-    padding-left: 15px;
-    margin-top: -20px;
-    p {
-      font-size: 16px;
-      color: #adc3c9;
-      span {
-        font-size: 22px;
-        font-weight: 600;
-        color: #054a5c;
-      }
-    }
+  .back-icon {
+    height: 20px;
+    width: 20px;
   }
-
-  .input-center {
-    z-index: 2;
-    background-color: white;
-    position: absolute;
-    top: 15%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 13%;
-    width: 98%;
-    border-radius: 15px;
-    box-shadow: 10px 10px 20px rgba(19, 84, 95, 0.233);
-
-    .title {
-      height: 48%;
-      width: 100%;
-      .titleSearchArea {
-        font-style: italic;
-        font-weight: 600;
-        font-size: 18px;
-        top: 16%;
-        margin-top: 10px;
-      }
-      .titleReceviceLot {
-        font-weight: 600;
-        font-size: 15px;
-        top: 16%;
-        margin-top: 10px;
-      }
-      .btn-CreateLot {
-        text-align: center;
-        vertical-align: middle;
-        background-color: transparent;
-        color: #054a5c;
-        border: solid 1px #054a5c;
-        border-radius: 5px;
-        font-size: 17px;
-        height: 80%;
-        width: 80%;
-        box-shadow: 3px 3px #748db8;
-        outline: none;
-        margin-top: 5px;
-        &:hover {
-          color: #054a5c;
-        }
-        &:active {
-          transform: translate(4px, 4px);
-          box-shadow: none;
-          outline: none;
-        }
-      }
-    }
-
-    .optionInput {
-      height: 40%;
-      width: 100%;
-      .valueSearchArea {
-        top: -10%;
-        display: flex;
-        align-items: center;
-        position: relative;
-        img {
-          height: 20px;
-          width: 20px;
-          margin-top: 2px;
-          position: absolute;
-          left: 25px;
-        }
-        .search_input {
-          width: 100%;
-          height: 80%;
-          border-radius: 20px;
-          background-color: transparent;
-          font-size: 15px;
-          line-height: 10px;
-          text-align: left;
-          padding-left: 35px;
-          border: solid 1px #adc3c9;
-          color: #021317;
-
-          &::placeholder {
-            font-size: 14px;
-            color: #3c3e3e;
-          }
-        }
-      }
-      .valueReceviceLot {
-        top: -10%;
-        display: flex;
-        align-items: center;
-        position: relative;
-        select {
-          width: 100%;
-          height: 85%;
-          border: 1px solid #adc3c9;
-          background-color: white;
-          color: #054a5c;
-        }
-      }
-      .valueWO {
-        @extend .valueReceviceLot;
-      }
-
-      .btn-MappingLot {
-        text-align: center;
-        vertical-align: middle;
-        background-color: transparent;
-        color: #054a5c;
-        border: solid 1px #054a5c;
-        border-radius: 5px;
-        font-size: 17px;
-        height: 160%;
-        width: 80%;
-        box-shadow: 3px 3px #748db8;
-        outline: none;
-        margin-top: -15%;
-        &:hover {
-          color: #054a5c;
-        }
-        &:active {
-          transform: translate(4px, 4px);
-          box-shadow: none;
-          outline: none;
-        }
-      }
-    }
+}
+.div-config-name {
+  margin-left: 20px;
+  line-height: 50px;
+  span {
+    font-weight: 555;
+    font-size: 17px;
   }
+}
+.searchbox-time {
+  height: 40px;
+}
+.searchbox-time1 {
+  margin-right: 5px;
+}
+.form-control:disabled,
+.form-control[readonly] {
+  background-color: #e9ecef;
+  opacity: 1;
+  height: 35px;
+  border-radius: 3px;
+}
+.searchbox {
+  display: inline-block;
+  margin-bottom: 5px;
+  width: 30%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+.btn-button {
+  padding: 5px 15px;
+  font-size: 20px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: #fff;
+  background-color: #f5944f;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0 3px #999;
+}
+.btn-button:hover {
+  background-color: #f37318;
+}
+.btn-button:active {
+  background-color: #f37318;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+.searchbox-content {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 1px;
+}
+.container {
+  display: grid;
+  grid-template-rows: 50px repeat(3, 35px) 5px repeat(3, 35px) auto;
+  grid-template-columns: repeat(3, 1fr);
+  align-content: space-around;
+  box-sizing: border-box;
+  background-color: #e6e6e2;
+  padding: 0 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  font-size: 16px;
+  border-radius: 5px;
+  width: 80%;
+  overflow: auto;
+  //height: auto;
+  //min-height: 100vh;
+  row-gap: 15px;
+  .text-input {
+    width: 50%;
+    padding: 5px;
+    //background-color: #e6e6e2;
+    border: 1px solid #e6e6e2;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    margin-left: 2px;
+    resize: vertical;
+  }
+  p {
+    color: #141414;
+  }
+}
 
-  .output-content {
-    z-index: 1;
-    background-color: white;
-    position: absolute;
-    top: 60%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 73%;
-    width: 98%;
-    border-radius: 15px;
-    box-shadow: 10px 10px 20px rgba(19, 84, 95, 0.233);
-    // overflow: auto;
-    .div-table {
-      overflow-x: auto;
-      overflow-y: auto;
-      //  border-radius: 15px;
-      // top: 62%;
-      // left: 50%;
-      top: 0;
-      height: 90%;
-      width: 100%;
-    }
-    .mytable {
-      //overflow: auto;
-      border-collapse: collapse;
-      th {
-        background-color: #024873;
-        color: white;
-        border: 0.5px solid #adc3c9;
-        white-space: nowrap;
-        padding-left: 15px;
-        padding-right: 15px;
-        font-size: 20px;
-        font-weight: 500;
-        height: 40px;
+.form-input {
+  grid-column: 1 / 4;
+  display: grid;
+  justify-items: center;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr;
+  width: 100%;
+  border: 1px solid #a19c9c;
+  position: relative;
+  border-radius: 5px;
+  margin-bottom: -17px;
+}
+.form-row-input {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  margin-top: 5px;
+}
+.form-row-input .text-input {
+  width: 25%;
+}
+.form-row-input i {
+  display: flex;
+  background-color: #800000;
+  height: 20px;
+  width: 20px;
+  right: 0;
+  margin-left: 10px;
+  border: 1px solid black;
+  border-radius: 6px;
+  justify-content: center;
+}
+.add-new-form {
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  right: 0;
+  top: -12px;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  height: 25px;
+  width: 25px;
+  cursor: pointer;
+  background-color: #00ff00;
+}
+.add-new-form i {
+  display: flex;
+  margin-right: 5px;
+  align-items: center;
+}
 
-        position: sticky;
-        top: 0;
-        z-index: 2;
-      }
+.form-row-address {
+  grid-column: 1 / 4;
+}
+.form-row-address .text-input {
+  width: 45%;
+}
+.title-class {
+  grid-column-start: 1;
+  grid-column-end: 4;
+  text-align: center;
+  font-size: 35px;
+  color: #0e0d0d;
+  font-family: serif;
+  font-style: italic;
+}
+.title-class p {
+  margin: 0px;
+}
+.submit-form {
+  text-align: center;
+  height: 45px;
+}
+.submit-form input {
+  margin-right: 5px;
+}
+#submit-form {
+  font-weight: 555;
+  margin-top: 5px;
+  padding: 8px 11px;
+  font-size: 17px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: #fff;
+  background-color: #04aa6d;
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 5px #999;
+}
+#submit-form:hover {
+  background-color: #3e8e41;
+}
+#submit-form:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
 
-      tr {
-        cursor: pointer;
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.form-row,
+.form-input label {
+  font-size: 16px;
+  font-weight: 555;
+  color: #141414;
+  margin-left: 30px;
+}
+.form-row:nth-child(17) {
+  grid-column: 1 / 4;
+  display: flex;
+  justify-content: flex-start;
+}
+.form-row:nth-child(17) label {
+  margin-right: 10px;
+}
 
-        &:hover {
-          background-color: #17d092;
-          color: black;
-        }
-
-        td {
-          border: 0.5px solid #adc3c9;
-          padding-left: 5px;
-          padding-right: 5px;
-          font-size: 17px;
-          color: #333;
-          font-weight: 500;
-        }
-      }
-    }
-    .card-title {
-      font-size: 22px;
-      margin-top: 10px;
-      span {
-        color: #4f5252;
-        font-size: 16px;
-      }
-    }
-
-    .div-CreateLOT {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: #c6efce;
-      width: 100%;
-      height: 10%;
-      left: 10px;
-      margin-bottom: 20px;
-      p {
-        margin: 0;
-        font-size: 18px;
-        color: #00b050;
-        span {
-          font-weight: bold;
-          font-size: 22px;
-        }
-      }
+.class-hr {
+  grid-column: 1/4;
+}
+.class-hr hr {
+  margin: 0 auto;
+  padding: 0;
+  width: 80%;
+  color: #000;
+}
+.td-edit {
+  text-align: center;
+  justify-content: center;
+  background: #f88838;
+  color: #fff;
+  height: 30px;
+  align-items: center;
+  align-content: center;
+  cursor: pointer;
+  margin: 10px;
+  &:hover {
+    background: #db6008;
+  }
+}
+.div-searchbox {
+  margin-top: 15px;
+  height: 40px;
+  display: flex;
+  align-content: center;
+  justify-content: left;
+  .div-searchbox-content {
+    display: flex;
+    margin-bottom: 10px;
+    text-align: center;
+    height: 40px;
+  }
+  .div-searchbox-content input {
+    border-radius: 5px;
+    width: 300px;
+    height: 40px;
+  }
+  .div-searchbox-content button {
+    border-radius: 5px;
+    padding: 6px 20px;
+    height: 40px;
+    background: #ff7a1c;
+    color: #fff;
+    box-sizing: 0;
+    &:hover {
+      background: #f88838;
     }
   }
 }
-.dropdown-icon {
-  z-index: 3;
+.main-contain {
+  max-height: 100vh;
+  overflow: auto;
+}
+.mytable {
+  margin-top: 0px;
+  overflow: auto;
+  thead {
+    th:first {
+      border-radius: 20%;
+    }
+    th {
+      background-color: #024873;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      color: #fff;
+      min-width: 60px;
+      padding: 3px;
+      font-size: 16px;
+      padding: 0.5rem 1.5rem;
+    }
+  }
+  tr {
+    &:hover {
+      background: #89cfed;
+    }
+    td:nth-child(1) {
+      cursor: pointer;
+      text-decoration: underline;
+    }
+    td {
+      overflow-x: auto;
+      white-space: nowrap;
+      z-index: 1;
+      padding: 2px;
+      min-width: 60px;
+      border: 0.5px solid #cdc;
+      font-size: 17px;
+      color: #000;
+      //font-weight: 555;
+    }
+  }
+}
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  font-size: 20px;
+}
+
+.return-btn {
+  margin-right: 10px;
+  padding: 5px 10px;
+  font-size: 20px;
+  color: white;
+  background-color: #adc3c9; /* Màu cam */
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  padding: 8px;
-  margin-left: -3.5%;
+  display: flex;
+  align-items: center;
+}
+
+.return-btn:hover {
+  background-color: #e66920; /* Màu cam đậm hơn khi hover */
+}
+
+.return-btn:focus {
+  outline: none;
+}
+
+.breadcrumb span {
+  color: #333; /* Màu chữ */
 }
 </style>

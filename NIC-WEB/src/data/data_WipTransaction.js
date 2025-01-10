@@ -11,11 +11,12 @@ var dataConfig = [
     //     IsDisable: false,
     //     Style: "box-shadow: 8px 6px 22px #054A5C;"
     // },
+
     // {
-    //     Id: '2',
-    //     Name: 'COMPLETE',
+    //     Id: '11',
+    //     Name: 'START',
     //     ReplaceName: '',
-    //     Route: '/Home/ConfigApp/QWIP_Trans/WipComplete',
+    //     Route: '/Home/ConfigApp/QWIP_Trans/WipStart',
     //     IsDisable: false,
     //     Style: "box-shadow: 8px 6px 22px #054A5C;"
     // },
@@ -28,6 +29,14 @@ var dataConfig = [
         Style: "box-shadow: 8px 6px 22px #054A5C;"
     },
     {
+        Id: '7',
+        Name: 'MOVE',
+        ReplaceName: '',
+        Route: '/Home/ConfigApp/QWIP_Trans/WipMove',
+        IsDisable: false,
+        Style: "box-shadow: 8px 6px 22px #054A5C;"
+    },
+    {
         Id: '4',
         Name: 'HOLD',
         ReplaceName: '',
@@ -36,14 +45,6 @@ var dataConfig = [
         Style: "box-shadow: 8px 6px 22px #054A5C;"
     },
     // {
-    //     Id: '5',
-    //     Name: 'MERGE',
-    //     ReplaceName: '',
-    //     Route: '/Home/ConfigApp/QWIP_Trans/WipMerge',
-    //     IsDisable: false,
-    //     Style: "box-shadow: 8px 6px 22px #054A5C;"
-    // },
-    // {
     //     Id: '6',
     //     Name: 'MOVE_IN',
     //     ReplaceName: '',
@@ -51,14 +52,6 @@ var dataConfig = [
     //     IsDisable: false,
     //     Style: "box-shadow: 8px 6px 22px #054A5C;"
     // },
-    {
-        Id: '7',
-        Name: 'MOVE',
-        ReplaceName: '',
-        Route: '/Home/ConfigApp/QWIP_Trans/WipMove',
-        IsDisable: false,
-        Style: "box-shadow: 8px 6px 22px #054A5C;"
-    },
     {
         Id: '8',
         Name: 'RELEASE',
@@ -77,20 +70,27 @@ var dataConfig = [
         Style: "box-shadow: 8px 6px 22px #054A5C;"
     },
 
-    // {
-    //     Id: '10',
-    //     Name: 'SPLIT',
-    //     ReplaceName: '',
-    //     Route: '/Home/ConfigApp/QWIP_Trans/WipSplit',
-    //     IsDisable: false,
-    //     Style: "box-shadow: 8px 6px 22px #054A5C;"
-    // },
-
     {
-        Id: '11',
-        Name: 'START',
+        Id: '10',
+        Name: 'SPLIT',
         ReplaceName: '',
-        Route: '/Home/ConfigApp/QWIP_Trans/WipStart',
+        Route: '/Home/ConfigApp/QWIP_Trans/WipSplit',
+        IsDisable: false,
+        Style: "box-shadow: 8px 6px 22px #054A5C;"
+    },
+    {
+        Id: '2',
+        Name: 'COMPLETE',
+        ReplaceName: '',
+        Route: '/Home/ConfigApp/QWIP_Trans/WipComplete',
+        IsDisable: false,
+        Style: "box-shadow: 8px 6px 22px #054A5C;"
+    },
+    {
+        Id: '5',
+        Name: 'MERGE',
+        ReplaceName: '',
+        Route: '/Home/ConfigApp/QWIP_Trans/WipMerge',
         IsDisable: false,
         Style: "box-shadow: 8px 6px 22px #054A5C;"
     },

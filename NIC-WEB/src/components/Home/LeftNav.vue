@@ -34,23 +34,23 @@
                 <span class="fa fa-chevron-right"></span
               ></router-link>
             </li>
-            <li v-if="arrData.includes('NIC')">
+            <li v-if="dataShowIcon.includes('NIC')">
               <router-link to="/Home/Applications">
                 <i class="fa fa-desktop"></i>
                 {{
-                  $store.state.language == "En" ? "Applications" : "Ứng dụng"
+                  $store.state.language == "En" ? "Applications" : "?ng d?ng"
                 }}
                 <span class="fa fa-chevron-right"></span
               ></router-link>
             </li>
-            <li v-if="arrData.includes('QUALCOMM')">
+            <li v-if="dataShowIcon.includes('QUALCOMM')">
               <router-link to="/Home/Qualcomm_Application">
                 <i class="fa fa-space-shuttle"></i>Qualcomm
                 <span class="fa fa-chevron-right"></span
               ></router-link>
             </li>
 
-            <li v-if="arrData.includes('TELIT')">
+            <li v-if="dataShowIcon.includes('TELIT')">
               <router-link to="/Home/Telit_Apps">
                 <i class="fa fa-space-shuttle"></i>Telit
                 <span class="fa fa-chevron-right"></span
@@ -79,15 +79,16 @@ export default {
   name: "LeftNav",
   data() {
     return {
+      databaseName: localStorage.databaseName,
+      empNo: localStorage.username,
+      dataShowIcon: "",
       listNav: [],
       DataTable: [],
       arrData: [],
-      EMP_NO: "",
       index: 0,
       index1: 0,
       index2: 9999,
       empname: "",
-      databaseName: "",
     };
   },
   mounted() {
@@ -115,25 +116,22 @@ export default {
   },
   methods: {
     async getPrivilege() {
-      let databaseName = localStorage.databaseName;
-      let EMP_NO = localStorage.username;
+      let databaseName = this.databaseName;
+      let empNo = this.empNo;
       try {
         let { data } = await Repository.getApiServer(
-          `GetPrivilegeLeftNav?database_name=${databaseName}&EMP_NO=${EMP_NO}`
+          `GetPrivilegeLeftNav?databaseName=${databaseName}&empNo=${empNo}`
         );
         this.DataTable = data.data;
-        this.arrData = this.DataTable.reduce((item, index) => {
-          if (parseInt(index.KEY) > 0) {
-            item.push(index.VALUE);
-          }
-          return item;
-        }, []);
+        console.log(this.DataTable);
+        this.dataShowIcon = this.DataTable[0].OWNER;
       } catch (error) {
-        if (error.response && error.response.data) {
-          this.$swal("", error.response.data.error, "error");
-        } else {
-          this.$swal("", error.Message, "error");
-        }
+        console.error("getPrivilege Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
     MaximizeWindow() {

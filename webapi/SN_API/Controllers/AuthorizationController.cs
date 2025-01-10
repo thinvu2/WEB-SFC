@@ -21,6 +21,10 @@ using System.IO;
 using static SN_API.Models.ValueShipToFile;
 using System.Web.Script.Serialization;
 using System.Collections;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.Data.SqlClient;
 
 namespace SN_API.Controllers
 {
@@ -138,6 +142,46 @@ namespace SN_API.Controllers
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", emp_name = dtCheck.Rows[0]["EMP_NAME"].ToString(), time = watch.ElapsedMilliseconds });
             }
         }
+        //    [System.Web.Http.Route("CheckLogin")]
+        //    [System.Web.Http.HttpPost]
+        //    public async Task<HttpResponseMessage> CheckLogin(LoginInfo privilege)
+        //    {
+        //        string database_name = privilege.DatabaseName;
+        //        string UserName = privilege.UserName;
+        //        string PassWord = privilege.PassWord; // Mã hóa mật khẩu
+        //        var watch = new Stopwatch();
+        //        watch.Start();
+
+        //        string queryString = "SELECT * FROM sfis1.C_EMP_DESC_T WHERE emp_no = @UserName AND emp_pass = @PassWord";
+        //        var parameters = new List<SqlParameter>
+        //{
+        //    new SqlParameter("@UserName", SqlDbType.NVarChar) { Value = UserName.ToUpper() },
+        //    new SqlParameter("@PassWord", SqlDbType.NVarChar) { Value = PassWord }
+        //};
+
+        //        DataTable dtCheck = DBConnect.GetData(queryString, parameters, database_name);
+        //        watch.Stop();
+
+        //        if (dtCheck.Rows.Count == 0)
+        //        {
+        //            return Request.CreateResponse(HttpStatusCode.OK, new { result = "fail", time = watch.ElapsedMilliseconds });
+        //        }
+        //        else
+        //        {
+        //            string empName = dtCheck.Rows[0]["EMP_NAME"].ToString();
+        //            string empNo = dtCheck.Rows[0]["EMP_NO"].ToString();
+        //            string token = GenerateJwtToken(empName, empNo);
+
+        //            return Request.CreateResponse(HttpStatusCode.OK, new
+        //            {
+        //                result = "ok",
+        //                emp_name = empName,
+        //                token = token,
+        //                time = watch.ElapsedMilliseconds
+        //            });
+        //        }
+        //    }
+
         [System.Web.Http.Route("GetFtpAddress")]
         [System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> GetFtpAddress()

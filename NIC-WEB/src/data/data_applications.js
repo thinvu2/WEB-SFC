@@ -137,5 +137,11 @@ var dataApplications = [
         Image: "/assets/img/excelImport.png",
         Style: "background-color: rgb(24 112 65); border: 3px solid rgb(24 112 65); box-shadow: 2px 2px 2px #919191;border-radius: 8px; "
     },
+    {
+        Name: 'SAS LABEL',
+        Route: "/Home/SAS_label",
+        Image: "assets/img/bg/3.jpg",
+        Style: "height:123px; background-color: rgb(24 112 65); border: 3px solid rgb(24 112 65); box-shadow: 2px 2px 2px #919191;border-radius: 8px; "
+    },
 ];
 export default dataApplications;

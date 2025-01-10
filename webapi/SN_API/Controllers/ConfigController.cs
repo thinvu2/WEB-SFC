@@ -92,7 +92,7 @@ namespace SN_API.Controllers
         {
             try
             {
-                string strGetData = $"SELECT FUN FROM SFIS1.C_PRIVILEGE WHERE PRG_NAME ='WEB_CONFIG' AND FUN = 'INSERT' AND EMP ='{emp_no}' and rownum =1";
+                string strGetData = $"select PASSW from SFIS1.C_PRIVILEGE where emp = '{emp_no}' and fun ='PRIVILEGE' and PRG_NAME ='WEB_CONFIG' and rownum = 1";
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
             }
@@ -103,19 +103,12 @@ namespace SN_API.Controllers
         }
         [System.Web.Http.Route("GetPrivilegeLeftNav")]
         [System.Web.Http.HttpGet]
-        public async Task<HttpResponseMessage> GetPrivilegeLeftNav(string database_name, string emp_no)
+        public async Task<HttpResponseMessage> GetPrivilegeLeftNav(string databaseName, string empNo)
         {
             try
             {
-                string strGetData = $@"SELECT 'NIC' as value, instr(OWNER, 'NIC') as key FROM
-                                        SFIS1.C_EMP_DESC_T where emp_no = '{emp_no}'
-                                        union all
-                                        select 'TELIT' as value, instr(OWNER, 'TELIT') as key from
-                                         SFIS1.C_EMP_DESC_T  where emp_no = '{emp_no}'
-                                        union all
-                                         select 'QUALCOMM' as value, instr(OWNER, 'QUALCOMM') as key from
-                                         SFIS1.C_EMP_DESC_T  where emp_no = '{emp_no}'";
-                DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
+                string strGetData = $@"select OWNER from SFIS1.C_EMP_DESC_T  where emp_no = '{empNo}' and rownum = 1";
+                DataTable dtCheck = DBConnect.GetData(strGetData, databaseName);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
             }
             catch (Exception ex)

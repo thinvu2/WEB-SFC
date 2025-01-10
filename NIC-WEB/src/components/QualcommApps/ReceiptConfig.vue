@@ -82,7 +82,6 @@ export default {
         const { data } = await Repository.getApiServer(
           `QDataConfig?databaseName=${databaseName}&IN_FUNC=${IN_FUNC}&IN_SUBFUNC=${IN_SUBFUNC}&IN_DATA=${IN_DATA}&IN_EMPNO=${empNo}`
         );
-        console.log(data.data);
         this.dataTable = data.data;
         if (this.dataTable.length > 0) {
           this.objData = this.dataTable[0];
@@ -117,15 +116,11 @@ export default {
         dangerMode: true,
       }).then(async (willDelete) => {
         if (willDelete.isConfirmed == false) return;
-
         const databaseName = this.databaseName;
         const IN_FUNC = "QRECEIPT";
         const IN_SUBFUNC = "INSERTDATA";
         const IN_DATA = JSON.stringify(this.objData);
         const empNo = this.empNo;
-
-        console.log(IN_DATA)
-
         try {
           const { data } = await Repository.getApiServer(
           `QDataConfig?databaseName=${databaseName}&IN_FUNC=${IN_FUNC}&IN_SUBFUNC=${IN_SUBFUNC}&IN_DATA=${IN_DATA}&IN_EMPNO=${empNo}`
@@ -135,7 +130,7 @@ export default {
            await this.loadComponent();
             this.$swal("", "Successfully applied", "success");
           } else {
-            this.$swal("", data.result, "error");
+            this.$swal("", data.data.substr(0, 100), "error");
           }
         } catch (error) {
           const message =

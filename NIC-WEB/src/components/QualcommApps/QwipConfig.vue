@@ -29,21 +29,11 @@
     </div>
 
     <div class="footer" v-if="isDisabled">
-    <input
-      type="submit"
-      @click="toggleEdit"
-      value="Edit"
-      id="edit-button"
-    />
-  </div>
-  <div class="footer" v-else>
-    <input
-      type="submit"
-      @click="submitForm"
-      value="Save"
-      id="edit-button"
-    />
-  </div>
+      <input type="submit" @click="toggleEdit" value="Edit" id="edit-button" />
+    </div>
+    <div class="footer" v-else>
+      <input type="submit" @click="submitForm" value="Save" id="edit-button" />
+    </div>
   </div>
 </template>
 <script>
@@ -66,7 +56,6 @@ export default {
       }
     });
   },
-
   mounted() {
     this.loadComponent();
   },
@@ -82,15 +71,12 @@ export default {
         const { data } = await Repository.getApiServer(
           `QDataConfig?databaseName=${databaseName}&IN_FUNC=${IN_FUNC}&IN_SUBFUNC=${IN_SUBFUNC}&IN_DATA=${IN_DATA}&IN_EMPNO=${empNo}`
         );
-        console.log(data.data);
         this.dataTable = data.data;
         if (this.dataTable.length > 0) {
           this.objData = this.dataTable[0];
           this.dataTableHeader = Object.keys(this.dataTable[0]);
         }
-
       } catch (error) {
-        console.error("LoadForm Error:", error);
         const message =
           error.response?.data?.error ||
           error.message ||
@@ -99,10 +85,10 @@ export default {
       }
     },
     async submitForm() {
-      for(let item of this.dataTableHeader) {
-        if(!this.objData[item]) {
+      for (let item of this.dataTableHeader) {
+        if (!this.objData[item]) {
           this.$swal("", `Please input data: ${item}`, "warning");
-        return;
+          return;
         }
       }
       let titleValue = "";
@@ -117,25 +103,21 @@ export default {
         dangerMode: true,
       }).then(async (willDelete) => {
         if (willDelete.isConfirmed == false) return;
-
         const databaseName = this.databaseName;
         const IN_FUNC = "QWIP";
         const IN_SUBFUNC = "INSERTDATA";
         const IN_DATA = JSON.stringify(this.objData);
         const empNo = this.empNo;
-
-        console.log(IN_DATA)
-
         try {
           const { data } = await Repository.getApiServer(
-          `QDataConfig?databaseName=${databaseName}&IN_FUNC=${IN_FUNC}&IN_SUBFUNC=${IN_SUBFUNC}&IN_DATA=${IN_DATA}&IN_EMPNO=${empNo}`
-        );
+            `QDataConfig?databaseName=${databaseName}&IN_FUNC=${IN_FUNC}&IN_SUBFUNC=${IN_SUBFUNC}&IN_DATA=${IN_DATA}&IN_EMPNO=${empNo}`
+          );
           if (data.result == "ok") {
             this.isDisabled = !this.isDisabled;
-           await this.loadComponent();
+            await this.loadComponent();
             this.$swal("", "Successfully applied", "success");
           } else {
-            this.$swal("", data.result, "error");
+            this.$swal("", data.data.substr(0, 100), "error");
           }
         } catch (error) {
           const message =
@@ -146,9 +128,9 @@ export default {
         }
       });
     },
-   async toggleEdit() {
-    this.isDisabled = !this.isDisabled;
-  },
+    async toggleEdit() {
+      this.isDisabled = !this.isDisabled;
+    },
     backToParent() {
       this.$router.push({ path: "/Home/Qualcomm_Application" });
     },
@@ -201,7 +183,6 @@ h1 {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
-
 label {
   display: block;
   margin: 10px 0 5px;
@@ -220,9 +201,9 @@ input[type="text"] {
 
 input[type="submit"] {
   font-size: 16px;
-    font-weight: bold;
-    width: 90px;
-    height: 45px;
+  font-weight: bold;
+  width: 90px;
+  height: 45px;
   padding: 7px;
   border: 1px solid #ccc;
   border-radius: 4px;

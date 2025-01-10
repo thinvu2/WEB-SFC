@@ -1,54 +1,32 @@
 <template>
   <div class="div-all">
     <header class="row header">
-      <div class="div-back" @click="isShowForm ? ReturnForm() : BackToParent()">
+      <div class="div-back" @click="isShowForm ? returnForm() : backToParent()">
         <Icon icon="chevron-left" class="back-icon sidenav-icon" />
       </div>
       <div class="row div-config-name">
-        <span>TelitEDI</span>
+        <span>Telit 850 860</span>
       </div>
     </header>
     <div class="searchbox" v-if="!isShowForm">
       <div class="searchbox-content">
         <input
           :disabled="showTimeForm"
-          v-on:keyup.enter="LoadComponent()"
+          v-on:keyup.enter="loadComponent()"
           v-model="valueSearch"
           type="text"
           class="form-control"
           placeholder="Enter Po... "
         />
-        <button @click="LoadComponent()" class="btn-button">
+        <button @click="loadComponent()" class="btn-button">
           <Icon icon="search" class="sidenav-icon" />
         </button>
       </div>
-      <!-- datepicker -->
-      <!-- <div class="searchbox-timerange">
-        <div class="showTimeForm">
-          <input id="showTimeForm" type="checkbox" v-model="showTimeForm" />
-        </div>
-        <div class="datepicker-wrapper">
-          <datepicker
-            :disabled="!showTimeForm"
-            class="form-control form-control-sm"
-            v-model="dateFrom"
-            :upperLimit="dateTo"
-          />
-        </div>
-        <div class="datepicker-wrapper">
-          <datepicker
-            :disabled="!showTimeForm"
-            class="form-control form-control-sm"
-            v-model="dateTo"
-            :lowerLimit="dateFrom"
-          />
-        </div>
-      </div> -->
     </div>
     <!-- Form input data -->
     <div class="container" v-if="isShowForm === true">
       <div class="title-class">
-        <p>Telit EDI</p>
+        <p>Telit 850 860</p>
       </div>
       <div class="form-row">
         <label for="purchase-order">Po:</label>
@@ -73,7 +51,7 @@
         />
       </div>
       <div class="form-row">
-        <label for="item-no">Item No:</label>
+        <label for="item-no">Item INT:</label>
         <input
           type="text"
           class="text-input"
@@ -291,7 +269,7 @@
         type="button"
         id="submit-form"
         value="Submit"
-        @click="SubmitForm()"
+        @click="submitForm()"
       />
     </div>
     <div
@@ -314,7 +292,7 @@
             <tbody>
               <tr v-for="(row, index) in DataTable" :key="index">
                 <template v-for="(value, key) in row" :key="key">
-                  <td @click="key === 'PURCHASE_ORDER' && ShowDetail(index)">
+                  <td @click="key === 'PURCHASE_ORDER' && showDetail(index)">
                     {{ value }}
                   </td>
                 </template>
@@ -389,7 +367,7 @@ export default {
   },
   computed: {},
   mounted() {
-    this.LoadComponent();
+    this.loadComponent();
     //this.getTodayDate();
   },
   methods: {
@@ -414,128 +392,7 @@ export default {
     handleDeleteNewForm(index) {
       this.additionalRows.splice(index, 1);
     },
-    async SubmitForm() {
-      console.log("this.model.SCHED_QTY", this.model.SCHED_QTY)
-      if (!this.model.SCHED_QTY) {
-        this.$swal("", "Please input a valid Schedule Qty!", "warning");
-        return;
-      }
-     // let titleValue = "";
-     // let textValue = "";
-      let titleValue = "Are you sure edit?";
-      let textValue = "Once OK, data will be updated!";
-      try {
-      const willDelete = await this.$swal({
-        title: titleValue,
-        text: textValue,
-        icon: "warning",
-        buttons: true,
-        dangerMode: true,
-      });
-      if (!willDelete) return;
-    } catch (err) {
-      console.error("SweetAlert Error:", err);
-    }
-      // this.$swal({
-      //   title: titleValue,
-      //   text: textValue,
-      //   icon: "warning",
-      //   buttons: true,
-      //   dangerMode: true,
-      // }).then(async (willDelete) => {
-      //   if (willDelete.isConfirmed == false) return;
-
-        let filleredRows = [];
-        this.additionalRows.forEach((row) => {
-          if (row.minTime || row.scheduleQty) {
-            filleredRows.push({ ...row });
-          }
-        });
-        if (this.minTimeDefault || this.model.SCHED_QTY) {
-          filleredRows.push({
-            minTime: this.minTimeDefault,
-            scheduleQty: this.model.SCHED_QTY,
-          });
-        } else {
-          this.$swal("", "Invalid data, input is wrong", "warning");
-          return;
-        }
-        if (filleredRows.length === 0) {
-          this.$swal("", "No data to submit", "warning");
-          return;
-        }
-        let arr2 = filleredRows.map((item) => item.minTime);
-        const set1 = new Set(arr2);
-        if (arr2.length !== set1.size) {
-          this.$swal("", "Delivery Date can't choose the same time", "warning");
-          return;
-        }
-        //sum qty
-        let sumScheduleQty = filleredRows.reduce((sum, qty) => sum + parseInt(qty.scheduleQty), 0)
-       // let sumScheduleQty = 0;
-        let QUANTITY = parseInt(this.ShowDataDetail[0].QUANTITY, 10);
-        // for (let item of filleredRows) {
-        //   sumScheduleQty += parseInt(item.scheduleQty, 10);
-        // }
-
-
-        if (Number.isNaN(sumScheduleQty) || Number.isNaN(QUANTITY)) {
-          this.$swal(
-            "",
-            `Invalid data, input is wrong: ${sumScheduleQty}, Quantity: ${QUANTITY}`,
-            "warning"
-          );
-          return;
-        }
-        if (QUANTITY !== sumScheduleQty) {
-          this.$swal(
-            "",
-            `Total scheduleQty: ${sumScheduleQty} not equal Quantity: ${QUANTITY}`,
-            "warning"
-          );
-          return;
-        }
-        let payload = {
-          EMP_NO: localStorage.username,
-          database_name: localStorage.databaseName,
-          additionalRows: filleredRows,
-          data: [
-            {
-              F_ID: this.model.F_ID,
-              F_SITE: this.model.F_SITE,
-              F_PIP_TYPE: this.model.F_PIP_TYPE,
-              F_MSGID: this.model.F_MSGID,
-              F_TIMESTAMP: this.model.F_TIMESTAMP,
-              F_VENDOR: this.model.F_VENDOR,
-              F_PO: this.model.F_PO,
-              F_PO_ITEM: this.model.F_PO_ITEM,
-              F_CONF_CTG: this.model.F_CONF_CTG,
-              F_REFERENCE: this.model.F_REFERENCE,
-              F_CREATION_DATE: this.model.F_CREATION_DATE,
-              F_LASTEDIT_DT: this.model.F_LASTEDIT_DT,
-              F_FILENAME: this.model.F_FILENAME,
-              F_TIMES: this.model.F_TIMES,
-            },
-          ],
-        };
-        try {
-          let { data } = await Repository.getRepo("InsertTelitEDI", payload);
-          if (data.result == "ok") {
-            this.ClearForm();
-            this.$swal("", "Successfully applied", "success");
-          } else {
-            this.$swal("", data.result, "error");
-          }
-        } catch (error) {
-          console.error("SubmitForm Error:", error);
-          const message =
-            error.response?.data?.error ||
-            error.message ||
-            "An unexpected error occurred.";
-          this.$swal("", message, "error");
-        }
-    },
-    async LoadComponent() {
+    async loadComponent() {
       let databaseName = localStorage.databaseName;
       let F_PO = this.valueSearch;
       try {
@@ -547,20 +404,22 @@ export default {
           this.DataTableHeader = Object.keys(this.DataTable[0]);
         }
       } catch (error) {
-          console.error("LoadForm Error:", error);
-          const message =
-            error.response?.data?.error ||
-            error.message ||
-            "An unexpected error occurred.";
-          this.$swal("", message, "error");
+        console.error("LoadForm Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
-    async ShowDetail(index) {
+    async showDetail(index) {
       let databaseName = localStorage.databaseName;
       let F_PO = this.DataTable[index].PURCHASE_ORDER;
+      let F_ITEM_INT = this.DataTable[index].ITEM_INT;
+      let F_PIP_TYPE = this.DataTable[index].F_PIP_TYPE;
       try {
         let responseData = await Repository.getApiServer(
-          `GetShowDetailTelitEDI?database_name=${databaseName}&F_PO=${F_PO}`
+          `GetShowDetailTelitEDI?database_name=${databaseName}&F_PO=${F_PO}&F_ITEM_INT=${F_ITEM_INT}&F_PIP_TYPE=${F_PIP_TYPE}`
         );
         this.ShowDataDetail = responseData.data.data;
         if (this.ShowDataDetail.length > 0) {
@@ -596,36 +455,156 @@ export default {
           this.isShowForm = false;
         }
       } catch (error) {
-          console.error("ShowForm Error:", error);
-          const message =
-            error.response?.data?.error ||
-            error.message ||
-            "An unexpected error occurred.";
-          this.$swal("", message, "error");
+        console.error("ShowForm Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
+      }
+    },
+    async submitForm() {
+      if (!this.model.SCHED_QTY) {
+        this.$swal("", "Please input a valid Schedule Qty!", "warning");
+        return;
+      }
+      if (parseInt(this.model.SCHED_QTY) < 0) {
+        this.$swal("", "Input qty can't < 0", "warning");
+        return;
+      }
+      let filleredRows = [];
+      this.additionalRows.forEach((row) => {
+        if (row.minTime || row.scheduleQty) {
+          filleredRows.push({ ...row });
+        }
+      });
+      if (this.minTimeDefault || this.model.SCHED_QTY) {
+        filleredRows.push({
+          minTime: this.minTimeDefault,
+          scheduleQty: this.model.SCHED_QTY,
+        });
+      } else {
+        this.$swal("", "Invalid data, input is wrong", "warning");
+        return;
+      }
+      if (filleredRows.length === 0) {
+        this.$swal("", "No data to submit", "warning");
+        return;
+      }
+      let arr2 = filleredRows.map((item) => item.minTime);
+      const set1 = new Set(arr2);
+      if (arr2.length !== set1.size) {
+        this.$swal("", "Delivery Date can't choose the same time", "warning");
+        return;
+      }
+      //sum qty
+      let sumScheduleQty = 0;
+      let Quantities = 0;
+      sumScheduleQty = filleredRows.reduce((sum, qty) => {
+        if (parseInt(qty.scheduleQty) < 0) {
+        this.$swal("", "Input qty can't < 0", "warning");
+        return;
+      }
+        return sum + parseInt(qty.scheduleQty);
+      }, 0);
+
+      Quantities = parseInt(this.ShowDataDetail[0].QUANTITY, 10);
+
+      console.log("Quantities: ", Quantities);
+      if (Number.isNaN(sumScheduleQty) || Number.isNaN(Quantities)) {
+        this.$swal(
+          "",
+          `Invalid data, input is wrong: ${sumScheduleQty}, Quantity: ${Quantities}`,
+          "warning"
+        );
+        return;
+      }
+      if (Quantities !== sumScheduleQty) {
+        this.$swal(
+          "",
+          `Total scheduleQty: ${sumScheduleQty} not equal Quantity: ${Quantities}`,
+          "warning"
+        );
+        return;
+      }
+
+      let titleValue = "Are you sure edit?";
+      let textValue = "Once OK, data will be updated!";
+      try {
+        const willDelete = await this.$swal({
+          title: titleValue,
+          text: textValue,
+          icon: "warning",
+          buttons: true,
+          dangerMode: true,
+        });
+        if (!willDelete) return;
+      } catch (err) {
+        console.error("SweetAlert Error:", err);
+      }
+
+      let payload = {
+        EMP_NO: localStorage.username,
+        database_name: localStorage.databaseName,
+        additionalRows: filleredRows,
+        data: [
+          {
+            F_ID: this.model.F_ID,
+            F_SITE: this.model.F_SITE,
+            F_PIP_TYPE: this.model.F_PIP_TYPE,
+            F_MSGID: this.model.F_MSGID,
+            F_TIMESTAMP: this.model.F_TIMESTAMP,
+            F_VENDOR: this.model.F_VENDOR,
+            F_PO: this.model.F_PO,
+            F_PO_ITEM: this.model.F_PO_ITEM,
+            F_CONF_CTG: this.model.F_CONF_CTG,
+            F_REFERENCE: this.model.F_REFERENCE,
+            F_CREATION_DATE: this.model.F_CREATION_DATE,
+            F_LASTEDIT_DT: this.model.F_LASTEDIT_DT,
+            F_FILENAME: this.model.F_FILENAME,
+            F_TIMES: this.model.F_TIMES,
+          },
+        ],
+      };
+      try {
+        let { data } = await Repository.getRepo("InsertTelitEDI", payload);
+        if (data.result == "ok") {
+          await this.clearForm();
+          this.$swal("", "Successfully applied", "success");
+        } else {
+          this.$swal("", data.result, "error");
+        }
+      } catch (error) {
+        console.error("submitForm Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
     pad(number) {
       return number < 10 ? `0${number}` : `${number}`;
     },
-    ClearForm() {
+    async clearForm() {
       this.DataTable = [];
       this.DataTableHeader = [];
       this.isShowForm = false;
       this.isShowSubmitForm = true;
       this.additionalRows = [];
       this.model.SCHED_QTY = "";
-      this.LoadComponent();
+      await this.loadComponent();
     },
-    ReturnForm() {
+    async returnForm() {
       this.DataTable = [];
       this.DataTableHeader = [];
       this.isShowForm = false;
       this.isShowSubmitForm = true;
       this.additionalRows = [];
       this.model.SCHED_QTY = "";
-      this.LoadComponent();
+      await this.loadComponent();
     },
-    BackToParent() {
+    backToParent() {
       this.$router.push({ path: "/Home/Telit_Apps" });
     },
   },
@@ -772,26 +751,26 @@ export default {
 }
 .form-row-input i {
   display: flex;
-  background-color: #800000;
-    height: 20px;
-    width: 20px;
-    margin-left: 10px;
-    border: 1px solid black;
-    border-radius: 6px;
-    justify-content: center;
+  background-color: #c82d2d;
+  height: 20px;
+  width: 20px;
+  margin-left: 10px;
+  border: 1px solid #c82d2d;
+  border-radius: 6px;
+  justify-content: center;
 }
 .add-new-form {
   display: flex;
-    justify-content: flex-end;
-    position: absolute;
-    right: 0;
-    top: -12px;
-    border: 1px solid #ffffff;
-    border-radius: 5px;
-    height: 25px;
-    width: 25px;
-    cursor: pointer;
-    background-color: #00ff00;
+  justify-content: flex-end;
+  position: absolute;
+  right: 0;
+  top: -12px;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  height: 25px;
+  width: 25px;
+  cursor: pointer;
+  background-color: #00ff00;
 }
 .add-new-form i {
   display: flex;
@@ -852,20 +831,21 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
-.form-row, .form-input label {
-    font-size: 16px;
-    font-weight: 555;
-    color: #141414;
-    margin-left: 30px;
-  }
-  .form-row:nth-child(17) {
-    grid-column: 1 / 4;
-    display: flex;
-    justify-content: flex-start;
-  }
-  .form-row:nth-child(17) label {
-    margin-right: 10px;
-  }
+.form-row,
+.form-input label {
+  font-size: 16px;
+  font-weight: 555;
+  color: #141414;
+  margin-left: 30px;
+}
+.form-row:nth-child(17) {
+  grid-column: 1 / 4;
+  display: flex;
+  justify-content: flex-start;
+}
+.form-row:nth-child(17) label {
+  margin-right: 10px;
+}
 
 .class-hr {
   grid-column: 1/4;

@@ -34,6 +34,7 @@
     },
     mounted() {
       this.dataApp = telitApps;
+      console.log(this.dataApp);
       //this.CheckEmpClass();
     },
     methods: {

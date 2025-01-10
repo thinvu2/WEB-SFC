@@ -4,7 +4,7 @@
       <nav>
         <ul class="breadcrumb">
           <li class="breadcrumb-item">
-            <router-link to="/Home/Qualcomm_Aplication">Qualcomm</router-link>
+            <router-link to="/Home/Qualcomm_Application">Qualcomm</router-link>
           </li>
           <li class="breadcrumb-item">
             <router-link to="/Home/ConfigApp/QWIP_Trans"
@@ -20,39 +20,21 @@
 
     <div class="input-center">
       <div class="title row col-12">
-        <div class="titleSearchArea col-3">
-          <p>What are you looking for?</p>
+        <div class="titleReceviceLot col-3">
+          <p>Choose LOT_NO:</p>
+        </div>
+        <div class="titleReceviceLot col-2" style="margin-left: -15px">
+          <p>Choose IN-OUT:</p>
         </div>
         <div class="titleReceviceLot col-2">
-          <p>Choose Foxconn LOT_NO:</p>
+          <p>STAGE:</p>
         </div>
-        <div class="titleReceviceLot col-2" style="margin-left: -15px">
-          <p>Choose Stage IN-OUT:</p>
-        </div>
-        <div class="titleReceviceLot col-2" style="margin-left: -15px">
-          <p>Input Qty:</p>
+        <div class="titleReceviceLot col-1">
+          <p>Qty:</p>
         </div>
       </div>
       <div class="optionInput row col-12">
-        <div class="valueSearchArea col-3">
-          <img src="../../../assets/img/search_100px.png" alt="" />
-          <input
-            class="search_input"
-            v-model="searchKey"
-            @keypress="btnSearchClick"
-            type="text"
-            placeholder="Search for Foxconn LotNo, ..."
-          />
-        </div>
-
-        <!-- <div class="valueReceviceLot col-3">
-                    <select id="ReceviceLot" name="CreateLot" v-model="createValue">
-                        <option v-for="(item, index) in listCreateLot" :key="index">
-                            {{ item.RECEIVELOT }}
-                        </option>
-                    </select>
-                </div> -->
-        <div style="position: relative" class="valueReceviceLot col-2">
+        <div style="position: relative" class="valueReceviceLot col-3">
           <input
             class="form-control"
             id="CreateLot"
@@ -61,6 +43,7 @@
             @focus="showDropdown = true"
             @input="filterOptions"
             @blur="hideDropdown"
+            v-on:change="UpdateQty"
           />
 
           <!-- Danh sách tùy chỉnh -->
@@ -87,6 +70,7 @@
               @mousedown="selectOption(item.RECEIVELOT)"
               style="padding: 8px; cursor: pointer"
               class="form-control"
+              v-on:change="UpdateQty"
             >
               {{ item.RECEIVELOT }}
             </li>
@@ -94,50 +78,28 @@
         </div>
 
         <span class="dropdown-icon" @click="toggleDropdown">▼</span>
-        <div style="position: relative" class="valueReceviceLot col-2">
-          <input
+        <div class="valueReceviceLot col-2">
+          <DropdownSearch
             class="form-control"
-            id="CreateLot"
-            name="CreateLot"
-            v-model="StageValue"
-            @focus="showDropdown1 = true"
-            @input="filterOptions1"
-            @blur="hideDropdown1"
+            :listAll="listCreateLotOwner"
+            @update-selected-item="UpdateKPNAMEReceive"
+            :textContent="StageValue"
+            type="model"
+            textPlaceHolder="Enter model name"
           />
-
-          <!-- Danh sách tùy chỉnh -->
-          <ul
-            v-show="showDropdown1 && StageList.length"
-            style="
-              position: absolute;
-              top: 105%;
-              left: 15px;
-              width: 90%;
-              border: 1px solid #ccc;
-              background: white;
-              max-height: 200px;
-              overflow-y: auto;
-              z-index: 1000;
-              list-style: none;
-              margin: 0;
-              padding: 0;
-            "
-          >
-            <li
-              v-for="(item, index) in StageList"
-              :key="index"
-              @mousedown="selectOption1(item.RECEIVELOT)"
-              style="padding: 8px; cursor: pointer"
-              class="form-control"
-            >
-              {{ item.RECEIVELOT }}
-            </li>
-          </ul>
         </div>
 
-        <span class="dropdown-icon" @click="toggleDropdown1">▼</span>
-
         <div class="valueReceviceLot col-2">
+          <DropdownSearch
+            class="form-control"
+            :listAll="listStage"
+            @update-selected-item="UpdateStage"
+            :textContent="Stage"
+            type="model"
+            textPlaceHolder="Enter stage"
+          />
+        </div>
+        <div class="valueReceviceLot col-1">
           <input class="form-control" type="number" v-model="Qty" />
         </div>
         <div class="valueActionArea col-2">
@@ -156,7 +118,7 @@
       </div>
       <div class="div-CreateLOT" v-if="isShowCreatedLot">
         <p>
-          <span>{{ labelResult }} SUCCESSED ➪[</span> Foxconn LOT No:
+          <span>{{ labelResult }} SUCCESSED ➪[</span> LOT No:
           <b>{{ createValue }}</b
           ><span>]</span>
         </p>
@@ -183,7 +145,11 @@
 
 <script>
 import Repository from "../../../services/Repository";
+import DropdownSearch from "../../Template/DropdownSearch.vue";
 export default {
+  components: {
+    DropdownSearch,
+  },
   name: "WipMoveOut",
   created() {
     this.loadComponents();
@@ -193,14 +159,8 @@ export default {
       listResult: [],
       listHeader: [],
       listCreateLot: [],
-      listCreateLotOwner: [
-        { RECEIVELOT: "0 - SMT" },
-        { RECEIVELOT: "SMT - PTH" },
-        { RECEIVELOT: "PTH - ASSY" },
-        { RECEIVELOT: "ASSY - TEST" },
-        { RECEIVELOT: "TEST - PACKING" },
-        { RECEIVELOT: "PACKING - FG" },
-      ],
+      listStage: [],
+      listCreateLotOwner: ["Move In", "Move Out"],
       labelResult: "",
       isShowCreatedLot: false,
       createValue: "",
@@ -209,6 +169,7 @@ export default {
       IN_STAGE_OUT: "",
       IN_STAGE_IN: "",
       Qty: 0,
+      Stage: "",
       searchKey: "",
       action: "Move",
       transaction: "WIPMoveTransaction",
@@ -221,6 +182,7 @@ export default {
   mounted() {
     document.title = "WIP Transaction Report, copyright: Hip";
     this.RefreshState();
+    this.LoadStage();
   },
   methods: {
     //inputselect
@@ -242,35 +204,20 @@ export default {
       this.showDropdown = !this.showDropdown;
       if (this.showDropdown) this.filterOptions();
     },
-    //inputselect Stage
-    filterOptions1() {
-      this.StageList = this.listCreateLotOwner.filter((item) =>
-        item.RECEIVELOT.toLowerCase().includes(this.StageValue.toLowerCase())
-      );
-    },
-    selectOption1(value) {
+    UpdateKPNAMEReceive(value) {
       this.StageValue = value;
-      this.showDropdown1 = false;
     },
-    hideDropdown1() {
-      setTimeout(() => {
-        this.showDropdown1 = false;
-      }, 100);
-    },
-    toggleDropdown1() {
-      this.showDropdown1 = !this.showDropdown1;
-      if (this.showDropdown1) this.filterOptions1();
-    },
-    async CheckPrivilege() {
-      let { data } = await Repository.getRepo("GetLoadFormQWip1", this.model);
-      if (data.result == "ok") {
-        this.listResult = data.data;
-        this.listHeader = Object.keys(this.listResult[0]);
-        this.setHeader();
-      }
+    UpdateStage(value) {
+      this.Stage = value;
     },
 
+    UpdateQty: function (event) {
+      console.log(event.target.value);
+      this.createValue = event.target.value;
+      this.btnSearchClick(event.target.value);
+    },
     async loadComponents() {
+      this.CheckPrivilege();
       this.RefreshState();
       this.loadCreateLot();
       try {
@@ -301,29 +248,46 @@ export default {
     async loadCreateLot() {
       let databaseName = localStorage.databaseName;
       var { data } = await Repository.getApiServer(
-        `GetLoadLotNoQWip?database_name=${databaseName}`
+        `GetLoadLotNoQWip?database_name=${databaseName}&type=MOVE_GET_LOTNO`
       );
       if (data.result == "ok") {
         this.listCreateLot = data.data;
       }
     },
+    async LoadStage() {
+      var payload = {
+        database_name: localStorage.databaseName,
+        qty: "20",
+        in_move_type: "GET_STAGE",
+        transaction: "WIPMoveTransaction",
+      };
+      this.listStage = [];
+      var { data } = await Repository.getRepo("InsertQWipTrans", payload);
+      if (data.result == "ok") {
+        let result = data.data.split("|");
+        this.listStage.push(result[0]);
+        this.listStage.push(result[1]);
+        this.listStage.push(result[2]);
+      }
+    },
 
     async btnClick(event) {
-      if (this.createValue.length == 0) {
-        this.$swal("", "Choose Foxconn LOT_NO & LOT_OWNER Retry...", "error");
+      if (
+        this.createValue.length == 0 ||
+        this.Qty.length == 0 ||
+        this.StageValue.length == 0 ||
+        this.Stage.length == 0
+      ) {
+        this.$swal("", "Cannot be left blank...", "error");
       } else {
-        const parts = this.StageValue.split(" - ");
-        this.IN_STAGE_IN = parts[0];
-        this.IN_STAGE_OUT = parts[1];
-
         var payload = {
           database_name: localStorage.databaseName,
           lot_no: this.createValue,
           reason: "",
           qty: this.Qty,
-          in_stage_out: this.IN_STAGE_IN,
-          in_stage_in: this.IN_STAGE_OUT,
-          transaction: "WIPMoveOutTransaction",
+          in_move_type: this.StageValue,
+          in_stage: this.Stage,
+          transaction: "WIPMoveTransaction",
         };
 
         var { data } = await Repository.getRepo("InsertQWipTrans", payload);
@@ -344,32 +308,42 @@ export default {
 
           //this.createValue = "";
         } else {
-          this.$swal("", data.data, "error");
+          this.$swal("", data.result, "error");
         }
       }
     },
 
     async btnSearchClick(event) {
-      if (event.keyCode == 13) {
-        if (this.searchKey.length == 0) {
-          this.$swal("", "Please input search key to continues", "error");
-        } else {
-          var database_name = localStorage.databaseName;
+      var database_name = localStorage.databaseName;
 
-          var { data } = await Repository.getApiServer(
-            `GetLoadFormQWip?database_name=${database_name}&trans_name=${this.transaction}&lot_no=${this.searchKey}`
-          );
-          if (data.result == "ok") {
-            this.listResult = data.data;
-            this.listHeader = Object.keys(this.listResult[0]);
-            this.setHeader();
-          } else {
-            this.$swal("", data.data, "error");
-          }
-        }
+      var { data } = await Repository.getApiServer(
+        `GetLoadFormQWip?database_name=${database_name}&trans_name=${this.transaction}&lot_no=${event}`
+      );
+      if (data.result == "ok") {
+        this.listResult = data.data;
+        this.listHeader = Object.keys(this.listResult[0]);
+        this.setHeader();
+      } else {
+        this.$swal("", "LOT_NO not exists!", "error");
       }
     },
 
+    async CheckPrivilege() {
+      var payload = {
+        database_name: localStorage.databaseName,
+        emp_no: localStorage.username,
+        fun: "QWIP_MOVE",
+      };
+      var { data } = await Repository.getRepo("CheckConfigPrivilege", payload);
+      if (data.result != "ok") {
+        if (localStorage.language == "En") {
+          this.$swal("", "Not privilege", "error");
+        } else {
+          this.$swal("", "Bạn không có quyền thêm sửa", "error");
+        }
+        this.$router.push({ path: "/Home/ConfigApp/QWIP_Trans" });
+      }
+    },
     RefreshState() {
       this.isShowCreatedLot = false;
       this.createValue = "";

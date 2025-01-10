@@ -114,7 +114,6 @@ export default {
         const { data } = await Repository.getApiServer(
           `QDataConfig?databaseName=${databaseName}&IN_FUNC=${IN_FUNC}&IN_SUBFUNC=${IN_SUBFUNC}&IN_DATA=${IN_DATA}&IN_EMPNO=${empNo}`
         );
-        console.log(data.data);
         this.dataTableList = data.data;
         if (this.dataTableList.length > 0) {
           this.objData = this.dataTableList[0];
@@ -138,12 +137,10 @@ export default {
       const IN_SUBFUNC = "SHOWDATA";
       const IN_DATA = index;
       const empNo = this.empNo;
-      console.log("IN_DATA: ", IN_DATA)
       try {
         const { data } = await Repository.getApiServer(
           `QDataConfig?databaseName=${databaseName}&IN_FUNC=${IN_FUNC}&IN_SUBFUNC=${IN_SUBFUNC}&IN_DATA=${IN_DATA}&IN_EMPNO=${empNo}`
         );
-        console.log(data.data);
         this.dataTable = data.data;
         if (this.dataTable.length > 0) {
           this.objData = this.dataTable[0];
@@ -184,20 +181,15 @@ export default {
         const IN_SUBFUNC = "INSERTDATA";
         const IN_DATA = JSON.stringify(this.objData);
         const empNo = this.empNo;
-
-        console.log(IN_DATA)
-
         try {
           const { data } = await Repository.getApiServer(
           `QDataConfig?databaseName=${databaseName}&IN_FUNC=${IN_FUNC}&IN_SUBFUNC=${IN_SUBFUNC}&IN_DATA=${IN_DATA}&IN_EMPNO=${empNo}`
         );
-
-        console.log(data.data);
           if (data.result == "ok") {
             this.isDisabled = !this.isDisabled;
             this.$swal("", "Successfully applied", "success");
           } else {
-            this.$swal("", data.data, "error");
+            this.$swal("", data.data.substr(0, 100), "error");
           }
         } catch (error) {
           const message =

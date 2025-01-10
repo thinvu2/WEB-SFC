@@ -13,13 +13,13 @@
         <div class="searchbox-content">
           <input
             :disabled="showTimeForm"
-            v-on:keyup.enter="querySearch()"
+            v-on:keyup.enter="loadComponent()"
             v-model="valueSearch"
             type="text"
             class="form-control"
-            placeholder="Enter Pack Slip No... "
+            placeholder="Enter To... "
           />
-          <button @click="querySearch()" class="btn-button">
+          <button @click="showTimeForm ? querySearch() : loadComponent()" class="btn-button">
             <Icon icon="search" class="sidenav-icon" />
           </button>
         </div>
@@ -54,14 +54,13 @@
       <div class="searchbox-asn-out">
         <div class="searchbox-content">
           <input
-            :disabled="showTimeForm"
             v-on:keyup.enter="querySearch()"
-            v-model="valueSearch"
+            v-model="searchDN"
             type="text"
             class="form-control"
             placeholder="Enter DN..."
           />
-          <button @click="SubmitBtn()" class="btn-button">Submit</button>
+          <button @click="SubmitBtn()" class="submit-form">Submit</button>
         </div>
       </div>
       <!--end asn out -->
@@ -125,11 +124,10 @@
         isVisible: false,
         DataTableHeader: [],
         DataTable: [],
-        valueSearch: "",
-        model: {
-          database_name: localStorage.databaseName,
-          EMP_NO: localStorage.username,
-        },
+        valueSearch: '',
+        searchDN: '',
+        databaseName: localStorage.databaseName,
+        empNo: localStorage.username,
       };
     },
     created() {
@@ -192,59 +190,65 @@
           });
       },
       async loadComponent() {
-        let databaseName = localStorage.databaseName;
-        const dateFrom = null;
-        const dateTo = null;
-        let PACKSLIP_NO = this.valueSearch;
-        let showTimeForm = this.showTimeForm;
-        try {
-          let { data } = await Repository.getApiServer(
-            `GetQAsnOut?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}&dateFrom=${dateFrom}&dateTo=${dateTo}&showTimeForm=${showTimeForm}`
-          );
-          this.DataTable = [];
-          this.DataTableHeader = [];
-          this.DataTable = data.data;
-          if (this.DataTable.length > 0) {
-            this.DataTableHeader = Object.keys(this.DataTable[0]);
-          }
-        } catch (error) {
-          if (error.response && error.response.data) {
-            this.$swal("", error.response.data.error, "error");
-          } else {
-            this.$swal("", error.Message, "error");
-          }
+      let databaseName = this.databaseName;
+      let empNo = this.empNo;
+      let inFunc = 'SHOWLISTBYPACKNO';
+      const dateFrom = '';
+      const dateTo = '';
+      let packslipNo = this.valueSearch;
+      try {
+        let { data } = await Repository.getApiServer(
+          `QAsnOutDataTable?databaseName=${databaseName}&inFunc=${inFunc}&inData=${packslipNo}&empNo=${empNo}&dateFrom=${dateFrom}&dateTo=${dateTo}`
+        );
+        this.DataTable = [];
+        this.DataTableHeader = [];
+        this.DataTable = data.data;
+        if (this.DataTable.length > 0) {
+          this.DataTableHeader = Object.keys(this.DataTable[0]);
         }
-      },
-      async querySearch() {
-        const formatDate = (date) => {
-          if (!date) return "";
-          return `${this.pad(date.getFullYear())}${this.pad(
-            date.getMonth() + 1
-          )}${this.pad(date.getDate())}`;
-        };
-        const dateFrom = formatDate(this.dateFrom);
-        const dateTo = formatDate(this.dateTo);
-        let databaseName = localStorage.databaseName;
-        let PACKSLIP_NO = this.valueSearch;
-        let showTimeForm = this.showTimeForm;
-        try {
-          let { data } = await Repository.getApiServer(
-            `GetQAsnOut?database_name=${databaseName}&PACKSLIP_NO=${PACKSLIP_NO}&dateFrom=${dateFrom}&dateTo=${dateTo}&showTimeForm=${showTimeForm}`
-          );
-          this.DataTable = [];
-          this.DataTableHeader = [];
-          this.DataTable = data.data;
-          if (this.DataTable.length > 0) {
-            this.DataTableHeader = Object.keys(this.DataTable[0]);
-          }
-        } catch (error) {
-          if (error.response && error.response.data) {
-            this.$swal("", error.response.data.error, "error");
-          } else {
-            this.$swal("", error.Message, "error");
-          }
+      } catch (error) {
+        console.error("loadComponent Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
+      }
+    },
+
+    async querySearch() {
+      const formatDate = (date) => {
+        if (!date) return "";
+        return `${this.pad(date.getFullYear())}${this.pad(
+          date.getMonth() + 1
+        )}${this.pad(date.getDate())}`;
+      };
+      const dateFrom = formatDate(this.dateFrom);
+      const dateTo = formatDate(this.dateTo);
+      let empNo = this.empNo;
+      let inFunc = 'SHOWLISTBYTIME';
+      let databaseName = this.databaseName;
+      let packslipNo = this.valueSearch;
+    //  let showTimeForm = this.showTimeForm;
+      try {
+        let { data } = await Repository.getApiServer(
+          `QAsnOutDataTable?databaseName=${databaseName}&inFunc=${inFunc}&inData=${packslipNo}&empNo=${empNo}&dateFrom=${dateFrom}&dateTo=${dateTo}`
+        );
+        this.DataTable = [];
+        this.DataTableHeader = [];
+        this.DataTable = data.data;
+        if (this.DataTable.length > 0) {
+          this.DataTableHeader = Object.keys(this.DataTable[0]);
         }
-      },
+      } catch (error) {
+        console.error("querySearch Error:", error);
+        const message =
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
+      }
+    },
       pad(number) {
         return number < 10 ? `0${number}` : `${number}`;
       },
@@ -356,10 +360,33 @@
     color: #fff;
     box-sizing: 0;
   }
+  
   .btn-button:hover {
     background: #ec690c;
     transition: 0.5s;
   }
+  .submit-form {
+  font-weight: 555;
+  padding: 8px 11px;
+  font-size: 17px;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: #fff;
+  background-color: #04aa6d;
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 5px #999;
+}
+.submit-form:hover {
+  background-color: #3e8e41;
+}
+.submit-form:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
   .searchbox-content {
     display: flex;
     gap: 5px;

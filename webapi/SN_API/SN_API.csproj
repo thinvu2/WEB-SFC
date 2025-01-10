@@ -74,6 +74,9 @@
     <Reference Include="Microsoft.Owin.Security.OAuth, Version=4.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.1.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -229,6 +232,7 @@
     <Compile Include="Controllers\QualcommApps\ReceiptConfigController.cs" />
     <Compile Include="Controllers\SASLabelController.cs" />
     <Compile Include="Controllers\ShippingDataController.cs" />
+    <Compile Include="Controllers\Telit\TelitConfirm855Controller.cs" />
     <Compile Include="Controllers\Telit\TelitEDIController.cs" />
     <Compile Include="Controllers\TrapTestController.cs" />
     <Compile Include="Controllers\Config\Config23Controller.cs" />
@@ -369,6 +373,8 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="FakesAssemblies\Oracle.ManagedDataAccess.Fakes.dll" />
+    <Content Include="FakesAssemblies\Oracle.ManagedDataAccess.Fakes.xml" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -443,6 +449,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
+    <Content Include="Fakes\Oracle.ManagedDataAccess.fakes" />
+    <Content Include="FakesAssemblies\Oracle.ManagedDataAccess.Fakes.fakesconfig" />
+    <Content Include="FakesAssemblies\Oracle.ManagedDataAccess.Fakes.messages" />
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <PropertyGroup>

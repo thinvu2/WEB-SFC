@@ -42,7 +42,7 @@ namespace SN_API.Controllers.QualcommApps
                         command.Parameters.Add("IN_DATA", OracleDbType.Varchar2).Value = IN_DATA;
                         command.Parameters.Add("IN_EMPNO", OracleDbType.Varchar2).Value = IN_EMPNO;
                         command.Parameters.Add("OUT_DT", OracleDbType.RefCursor).Direction = ParameterDirection.Output;
-                        command.Parameters.Add("RES", OracleDbType.Varchar2, 1000).Direction = ParameterDirection.Output;
+                        command.Parameters.Add("RES", OracleDbType.Varchar2, 4000).Direction = ParameterDirection.Output;
                         connection.Open();
                         await command.ExecuteNonQueryAsync();
                         procedureResult = command.Parameters["RES"].Value.ToString();
