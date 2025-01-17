@@ -189,6 +189,7 @@ export default {
       localStorage.language = lang;
       console.log(lang);
     },
+    
     async submitLogin() {
       if (typeof this.database == "undefined" || this.database.length == 0) {
         if (this.$store.state.language == "En") {
@@ -208,11 +209,7 @@ export default {
           localStorage.username = this.username;
           localStorage.password = this.password;
           localStorage.empname = data.emp_name;
-          // if (window.location.protocol == "http:") {
-          //   window.location.href = window.location.origin + "/#/Home/Applications/";
-          // } else {
-            window.location.href = window.location.origin + "/#/";
-          // }
+          window.location.href = window.location.origin + "/#/Home";
         } else
         {
           if (this.$store.state.language == "En") {
@@ -241,7 +238,6 @@ export default {
       if (localStorage.username.length == 0) {
         this.$router.push({ name: "Login" });
       } else {
-        // window.location.href =  window.location.origin+"/sfc";
         if (window.location.protocol == "http:") {
           window.location.href = window.location.origin + "/sfc";
         } else {
@@ -264,10 +260,6 @@ export default {
             "Vi";
       }
     }
-  },
-  mounted() {
-    // var host = window.location.protocol + "//" + window.location.host;
-    // console.log(host);
   },
 };
 </script>

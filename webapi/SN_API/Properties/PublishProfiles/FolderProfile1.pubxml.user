@@ -4,7 +4,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <History>True|2025-01-06T02:27:46.7018936Z;False|2025-01-06T09:27:24.3048250+07:00;True|2025-01-03T15:23:00.8343275+07:00;True|2025-01-03T14:47:05.9829186+07:00;False|2025-01-03T14:46:57.8395277+07:00;False|2025-01-03T14:45:54.7200589+07:00;False|2025-01-03T14:45:38.6740084+07:00;</History>
+    <History>True|2025-01-17T06:45:57.5142278Z;False|2025-01-17T13:45:48.3501497+07:00;True|2025-01-06T09:27:46.7018936+07:00;False|2025-01-06T09:27:24.3048250+07:00;True|2025-01-03T15:23:00.8343275+07:00;True|2025-01-03T14:47:05.9829186+07:00;False|2025-01-03T14:46:57.8395277+07:00;False|2025-01-03T14:45:54.7200589+07:00;False|2025-01-03T14:45:38.6740084+07:00;</History>
     <_PublishTargetUrl>C:\Users\V1039443\Desktop\SOURCE-NIC\webapi\SN_API\bin\app.publish\</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
@@ -13,6 +13,27 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
     </File>
     <File Include="bin/Antlr3.Runtime.pdb">
       <publishTime>11/08/2024 08:52:03</publishTime>
+    </File>
+    <File Include="bin/cs/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
+    </File>
+    <File Include="bin/de/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
+    </File>
+    <File Include="bin/es/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
+    </File>
+    <File Include="bin/fr/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
+    </File>
+    <File Include="bin/it/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
+    </File>
+    <File Include="bin/ja/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
+    </File>
+    <File Include="bin/ko/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
     </File>
     <File Include="bin/Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll">
       <publishTime>11/08/2024 08:52:04</publishTime>
@@ -38,6 +59,9 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
     <File Include="bin/Microsoft.Owin.Security.OAuth.dll">
       <publishTime>11/08/2024 08:52:07</publishTime>
     </File>
+    <File Include="bin/Microsoft.QualityTools.Testing.Fakes.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
+    </File>
     <File Include="bin/Microsoft.Web.Infrastructure.dll">
       <publishTime>11/08/2024 08:52:07</publishTime>
     </File>
@@ -49,6 +73,12 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
     </File>
     <File Include="bin/Owin.dll">
       <publishTime>11/08/2024 08:52:10</publishTime>
+    </File>
+    <File Include="bin/pl/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
+    </File>
+    <File Include="bin/pt-BR/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
     </File>
     <File Include="bin/roslyn/csc.exe">
       <publishTime>11/08/2024 08:52:07</publishTime>
@@ -86,11 +116,14 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
     <File Include="bin/roslyn/VBCSCompiler.exe.config">
       <publishTime>11/08/2024 08:52:07</publishTime>
     </File>
+    <File Include="bin/ru/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
+    </File>
     <File Include="bin/SN_API.dll">
-      <publishTime>01/06/2025 09:27:42</publishTime>
+      <publishTime>01/17/2025 13:45:55</publishTime>
     </File>
     <File Include="bin/SN_API.pdb">
-      <publishTime>01/06/2025 09:27:42</publishTime>
+      <publishTime>01/17/2025 13:45:55</publishTime>
     </File>
     <File Include="bin/Swashbuckle.Core.dll">
       <publishTime>11/08/2024 08:52:11</publishTime>
@@ -137,11 +170,20 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
     <File Include="bin/System.Web.WebPages.Razor.dll">
       <publishTime>11/08/2024 08:52:04</publishTime>
     </File>
+    <File Include="bin/tr/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
+    </File>
     <File Include="bin/WebActivatorEx.dll">
       <publishTime>11/08/2024 08:52:11</publishTime>
     </File>
     <File Include="bin/WebGrease.dll">
       <publishTime>11/08/2024 08:52:11</publishTime>
+    </File>
+    <File Include="bin/zh-Hans/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
+    </File>
+    <File Include="bin/zh-Hant/Microsoft.QualityTools.Testing.Fakes.resources.dll">
+      <publishTime>12/03/2024 09:49:49</publishTime>
     </File>
     <File Include="bin/zxing.dll">
       <publishTime>11/08/2024 08:52:16</publishTime>
@@ -163,6 +205,21 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
     </File>
     <File Include="Content/Site.css">
       <publishTime>11/08/2024 08:52:03</publishTime>
+    </File>
+    <File Include="Fakes/Oracle.ManagedDataAccess.fakes">
+      <publishTime>01/08/2025 19:13:10</publishTime>
+    </File>
+    <File Include="FakesAssemblies/Oracle.ManagedDataAccess.Fakes.dll">
+      <publishTime>01/08/2025 19:13:10</publishTime>
+    </File>
+    <File Include="FakesAssemblies/Oracle.ManagedDataAccess.Fakes.fakesconfig">
+      <publishTime>01/08/2025 19:13:10</publishTime>
+    </File>
+    <File Include="FakesAssemblies/Oracle.ManagedDataAccess.Fakes.messages">
+      <publishTime>01/08/2025 19:13:10</publishTime>
+    </File>
+    <File Include="FakesAssemblies/Oracle.ManagedDataAccess.Fakes.xml">
+      <publishTime>01/08/2025 19:13:10</publishTime>
     </File>
     <File Include="favicon.ico">
       <publishTime>11/08/2024 08:52:03</publishTime>
@@ -201,7 +258,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>11/08/2024 08:52:03</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>01/03/2025 14:47:05</publishTime>
+      <publishTime>01/17/2025 13:45:56</publishTime>
     </File>
   </ItemGroup>
 </Project>

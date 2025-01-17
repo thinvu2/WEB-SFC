@@ -117,11 +117,7 @@ namespace SN_API.Controllers
             var _token = JwtToken.GenerateToken(username, password);
             return _token;
         }
-        protected string CheckToken(string token)
-        {
-            var _username = JwtToken.ValidateToken(token);
-            return _username;
-        }
+
         [System.Web.Http.Route("CheckLogin")]
         [System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> CheckLogin(LoginInfo privilege)
@@ -130,7 +126,7 @@ namespace SN_API.Controllers
             string UserName = privilege.UserName;
             string PassWord = privilege.PassWord;
             var watch = new Stopwatch();
-            string queryString = "select * from sfis1.C_EMP_DESC_T  where Upper(emp_no) = '" + UserName.ToUpper() + "' and emp_pass='" + PassWord + "'";
+            string queryString = $"select * from sfis1.C_EMP_DESC_T  where emp_no = '{UserName}' and emp_pass='{PassWord}' ";
             DataTable dtCheck = DBConnect.GetData(queryString, database_name);
             watch.Stop();
             if (dtCheck.Rows.Count == 0)
@@ -142,45 +138,6 @@ namespace SN_API.Controllers
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", emp_name = dtCheck.Rows[0]["EMP_NAME"].ToString(), time = watch.ElapsedMilliseconds });
             }
         }
-        //    [System.Web.Http.Route("CheckLogin")]
-        //    [System.Web.Http.HttpPost]
-        //    public async Task<HttpResponseMessage> CheckLogin(LoginInfo privilege)
-        //    {
-        //        string database_name = privilege.DatabaseName;
-        //        string UserName = privilege.UserName;
-        //        string PassWord = privilege.PassWord; // Mã hóa mật khẩu
-        //        var watch = new Stopwatch();
-        //        watch.Start();
-
-        //        string queryString = "SELECT * FROM sfis1.C_EMP_DESC_T WHERE emp_no = @UserName AND emp_pass = @PassWord";
-        //        var parameters = new List<SqlParameter>
-        //{
-        //    new SqlParameter("@UserName", SqlDbType.NVarChar) { Value = UserName.ToUpper() },
-        //    new SqlParameter("@PassWord", SqlDbType.NVarChar) { Value = PassWord }
-        //};
-
-        //        DataTable dtCheck = DBConnect.GetData(queryString, parameters, database_name);
-        //        watch.Stop();
-
-        //        if (dtCheck.Rows.Count == 0)
-        //        {
-        //            return Request.CreateResponse(HttpStatusCode.OK, new { result = "fail", time = watch.ElapsedMilliseconds });
-        //        }
-        //        else
-        //        {
-        //            string empName = dtCheck.Rows[0]["EMP_NAME"].ToString();
-        //            string empNo = dtCheck.Rows[0]["EMP_NO"].ToString();
-        //            string token = GenerateJwtToken(empName, empNo);
-
-        //            return Request.CreateResponse(HttpStatusCode.OK, new
-        //            {
-        //                result = "ok",
-        //                emp_name = empName,
-        //                token = token,
-        //                time = watch.ElapsedMilliseconds
-        //            });
-        //        }
-        //    }
 
         [System.Web.Http.Route("GetFtpAddress")]
         [System.Web.Http.HttpPost]
@@ -232,64 +189,6 @@ namespace SN_API.Controllers
             return Ok(_results);
         }
 
-        //[System.Web.Http.Route("GetEmp")]
-        ////[System.Web.Http.Authorize]
-        //[System.Web.Http.HttpPost]
-        //public async Task<HttpResponseMessage> CheckAuth(EmpResponse emp)
-        //{
-        //    List<Employee> listEmp = new List<Employee>();
-        //    string Token = emp.Token;
-        //    var ApplicationID = emp.ApplicationID;
-        //    var _listEMPNo = emp.EmpList;
-        //    int i = 0;
-        //    string queryString = "";
-        //    var response = new HttpResponseMessage();
-        //    //var _obj = JwtToken.GetPayLoad(Token);
-        //    //var _unique_name = "";
-        //    //var _password = "";
-        //    //try
-        //    //{
-        //    //    _unique_name = _obj["username"].ToString();
-        //    //    _password = _obj["password"].ToString();
-        //    //}
-        //    //catch
-        //    //{
-        //    //    return Request.CreateResponse(new { message = "Authorization has been denied for this request." });
-        //    //}
-        //    //string _query_string_check = "SELECT * FROM SFIS1.C_PARAMETER_INI WHERE PRG_NAME = 'AMS_API' AND VR_NAME = '" + _unique_name + "' AND VR_VALUE = '" + _password + "' AND ROWNUM =1";
-        //    //DataTable dtCheck = Employee.GetData(_query_string_check, "CPEI");
-        //    //if (dtCheck.Rows.Count == 0) return Request.CreateResponse(new { message = "Username or password is wrong." });
-
-        //    string temp_condition = "";
-        //    foreach (var item in _listEMPNo)
-        //    {
-        //        if (i == 0)
-        //        {
-        //            temp_condition += "'" + item.EMPNO + "'";
-        //        }
-        //        else
-        //        {
-        //            temp_condition += ",'" + item.EMPNO + "'";
-        //        }
-        //        i = 1;
-        //    }
-        //    queryString = "SELECT * FROM SFIS1.C_AMS_USER_INFOR_T WHERE APPLICATIONID='" + ApplicationID + "' AND EMPNO IN (" + temp_condition + ")";
-
-        //    if (temp_condition == "") return Request.CreateResponse(new { ApplicationID = ApplicationID, EmpList = listEmp });
-
-
-        //    DataTable dt = Employee.GetData(queryString, "CPEI");
-
-        //    if (dt.Rows.Count < 0) return response;
-
-        //    for (int j = 0; j < dt.Rows.Count; j++)
-        //    {
-        //        listEmp.Add(new Employee(dt.Rows[j]["USERID"].ToString(), dt.Rows[j]["EMPNO"].ToString(), dt.Rows[j]["NAME"].ToString(), dt.Rows[j]["GROUPNAME"].ToString(), dt.Rows[j]["GROUPREMARK"].ToString(), dt.Rows[j]["EFFECTTIME"].ToString()));
-        //    }
-
-        //    return Request.CreateResponse(new { ApplicationID = ApplicationID, EmpList = listEmp });
-
-        //}
         [System.Web.Http.Route("GetDataShipToFile")]
         [System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> GetDataShipToFile(ValueShipToFile value)
@@ -318,7 +217,6 @@ namespace SN_API.Controllers
                         left join    SFISM4.R_DN_CARTON_LINK_T i
                         on b.mcarton_no = i.MCARTON_NO
                         where 1 = 1 and wip_group = 'SHIPPING' ");
-
 
             string r117 = string.Format(@"SELECT * FROM (SELECT SERIAL_NUMBER,MODEL_NAME,MO_NUMBER,VERSION_CODE Version,TYPE,SECTION_FLAG,LINE_NAME,
                         SECTION_NAME,GROUP_NAME,STATION_NAME,LOCATION,STATION_SEQ,ERROR_FLAG,IN_STATION_TIME,
@@ -695,8 +593,8 @@ namespace SN_API.Controllers
           "a.SPECIAL_ROUTE,a.QA_NO,a.QA_RESULT,a.SCRAP_FLAG," +
           "a.NEXT_STATION,a.CUSTOMER_NO,a.BOM_NO,a.PO_NO,a.KEY_PART_NO,a.REWORK_NO," +
           "a.EMP_NO,a.PO_LINE,a.PALLET_FULL_FLAG,a.ATE_STATION_NO,a.GROUP_NAME_CQC,a.MSN,a.SO_NUMBER,b.LICENSE_NO PMCC," +
-          "a.SO_LINE,a.STOCK_NO,a.TRAY_NO,a.SHIP_NO,a.WIP_GROUP FROM SFISM4.R_WIP_TRACKING_T a left join SFISM4.R_SEC_LIC_LINK_T b on a.mcarton_no = b.carton_no or  a.carton_no = b.carton_no" +
-          " WHERE a.Carton_NO = '" + value + "' OR a.MCarton_NO = '" + value + "'";
+          "a.SO_LINE,a.STOCK_NO,a.TRAY_NO,a.SHIP_NO,a.WIP_GROUP FROM SFISM4.R_WIP_TRACKING_T a left join SFISM4.R_SEC_LIC_LINK_T b on a.mcarton_no = b.carton_no" +
+          " WHERE a.MCarton_NO = '" + value + "'";
             }
             else if (_option == "IMEI")
             {
@@ -707,7 +605,7 @@ namespace SN_API.Controllers
           "NEXT_STATION,CUSTOMER_NO,BOM_NO,PO_NO,KEY_PART_NO,REWORK_NO," +
           "EMP_NO,PO_LINE,PALLET_FULL_FLAG,ATE_STATION_NO,GROUP_NAME_CQC,MSN,SO_NUMBER," +
           "SO_LINE,STOCK_NO,TRAY_NO,SHIP_NO,WIP_GROUP FROM SFISM4.R_WIP_TRACKING_T " +
-          " WHERE IMEI= '" + value + "' OR PALLET_NO = '" + value + "'";
+          " WHERE IMEI= '" + value + "'";
             }
             else if (_option == "License")
             {
@@ -1519,42 +1417,10 @@ namespace SN_API.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, new { data = dt, query = sql, result = "ok" });
         }
 
-        //[System.Web.Http.Route("SendMessage")]
-        //[System.Web.Http.HttpPost]
-        //public async Task<HttpResponseMessage> SendMessage(Message message)
-        //{
-        //    string key = "xFUfgkitlozH";
-        //    using (var client = new HttpClient())
-        //    {
-        //        string URL = "http://10.224.81.136:8015/api/SendMessage";
-
-        //        string urlParameters = "?key=" + key + "&group=" + message.GroupName + "&message=" + message.MessageContent + " ";
-
-        //        client.BaseAddress = new Uri(URL);
-
-        //        // Add an Accept header for JSON format.
-        //        client.DefaultRequestHeaders.Accept.Add(
-        //        new MediaTypeWithQualityHeaderValue("application/json"));
-
-        //        // List data response.
-        //        HttpResponseMessage response = client.GetAsync(urlParameters).Result;
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            return Request.CreateResponse(HttpStatusCode.OK, new { status = "ok" });
-        //        }
-        //        else
-        //        {
-        //            return Request.CreateResponse(HttpStatusCode.OK, new { status = "fail" });
-        //        }
-        //    }
-        //}
-
         [System.Web.Http.Route("Query")]
         [System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> Query(ValueInputQuery6 valueInput)
         {
-            //Request.Content.Headers.Add("Access-Control-Allow-Origin", "*");
-            //Response.Headers.Add("Access-Control-Allow-Origin", "*");
             string _database = valueInput.database;
             DataTable dt = null;
             DataTable dt2 = null;
@@ -2003,7 +1869,6 @@ namespace SN_API.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok" });
         }
 
-
         [System.Web.Http.Route("SendMessage")]
         [System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> SendMessage(Message message)
@@ -2169,8 +2034,6 @@ namespace SN_API.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok" });
         }
 
-
-
         [System.Web.Http.Route("UpdateLockInfo")]
         [System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> UpdateLockInfo(ETEConfigInfo eteConfig)
@@ -2197,7 +2060,6 @@ namespace SN_API.Controllers
             DBConnect.ExecuteNoneQuery(queryInserLog, database_name);
             return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok" });
         }
-
 
         [System.Web.Http.Route("InsertLockInfo")]
         [System.Web.Http.HttpPost]
@@ -2274,7 +2136,6 @@ namespace SN_API.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, new { data = dt });
 
         }
-
 
         [System.Web.Http.Route("GetLogHistory")]
         [System.Web.Http.HttpPost]
@@ -2979,21 +2840,12 @@ namespace SN_API.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, new { data = dt });
         }
         //login
-
         [System.Web.Http.Route("LoginQuery")]
         [System.Web.Http.HttpPost]
         public async Task<HttpResponseMessage> LoginQuery(JObject obj)
         {
             var JsonObj = JsonConvert.SerializeObject(obj, Formatting.Indented);
             dynamic data = JObject.Parse(JsonObj);
-            //List<Employee> listEmp = new List<Employee>();
-            //string Token = await Task.Run(() => data.Token);
-            //var ApplicationID = await Task.Run(() => data.ApplicationID);
-            //var _listEMPNo = await Task.Run(() => data.EmpList);
-            //int i = 0;
-            //string queryString = "";
-            //var response = new HttpResponseMessage();
-            //var _obj = JwtToken.GetPayLoad(Token);
             var _database = "";
             var _unique_name = "";
             var _password = "";
@@ -3240,7 +3092,6 @@ FROM   (SELECT SUBLOCATION SUB,b.*,
             {
                 return Request.CreateResponse(new { message = e.Message });
             }
-
         }
 
         [System.Web.Http.Route("GetTrayinBake")]

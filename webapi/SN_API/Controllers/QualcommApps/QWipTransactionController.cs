@@ -26,11 +26,19 @@ namespace SN_API.Controllers.QualcommApps
                 string strGetData = "";
                 if (string.IsNullOrEmpty(lot_no))
                 {
-                    strGetData = $"SELECT  * FROM SFISM4.R_QWIP_DATA where upper(TRANS_NAME) = '{trans_name.ToUpper()}'";
+                    strGetData = $@"SELECT LOT_NO,PO_NO,SCHEDULE_COMPLETION_QTY,FULL_JOB_QTY,TRANS_NAME,F_id,CREATE_TIME_UTC,CREATE_TIME,SENDER_NAME,SENDER_DUNS,SENDER_DUNS4,RECEIVER_DUNS,
+                                SSM_PROCESS_VER,FLAG,EVENT_DATE,EVENT_DATE_UTC,TRANS_TYPE,LOT_STATE,SEQ_NO,REASON,PROCESS_NAME,STAGE_NAME,
+                                OPERATION_STEP,MANUFACTURING_TYPE,SUPPLIER_OPERATION,LOT_ITEM,LOT_QTY,BIN_NO,KGD,DATE_CODE,TEST_PRG,ISPARTIAL,
+                                SCHEDULE_COMPLETION_DATETIME,P_LOT_NO,P_LOT_ITEMS,P_LOT_QTY,SSM_ITEM,NOTES,LAST_EDIT_TIME,FILENAME
+                                FROM SFISM4.R_QWIP_DATA where upper(TRANS_NAME) = '{trans_name.ToUpper()}'";
                 }
                 else
                 {
-                    strGetData = $"SELECT  * FROM SFISM4.R_QWIP_DATA where upper(TRANS_NAME) = '{trans_name.ToUpper()}' and upper(lot_no) = '{lot_no.ToUpper()}'";
+                    strGetData = $@"SELECT LOT_NO,PO_NO,SCHEDULE_COMPLETION_QTY,FULL_JOB_QTY,TRANS_NAME,F_id,CREATE_TIME_UTC,CREATE_TIME,SENDER_NAME,SENDER_DUNS,SENDER_DUNS4,RECEIVER_DUNS,
+                                SSM_PROCESS_VER,FLAG,EVENT_DATE,EVENT_DATE_UTC,TRANS_TYPE,LOT_STATE,SEQ_NO,REASON,PROCESS_NAME,STAGE_NAME,
+                                OPERATION_STEP,MANUFACTURING_TYPE,SUPPLIER_OPERATION,LOT_ITEM,LOT_QTY,BIN_NO,KGD,DATE_CODE,TEST_PRG,ISPARTIAL,
+                                SCHEDULE_COMPLETION_DATETIME,P_LOT_NO,P_LOT_ITEMS,P_LOT_QTY,SSM_ITEM,NOTES,LAST_EDIT_TIME,FILENAME
+                                FROM SFISM4.R_QWIP_DATA where upper(TRANS_NAME) = '{trans_name.ToUpper()}' and upper(lot_no) = '{lot_no.ToUpper()}'";
                 }
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
 
@@ -59,15 +67,66 @@ namespace SN_API.Controllers.QualcommApps
             try
             {
                 string strGetData = "";
-                strGetData = $"select distinct LOT_NO as RECEIVELOT from SFISM4.R_QASN_IN";
+                strGetData = $"select distinct LOT_NO as RECEIVELOT from SFISM4.R_QWIP_DATA";
 
                 if (type == "CONSUME_GET_LOTNO")
                 {
-                    strGetData = @" select lot_no as RECEIVELOT from SFISM4.R_QWIP_DATA where trans_name='WIPStartTransaction'";
+                    strGetData = @" select distinct lot_no as RECEIVELOT from SFISM4.R_QWIP_DATA where trans_name='WIPStartTransaction'";
+                }
+                else if (type == "MOVE_GET_LOTNO")
+                {
+                    strGetData = @" select distinct lot_no as RECEIVELOT from SFISM4.R_QWIP_DATA where trans_name='WIPConsumeTransaction'";
+                }
+                else if (type == "SCRAP_GET_LOTNO")
+                {
+                    strGetData = @" select distinct lot_no as RECEIVELOT from SFISM4.R_QWIP_DATA where ";
+                }
+                else if (type == "RELEASE_GET_LOTNO")
+                {
+                    strGetData = @" select distinct lot_no as RECEIVELOT from SFISM4.R_QWIP_DATA where trans_name='WIPHoldTransaction'";
                 }
 
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
+            }
+            catch (SqlException ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "Database error", message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
+            }
+        }
+        [System.Web.Http.Route("CheckQty_Qwip")]
+        [System.Web.Http.HttpPost]
+        public async Task<HttpResponseMessage> CheckQty_Qwip(Qwip_Element qwip)
+        {
+            try
+            {
+                string strGetData = "";
+                strGetData = $@"  select * from SFISM4.R_QWIP_DATA 
+                     where lot_no = '{qwip.lot_no}' and SCHEDULE_COMPLETION_QTY >= '{qwip.qty}' ";
+
+                if (qwip.transaction == "WIPHoldTransaction")
+                {
+                    strGetData = $@"  select * from SFISM4.R_QWIP_DATA 
+                     where lot_no = '{qwip.lot_no}' and SCHEDULE_COMPLETION_QTY >= '{qwip.qty}' ";
+                }else if (qwip.transaction == "WIPReleaseTransaction")
+                {
+                    strGetData = $@"  select * from SFISM4.R_QWIP_DATA 
+                     where lot_no = '{qwip.lot_no}' and SCHEDULE_COMPLETION_QTY >= '{qwip.qty}' and TRANS_NAME = 'WIPHoldTransaction' ";
+                }
+
+                DataTable dtCheck = DBConnect.GetData(strGetData, qwip.database_name);
+                if (dtCheck.Rows.Count == 0)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, new { result = "fail" });
+                }
+                else
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
+                }
             }
             catch (SqlException ex)
             {
@@ -117,7 +176,12 @@ namespace SN_API.Controllers.QualcommApps
                 }
                 if (procedureResult == "OK")
                 {
-                    strGetData = $"SELECT  * FROM SFISM4.R_QWIP_DATA where upper(TRANS_NAME) = '{model.transaction.ToUpper()}' and upper(lot_no) = '{model.lot_no.ToUpper()}'";
+                    strGetData = $@"SELECT TRANS_NAME,LOT_NO,PO_NO,SCHEDULE_COMPLETION_QTY,FULL_JOB_QTY,F_id,CREATE_TIME_UTC,CREATE_TIME,SENDER_NAME,SENDER_DUNS,SENDER_DUNS4,RECEIVER_DUNS,
+                                SSM_PROCESS_VER,FLAG,EVENT_DATE,EVENT_DATE_UTC,TRANS_TYPE,LOT_STATE,SEQ_NO,REASON,PROCESS_NAME,STAGE_NAME,
+                                OPERATION_STEP,MANUFACTURING_TYPE,SUPPLIER_OPERATION,LOT_ITEM,LOT_QTY,BIN_NO,KGD,DATE_CODE,TEST_PRG,ISPARTIAL,
+                                SCHEDULE_COMPLETION_DATETIME,P_LOT_NO,P_LOT_ITEMS,P_LOT_QTY,SSM_ITEM,NOTES,LAST_EDIT_TIME,FILENAME
+                                FROM SFISM4.R_QWIP_DATA where upper(TRANS_NAME) = '{model.transaction.ToUpper()}' and upper(lot_no) = '{model.lot_no.ToUpper()}'
+                                order by EVENT_DATE desc";
                     DataTable dtCheck = DBConnect.GetData(strGetData, model.database_name);
                     return Request.CreateResponse(HttpStatusCode.OK, new { result = procedureResult.ToLower(), data = dtCheck });
                 }

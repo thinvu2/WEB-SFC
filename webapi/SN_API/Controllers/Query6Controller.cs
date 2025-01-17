@@ -111,36 +111,6 @@ namespace SN_API.Controllers
             return bmpReturn;
         }
 
-
-
-        //public string Decode()
-        //{
-        //    using (var image = new Image<Gray, Byte>(_bitmap))
-        //    {
-        //        using (Image<Gray, byte> bw = image.Convert(b => (byte)((b < 128) ? 0 : 255)))
-        //        {
-        //            var reader = new BarcodeReader();
-        //            Result result = reader.Decode(bw.Bitmap);
-        //            if (result == null) throw new Exception("Баркод не распознан");
-        //            byte[] bytes = Convert.FromBase64String(result.Text);
-        //            int count = Marshal.SizeOf(typeof(BinaryData));
-        //            GCHandle handle = GCHandle.Alloc(bytes, GCHandleType.Pinned);
-        //            var binaryData =(BinaryData)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(BinaryData));
-        //            handle.Free();
-        //            ArchiverIndex = binaryData.ArchiverIndex;
-        //            GammaIndex = binaryData.GammaIndex;
-        //            MixerIndex = binaryData.MixerIndex;
-        //            EccIndex = binaryData.EccIndex;
-        //            ExpandSize = binaryData.ExpandSize;
-        //            EccCodeSize = binaryData.EccCodeSize;
-        //            EccDataSize = binaryData.EccDataSize;
-        //            MaximumGamma = (binaryData.MaximumGamma == 0);
-        //            Key = Encoding.Default.GetString(bytes.ToList().GetRange(count, bytes.Length - count).ToArray());
-        //            return ToString();
-        //        }
-        //    }
-
-        //}
         private static readonly List<BarcodeFormat> Fmts = new List<BarcodeFormat> { BarcodeFormat.All_1D };
 
         public static bool DecodeImg(Bitmap img)

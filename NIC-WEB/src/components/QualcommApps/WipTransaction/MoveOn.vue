@@ -4,7 +4,7 @@
       <nav>
         <ul class="breadcrumb">
           <li class="breadcrumb-item">
-            <router-link to="/Home/Qualcomm_Application">Qualcomm</router-link>
+            <router-link to="/Home/QualcommApps">Qualcomm</router-link>
           </li>
           <li class="breadcrumb-item">
             <router-link to="/Home/ConfigApp/QWIP_Trans"
@@ -27,7 +27,7 @@
           <p>Choose IN-OUT:</p>
         </div>
         <div class="titleReceviceLot col-2">
-          <p>STAGE:</p>
+          <p>PROCESS NAME:</p>
         </div>
         <div class="titleReceviceLot col-1">
           <p>Qty:</p>
@@ -214,7 +214,7 @@ export default {
     UpdateQty: function (event) {
       console.log(event.target.value);
       this.createValue = event.target.value;
-      this.btnSearchClick(event.target.value);
+      //this.btnSearchClick(event.target.value);;
     },
     async loadComponents() {
       this.CheckPrivilege();

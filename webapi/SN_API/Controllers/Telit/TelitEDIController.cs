@@ -29,11 +29,11 @@ namespace SN_API.Controllers.Telit
                 string strGetData = "";
                 if(string.IsNullOrEmpty(F_PO))
                 {
-                    strGetData = $"SELECT DISTINCT PO as PURCHASE_ORDER, PIP_TYPE, ITEM_INT, DOC_DATE, INCOTERMS, INCO_2, ITEM_PO, ITEM, CHANGED_ON, QUANTITY, NET_PRICE, SHIPPING_NAME as SHIPPING_ADDRESS, FILENAME FROM SFISM4.R_TB_EDI_850_860 where (PO, ITEM) not in (select F_PO, F_PO_ITEM from SFISM4.R_TB_EDI_855)";
+                    strGetData = $"SELECT PO, SITE, PIP_TYPE, COCODE, DOC_TYPE, F_ON, CREATED, ITEM_INT, LAST_ITEM, VENDOR, VENDOR_NAME, VENDOR_STREET, VENDOR_CITY, VENDOR_COUNTRY, VENDOR_PHONE, VENDOR_FAX, F_LANGUAGE, PAYT_TERMS, PURCH_ORG, PUR_GROUP, CURRENCY, EXCH_RATE, DOC_DATE, INCOTERMS, INCO_2, VAT_REG_NO, F_VERSION, CONTACT_PERSON_NAME, CONTACT_PERSON_PHONE, CONTACT_PERSON_FAX, CONTACT_PERSON_EMAIL, HEADER_TEXT, ITEM_PO, ITEM, DELET_IND, CHANGED_ON, SHORT_TEXT, MATERIAL, ITEM_COCODE, PLANT, STOR_LOC, MATL_GROUP, QUANTITY, ORDER_UNIT, ORDERPR_UN, NET_PRICE, F_PER, NET_VALUE, GROSS_VAL, F_VALUE, ADDRESS, SHIPPING_NAME, SHIPPING_STREET, SHIPPING_CITY, SHIPPING_COUNTRY, ITEM_TEXT, SCHED_PURCH_DOC, SCHED_ITEM, SCHED_LINE, SCHED_DELIV_DATE, SCHED_QTY, ACK1_FILE_NAME, ACK2_FILE_NAME, LASTEDIT_DT, FILENAME FROM SFISM4.R_TB_EDI_850_860 where (PO, ITEM) not in (select F_PO, F_PO_ITEM from SFISM4.R_TB_EDI_855)";
                 }
                 else
                 {
-                    strGetData = $"SELECT DISTINCT PO as PURCHASE_ORDER, PIP_TYPE, ITEM_INT, DOC_DATE, INCOTERMS, INCO_2, ITEM_PO, ITEM, CHANGED_ON, QUANTITY, NET_PRICE, SHIPPING_NAME as SHIPPING_ADDRESS, FILENAME FROM SFISM4.R_TB_EDI_850_860 WHERE PO = '{F_PO}' and (PO, ITEM) not in (select F_PO, F_PO_ITEM from SFISM4.R_TB_EDI_855)";
+                    strGetData = $"SELECT PO, SITE, PIP_TYPE, COCODE, DOC_TYPE, F_ON, CREATED, ITEM_INT, LAST_ITEM, VENDOR, VENDOR_NAME, VENDOR_STREET, VENDOR_CITY, VENDOR_COUNTRY, VENDOR_PHONE, VENDOR_FAX, F_LANGUAGE, PAYT_TERMS, PURCH_ORG, PUR_GROUP, CURRENCY, EXCH_RATE, DOC_DATE, INCOTERMS, INCO_2, VAT_REG_NO, F_VERSION, CONTACT_PERSON_NAME, CONTACT_PERSON_PHONE, CONTACT_PERSON_FAX, CONTACT_PERSON_EMAIL, HEADER_TEXT, ITEM_PO, ITEM, DELET_IND, CHANGED_ON, SHORT_TEXT, MATERIAL, ITEM_COCODE, PLANT, STOR_LOC, MATL_GROUP, QUANTITY, ORDER_UNIT, ORDERPR_UN, NET_PRICE, F_PER, NET_VALUE, GROSS_VAL, F_VALUE, ADDRESS, SHIPPING_NAME, SHIPPING_STREET, SHIPPING_CITY, SHIPPING_COUNTRY, ITEM_TEXT, SCHED_PURCH_DOC, SCHED_ITEM, SCHED_LINE, SCHED_DELIV_DATE, SCHED_QTY, ACK1_FILE_NAME, ACK2_FILE_NAME, LASTEDIT_DT, FILENAME FROM SFISM4.R_TB_EDI_850_860 WHERE PO = '{F_PO}' and (PO, ITEM) not in (select F_PO, F_PO_ITEM from SFISM4.R_TB_EDI_855)";
                 }
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
@@ -57,7 +57,7 @@ namespace SN_API.Controllers.Telit
                                 WHEN substr(QUANTITY, 1, 1) = 0 then  TO_CHAR(QUANTITY, 'FM99990D99', 'NLS_NUMERIC_CHARACTERS = ''. ''' )
                                 ELSE replace(TO_CHAR(QUANTITY), '.','') 
                                 END as QUANTITY, 
-                                NET_PRICE, SHIPPING_NAME, SHORT_TEXT, MATERIAL, STOR_LOC
+                                NET_PRICE, SCHED_DELIV_DATE, SHIPPING_NAME, SHORT_TEXT, MATERIAL, STOR_LOC
                                 FROM SFISM4.R_TB_EDI_850_860 where PO = '{F_PO}' and ITEM_INT = '{F_ITEM_INT}' and PIP_TYPE = '{F_PIP_TYPE}' ";
                
                 DataTable dtCheck = DBConnect.GetData(strGetData, database_name);
@@ -125,7 +125,7 @@ namespace SN_API.Controllers.Telit
                 string insertLog = $@"insert into SFISM4.R_SYSTEM_LOG_T
                                     (EMP_NO, PRG_NAME, ACTION_TYPE, ACTION_DESC, TIME)
                                     values
-                                    ('{emp_no}', 'TELIT_EDI', 'INSERT', :actionDesc, sysdate)";
+                                    ('{emp_no}', 'TELIT_850_860', 'INSERT', :actionDesc, sysdate)";
                 var actionDesc = $"Po: {fPo}, Del_Date: {minTime}, Schedule_qty: {scheduleQty}";
                 
                 string insertTbEdi855 = $@" INSERT INTO SFISM4.R_TB_EDI_855 (

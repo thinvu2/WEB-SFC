@@ -78,6 +78,7 @@ export default {
         }
       } catch (error) {
         const message =
+        error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -121,6 +122,7 @@ export default {
           }
         } catch (error) {
           const message =
+          error.response?.data?.message ||
             error.response?.data?.error ||
             error.message ||
             "An unexpected error occurred.";
@@ -132,7 +134,7 @@ export default {
       this.isDisabled = !this.isDisabled;
     },
     backToParent() {
-      this.$router.push({ path: "/Home/Qualcomm_Application" });
+      this.$router.push({ path: "/Home/QualcommApps" });
     },
   },
 };

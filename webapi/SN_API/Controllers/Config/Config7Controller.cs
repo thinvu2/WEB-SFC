@@ -134,7 +134,7 @@ namespace SN_API.Controllers.Config
                     sb.Append($"'{model.EMP_NAME}',");
                     sb.Append($"'0',");
                     sb.Append($"'{model.CLASS_NAME}',to_char(sysdate,'yyyy/mm/dd'), ");
-                    sb.Append($"TO_DATE('{time_quit}','YYYY/MM/DD HH24:MI:SS'),'{model.EMP_PASS}','{model.EMP_PASS}','{MRHA_DECRYPT(model.EMP_PASS)}'");
+                    sb.Append($"TO_DATE('{time_quit}','YYYY/MM/DD HH24:MI:SS'),'{model.EMP_PASS}','{model.EMP_PASS}','{model.EMP_PASS}'");
                     sb.Append(")");
                 }
                 else
@@ -152,12 +152,9 @@ namespace SN_API.Controllers.Config
                     sb.Append($"CLASS_NAME='{model.CLASS_NAME}',");
                     sb.Append($"QUIT_DATE=TO_DATE('{time_quit}','YYYY/MM/DD HH24:MI:SS'),");
                     sb.Append($"EMP_PASS='{model.EMP_PASS}',EMP_BC='{model.EMP_PASS}',");
-                    sb.Append($"EMP_PWD_PASS ='{MRHA_DECRYPT(model.EMP_PASS)}'");
+                    sb.Append($"EMP_PWD_PASS ='{model.EMP_PASS}'");
                     sb.Append(" WHERE ");
                     sb.Append($" ROWID='{model.ID}'");
-
-                    //string delete_group = $"DELETE SFIS1.C_EMP_2_GROUP_T where  EMP_NO='{model.EMP_NO}' ";
-                    //DBConnect.ExecuteNoneQuery(delete_group, model.database_name);
                 }
                 strInserUpdate = sb.ToString();
                 sbLog.Append(" INSERT INTO sfism4.r_system_log_t (EMP_NO,PRG_NAME,ACTION_TYPE,ACTION_DESC) ");
@@ -184,7 +181,7 @@ namespace SN_API.Controllers.Config
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, new { result = ex.Message });
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
             }
         }
         public void InsertGroupForUser(string emp_no, string group, string database)
@@ -258,7 +255,7 @@ namespace SN_API.Controllers.Config
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, new { result = ex.Message });
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
             }
         }
         public static string MH(string TMPSTR)
@@ -327,6 +324,7 @@ namespace SN_API.Controllers.Config
             }
             return text;
         }
+
         #region Privilege
         [System.Web.Http.Route("getEmpNo")]
         [System.Web.Http.HttpGet]

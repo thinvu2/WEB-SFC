@@ -23,6 +23,15 @@
         </button>
       </div>
     </div>
+    <!-- export excel -->
+    <div class="export-excel" v-if="!isShowForm">
+      <img
+        @click="exportexcelxlsx()"
+        class="img-excel"
+        src="assets/img/xlsx-icon.jpg"
+        alt=""
+      />
+    </div>
     <!-- Form input data -->
     <div class="container" v-if="isShowForm === true">
       <div class="title-class">
@@ -188,6 +197,17 @@
         />
       </div>
       <div class="form-row">
+        <label for="sched-deliv-date">Sched Deliv Date:</label>
+        <input
+          type="text"
+          id="sched-deliv-date"
+          class="text-input"
+          name="sched-deliv-date"
+          readonly
+          v-model="model.SCHED_DELIV_DATE"
+        />
+      </div>
+      <div class="form-row">
         <label for="shipping-name">Shipping Address:</label>
         <input
           type="text"
@@ -213,7 +233,12 @@
             name="sched-deliv-date"
             v-model="minTimeDefault"
           />
-
+          <input
+            type="checkbox"
+            id="checkbox-time"
+            name="checkbox-time"
+            v-model="checkboxTimeDefault"
+          />
           <label for="sched-qty">Schedule Qty:</label>
           <input
             type="number"
@@ -237,9 +262,15 @@
             type="date"
             :id="`sched-deliv-date + ${index}`"
             class="text-input"
-            :min="minTime"
             :name="`sched-deliv-date + ${index}`"
+            :min="minTime"
             v-model="row.minTime"
+          />
+          <input
+            type="checkbox"
+            :id="`checkbox-time + ${index}`"
+            :name="`checkbox-time + ${index}`"
+            v-model="row.checkboxTime"
           />
           <label :for="`sched-qty + ${index}`">Schedule Qty:</label>
           <input
@@ -292,7 +323,7 @@
             <tbody>
               <tr v-for="(row, index) in DataTable" :key="index">
                 <template v-for="(value, key) in row" :key="key">
-                  <td @click="key === 'PURCHASE_ORDER' && showDetail(index)">
+                  <td @click="key === 'PO' && showDetail(index)">
                     {{ value }}
                   </td>
                 </template>
@@ -305,12 +336,15 @@
   </div>
 </template>
 <script>
+import xlsx from "xlsx";
 import Repository from "../../services/Repository";
 export default {
   data() {
     return {
-      minTime: this.getTodayDate(),
+      checkboxTimeDefault: false,
+      checkboxTime: false,
       minTimeDefault: this.getTodayDate(),
+      minTime: this.getTodayDate(),
       additionalRows: [],
       showTimeForm: false,
       showError: false,
@@ -351,9 +385,8 @@ export default {
         CHANGED_ON: "",
         QUANTITY: "",
         NET_PRICE: "",
-        SHIPPING_NAME: "",
-        ///input
         SCHED_DELIV_DATE: "",
+        SHIPPING_NAME: "",
         SCHED_QTY: "",
       },
     };
@@ -365,10 +398,33 @@ export default {
       }
     });
   },
-  computed: {},
+
+  watch: {
+    checkboxTimeDefault(newValue) {
+      this.minTimeDefault = newValue ? "2099-01-01" : this.getTodayDate();
+    },
+    additionalRows: {
+      handler(newRows) {
+        newRows.forEach((row) => {
+          if (!row.watched) {
+            row.watched = true;
+            this.$watch(
+              () => row.checkboxTime,
+              (newValue) => {
+                row.minTime = newValue ? "2099-01-01" : this.getTodayDate();
+              },
+              { immediate: true }
+            );
+          }
+        });
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
+
   mounted() {
     this.loadComponent();
-    //this.getTodayDate();
   },
   methods: {
     limitInputLength(event, maxLength) {
@@ -385,8 +441,9 @@ export default {
     },
     handAddNewForm() {
       this.additionalRows.push({
-        minTime: this.minTime,
+        minTime: this.getTodayDate(),
         scheduleQty: "",
+        checkboxTime: false,
       });
     },
     handleDeleteNewForm(index) {
@@ -406,6 +463,7 @@ export default {
       } catch (error) {
         console.error("LoadForm Error:", error);
         const message =
+          error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -414,9 +472,9 @@ export default {
     },
     async showDetail(index) {
       let databaseName = localStorage.databaseName;
-      let F_PO = this.DataTable[index].PURCHASE_ORDER;
+      let F_PO = this.DataTable[index].PO;
       let F_ITEM_INT = this.DataTable[index].ITEM_INT;
-      let F_PIP_TYPE = this.DataTable[index].F_PIP_TYPE;
+      let F_PIP_TYPE = this.DataTable[index].PIP_TYPE;
       try {
         let responseData = await Repository.getApiServer(
           `GetShowDetailTelitEDI?database_name=${databaseName}&F_PO=${F_PO}&F_ITEM_INT=${F_ITEM_INT}&F_PIP_TYPE=${F_PIP_TYPE}`
@@ -449,6 +507,7 @@ export default {
           this.model.CHANGED_ON = firstItem.CHANGED_ON;
           this.model.QUANTITY = firstItem.QUANTITY;
           this.model.NET_PRICE = firstItem.NET_PRICE;
+          this.model.SCHED_DELIV_DATE = firstItem.SCHED_DELIV_DATE;
           this.model.SHIPPING_NAME = firstItem.SHIPPING_NAME;
           this.isShowForm = true;
         } else {
@@ -457,6 +516,7 @@ export default {
       } catch (error) {
         console.error("ShowForm Error:", error);
         const message =
+          error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -473,7 +533,11 @@ export default {
         return;
       }
       let filleredRows = [];
-      this.additionalRows.forEach((row) => {
+      this.removeValues = this.additionalRows.map((value) => ({
+        minTime: value.minTime,
+        scheduleQty: value.scheduleQty,
+      }));
+      this.removeValues.forEach((row) => {
         if (row.minTime || row.scheduleQty) {
           filleredRows.push({ ...row });
         }
@@ -502,15 +566,12 @@ export default {
       let Quantities = 0;
       sumScheduleQty = filleredRows.reduce((sum, qty) => {
         if (parseInt(qty.scheduleQty) < 0) {
-        this.$swal("", "Input qty can't < 0", "warning");
-        return;
-      }
+          this.$swal("", "Input qty can't < 0", "warning");
+          return;
+        }
         return sum + parseInt(qty.scheduleQty);
       }, 0);
-
       Quantities = parseInt(this.ShowDataDetail[0].QUANTITY, 10);
-
-      console.log("Quantities: ", Quantities);
       if (Number.isNaN(sumScheduleQty) || Number.isNaN(Quantities)) {
         this.$swal(
           "",
@@ -527,7 +588,6 @@ export default {
         );
         return;
       }
-
       let titleValue = "Are you sure edit?";
       let textValue = "Once OK, data will be updated!";
       try {
@@ -577,6 +637,7 @@ export default {
       } catch (error) {
         console.error("submitForm Error:", error);
         const message =
+          error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -585,6 +646,13 @@ export default {
     },
     pad(number) {
       return number < 10 ? `0${number}` : `${number}`;
+    },
+    //export excel
+    exportexcelxlsx() {
+      let ws = xlsx.utils.json_to_sheet(this.DataTable);
+      let wb = xlsx.utils.book_new();
+      xlsx.utils.book_append_sheet(wb, ws, "data");
+      xlsx.writeFile(wb, "download.xlsx");
     },
     async clearForm() {
       this.DataTable = [];
@@ -694,6 +762,16 @@ export default {
   gap: 5px;
   margin-bottom: 1px;
 }
+.export-excel {
+  display: inline-block;
+  right: 25px;
+  position: absolute;
+}
+.img-excel {
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
+}
 .container {
   display: grid;
   grid-template-rows: 50px repeat(3, 35px) 5px repeat(3, 35px) auto;
@@ -777,6 +855,9 @@ export default {
   margin-right: 5px;
   align-items: center;
 }
+input[type="checkbox"] {
+  margin-left: 5px;
+}
 
 .form-row-address {
   grid-column: 1 / 4;
@@ -838,12 +919,12 @@ export default {
   color: #141414;
   margin-left: 30px;
 }
-.form-row:nth-child(17) {
+.form-row:nth-child(18) {
   grid-column: 1 / 4;
   display: flex;
   justify-content: flex-start;
 }
-.form-row:nth-child(17) label {
+.form-row:nth-child(18) label {
   margin-right: 10px;
 }
 

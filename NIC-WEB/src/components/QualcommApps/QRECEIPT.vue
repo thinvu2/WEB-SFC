@@ -578,6 +578,7 @@ export default {
       } catch (error) {
         console.error("loadComponent Error:", error);
         const message =
+          error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -597,7 +598,6 @@ export default {
       let inFunc = "SHOWLISTBYTIME";
       let databaseName = this.databaseName;
       let packslipNo = this.valueSearch;
-      //  let showTimeForm = this.showTimeForm;
       try {
         let { data } = await Repository.getApiServer(
           `QReceiptDataTable?databaseName=${databaseName}&inFunc=${inFunc}&inData=${packslipNo}&empNo=${empNo}&dateFrom=${dateFrom}&dateTo=${dateTo}`
@@ -611,6 +611,7 @@ export default {
       } catch (error) {
         console.error("querySearch Error:", error);
         const message =
+          error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -632,11 +633,9 @@ export default {
         let { data } = await Repository.getApiServer(
           `QReceiptDataTable?databaseName=${databaseName}&inFunc=${inFunc}&inData=${packslipNo}&empNo=${empNo}&dateFrom=${dateFrom}&dateTo=${dateTo}`
         );
-
         this.ShowDataDetail = [];
         this.ShowDataDetail = data.data;
         this.ShowDataTableOuterLpn = data.dataTable;
-
         if (this.ShowDataTableOuterLpn.length > 0) {
           this.ShowDataTableOuterLpnHeader = Object.keys(
             this.ShowDataTableOuterLpn[0]
@@ -670,6 +669,7 @@ export default {
       } catch (error) {
         console.error("querySearch Error:", error);
         const message =
+          error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -677,10 +677,91 @@ export default {
       }
     },
     async submitForm() {
-      let titleValue = "";
-      let textValue = "";
-      titleValue = "Are you sure edit?";
-      textValue = "Once OK, data will be updated!";
+      const filleredRows = this.rowsInnerBox
+        .map((row, index) => ({
+          ...row,
+          LOT_NO: this.ShowDataTableOuterLpn[index].LOT_NO,
+          SHIPPEDQTY: this.ShowDataTableOuterLpn[index].SHIPPEDQTY,
+        }))
+        .filter((row) => row.receiveQty || row.rejectQty || row.reason);
+      if (filleredRows.length === 0) {
+        this.$swal("", "No data to submit", "warning");
+        return;
+      }
+      if (this.ShowDataTableOuterLpn.length !== filleredRows.length) {
+        this.$swal("", "Please enter enough data.", "warning");
+        return;
+      }
+      this.isInputReason = false;
+      const invalidRows = [];
+      filleredRows.forEach((row) => {
+        const receiveQty = parseInt(row.receiveQty) || 0;
+        const rejectQty = parseInt(row.rejectQty) || 0;
+        const SHIPPEDQTY = parseInt(row.SHIPPEDQTY) || 0;
+        const reason = row.reason;
+        const LOT_NO = row.LOT_NO;
+        row = { receiveQty, rejectQty, SHIPPEDQTY, reason, LOT_NO };
+        if (rejectQty > 0 && reason === "") {
+          this.isInputReason = true;
+          invalidRows.push({ ...row, errorType: "MISSING_REASON" });
+          //return;
+        } else if (receiveQty + rejectQty !== SHIPPEDQTY) {
+          invalidRows.push({ ...row, errorType: "MISMATCH_QTY" });
+        } else if (receiveQty < 0 || rejectQty < 0) {
+          invalidRows.push({ ...row, errorType: "ERROR_QTY" });
+        }
+      });
+      if (invalidRows.length > 0) {
+        const missingReason = invalidRows
+          .filter((row) => row.errorType === "MISSING_REASON")
+          .map((row) => row.LOT_NO)
+          .join(", ");
+        if (missingReason) {
+          this.$swal(
+            "",
+            `Reason is not null, Lot no: ${missingReason}`,
+            "warning"
+          );
+          return;
+        }
+        const misMatchQty = invalidRows
+          .filter((row) => row.errorType === "MISMATCH_QTY")
+          .map((row) => row.LOT_NO)
+          .join(", ");
+        if (misMatchQty) {
+          this.$swal(
+            "",
+            `ReceiveQty + RejectQty must equal ShippedQty, Lot no: ${misMatchQty}`,
+            "warning"
+          );
+          return;
+        }
+        const errorQty = invalidRows
+          .filter((row) => row.errorType === "ERROR_QTY")
+          .map((row) => row.LOT_NO)
+          .join(", ");
+        if (errorQty) {
+          this.$swal(
+            "",
+            `ReceivedQty/RejectQty < 0, Lot no: ${errorQty}`,
+            "warning"
+          );
+          return;
+        }
+      }
+      const formatJSON = [
+        { PACKNO: this.model.PACKSLIP_NO },
+        ...filleredRows.map((row, index) => ({
+          [`LOTNO${index + 1}`]: row.LOT_NO || "",
+          [`ACCEPTQTY${index + 1}`]: row.receiveQty || "",
+          [`REJECTQTY${index + 1}`]: row.rejectQty || "",
+          [`REASON${index + 1}`]: row.reason || "",
+        })),
+      ];
+        console.log(formatJSON);
+
+      let titleValue = "Are you sure edit?";
+      let textValue = "Once OK, data will be updated!";
       this.$swal({
         title: titleValue,
         text: textValue,
@@ -689,76 +770,6 @@ export default {
         dangerMode: true,
       }).then(async (willDelete) => {
         if (willDelete.isConfirmed == false) return;
-
-        const filleredRows = this.rowsInnerBox
-          .map((row, index) => ({
-            ...row,
-            LOT_NO: this.ShowDataTableOuterLpn[index].LOT_NO,
-            SHIPPEDQTY: this.ShowDataTableOuterLpn[index].SHIPPEDQTY,
-          }))
-          .filter((row) => row.receiveQty || row.rejectQty || row.reason);
-        if (filleredRows.length === 0) {
-          this.$swal("", "No data to submit", "warning");
-          return;
-        }
-        if (this.ShowDataTableOuterLpn.length !== filleredRows.length) {
-          this.$swal("", "Please enter enough data.", "warning");
-          return;
-        }
-        this.isInputReason = false;
-        const invalidRows = [];
-        filleredRows.forEach((row) => {
-          const receiveQty = parseInt(row.receiveQty) || 0;
-          const rejectQty = parseInt(row.rejectQty) || 0;
-          const SHIPPEDQTY = parseInt(row.SHIPPEDQTY) || 0;
-          const reason = row.reason;
-          const LOT_NO = row.LOT_NO;
-
-          row = { receiveQty, rejectQty, SHIPPEDQTY, reason, LOT_NO };
-
-          if (rejectQty > 0 && reason === "") {
-            this.isInputReason = true;
-            invalidRows.push({ ...row, errorType: "MISSING_REASON" });
-            //return;
-          } else if (receiveQty + rejectQty !== SHIPPEDQTY) {
-            invalidRows.push({ ...row, errorType: "MISMATCH_QTY" });
-          }
-        });
-        if (invalidRows.length > 0) {
-          const missingReason = invalidRows
-            .filter((row) => row.errorType === "MISSING_REASON")
-            .map((row) => row.LOT_NO)
-            .join(", ");
-          if (missingReason) {
-            this.$swal(
-              "",
-              `Reason is not null, Lot no: ${missingReason}`,
-              "warning"
-            );
-            return;
-          }
-          const misMatchQty = invalidRows
-            .filter((row) => row.errorType === "MISMATCH_QTY")
-            .map((row) => row.LOT_NO)
-            .join(", ");
-          if (misMatchQty) {
-            this.$swal(
-              "",
-              `ReceiveQty + RejectQty must equal ShippedQty, Lot no: ${misMatchQty}`,
-              "warning"
-            );
-            return;
-          }
-        }
-        const formatJSON = [
-          { PACKNO: this.model.PACKSLIP_NO },
-          ...filleredRows.map((row, index) => ({
-            [`LOTNO${index + 1}`]: row.LOT_NO || "",
-            [`ACCEPTQTY${index + 1}`]: row.receiveQty || "",
-            [`REJECTQTY${index + 1}`]: row.rejectQty || "",
-            [`REASON${index + 1}`]: row.reason || "",
-          })),
-        ];
         let empNo = this.empNo;
         let inFunc = "INSERTDATA";
         let formattedJSON = JSON.stringify(formatJSON);
@@ -776,11 +787,13 @@ export default {
             this.$swal("", data.data, "error");
           }
         } catch (error) {
-          if (error.response && error.response.data) {
-            this.$swal("", error.response.data.error, "error");
-          } else {
-            this.$swal("", error.Message, "error");
-          }
+          console.error("Error:", error);
+          const message =
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            error.message ||
+            "An unexpected error occurred.";
+          this.$swal("", message, "error");
         }
       });
     },
@@ -808,10 +821,8 @@ export default {
         }, {});
       });
       let ws = xlsx.utils.json_to_sheet(filteredData);
-      /* add to workbook */
       let wb = xlsx.utils.book_new();
       xlsx.utils.book_append_sheet(wb, ws, "data");
-      /* generate an XLSX file */
       xlsx.writeFile(wb, "download.xlsx");
     },
     exportExcel() {
@@ -827,7 +838,7 @@ export default {
       const replacer = (key, value) => (value === null ? "" : value);
       const header = Object.keys(items[0]);
       const csv = [
-        header.join(","), // header row first
+        header.join(","),
         ...items.map((row) =>
           header
             .map((fieldName) => JSON.stringify(row[fieldName], replacer))
@@ -869,7 +880,7 @@ export default {
       this.selectedItems = [];
     },
     BackToParent() {
-      this.$router.push({ path: "/Home/Qualcomm_Application" });
+      this.$router.push({ path: "/Home/QualcommApps" });
     },
   },
 };
@@ -882,7 +893,6 @@ export default {
   padding: 0 10px;
   background-color: #f9f9f9;
 }
-/* Back Button Styles */
 .div-back {
   float: left;
   background: #eae1e1;

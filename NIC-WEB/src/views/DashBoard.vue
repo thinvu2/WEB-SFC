@@ -28,7 +28,9 @@
           <h6 class="text-white">
             <i class="fa fa-globe pull-left"></i>
             <strong>Website:</strong>
-            <a href="https://sfcnic-cns.myfiinet.com/">https://sfcnic-cns.myfiinet.com/</a>
+            <a href="https://sfcnic-cns.myfiinet.com/"
+              >https://sfcnic-cns.myfiinet.com/</a
+            >
           </h6>
         </li>
       </ul>
@@ -85,7 +87,6 @@ ul {
   min-height: 95vh;
   background: url("../../public/assets/img/BG_1.jpg");
   background-size: 100% auto;
-  //background: #eef1ff;
 }
 .div-app {
   padding-top: 20px;
@@ -97,7 +98,6 @@ ul {
 .div-top {
   font-size: 1.1rem;
   color: rgb(43, 42, 42);
-  //   margin: 10px;
 }
 .div-main {
   padding-left: 20px;
@@ -119,7 +119,6 @@ ul {
       cursor: default;
     }
     span {
-      // color: #000;
       color: #737677;
       margin: auto;
       text-align: center;
@@ -147,7 +146,6 @@ ul {
   border-radius: 20%;
   border: 3px solid #0ac9ff;
   span {
-    // color: #000;
     color: #0ac9ff;
     margin: auto;
     text-align: center;
@@ -164,9 +162,7 @@ ul {
   }
 }
 .text-config-name {
-  //font-family: "Roboto", sans-serif;
   text-align: center;
-  //border: 1px solid #cdc;
   align-content: center;
   font-size: 90%;
   font-weight: 666;

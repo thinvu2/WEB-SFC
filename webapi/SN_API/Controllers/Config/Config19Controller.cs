@@ -10,9 +10,6 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using System.Web.Mvc;
-using static SN_API.Models.Config19Element;
-using static SN_API.Models.LineElement;
 
 namespace SN_API.Controllers
 {
@@ -21,53 +18,53 @@ namespace SN_API.Controllers
     {
         // GET: Config
         [System.Web.Http.Route("GetConfig19Content")]
-        [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> GetConfig19Content(Config19Element model)
+        [System.Web.Http.HttpGet]
+        public async Task<HttpResponseMessage> GetConfig19Content(string databaseName, string modelName)
         {
-            string strGetData = "";
-            if (string.IsNullOrEmpty(model.MODEL_NAME))
+            try
             {
-                strGetData = $" select A.*,B.CUSTOMER, ROWIDTOCHAR(A.rowid) ID from SFIS1.C_CUST_SNRULE_T A LEFT JOIN  SFIS1.C_CUSTOMER_T B ON A.CUST_CODE = B.CUST_CODE WHERE ROWNUM< 20 ORDER BY A.MODEL_NAME,VERSION_CODE ";
-            }
-            else
-            {
-                strGetData = $" select A.*,B.CUSTOMER, ROWIDTOCHAR(A.rowid) ID from SFIS1.C_CUST_SNRULE_T A LEFT JOIN  SFIS1.C_CUSTOMER_T B ON A.CUST_CODE = B.CUST_CODE WHERE upper(A.MODEL_NAME) LIKE '%{model.MODEL_NAME.ToUpper()}%' ORDER BY A.MODEL_NAME,VERSION_CODE ";
-            }
-            DataTable dtCheck = DBConnect.GetData(strGetData, model.database_name);
-            if (dtCheck.Rows.Count == 0)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, new { result = "fail" });
-            }
-            else
-            {
+                string strGetData = "";
+                if (string.IsNullOrEmpty(modelName))
+                {
+                    strGetData = $"SELECT * FROM SFIS1.C_CUST_SNRULE_T where rownum < 21 ";
+                }
+                else
+                {
+                    strGetData = $"select * from SFIS1.C_CUST_SNRULE_T WHERE MODEL_NAME LIKE '{modelName}%' ORDER BY MODEL_NAME,VERSION_CODE ";
+                }
+                DataTable dtCheck = DBConnect.GetData(strGetData, databaseName);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
             }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
+            }
+
         }
         [System.Web.Http.Route("Config19GetAllModel")]
-        [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> Config19GetAllModel(Config19Element model)
+        [System.Web.Http.HttpGet]
+        public async Task<HttpResponseMessage> Config19GetAllModel(string databaseName)
         {
-            string strGetData = "select model_name from SFIS1.C_MODEL_DESC_T order by model_name asc";
-            DataTable dtCheck = DBConnect.GetData(strGetData, model.database_name);
-            return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
+            try
+            {
+                string strGetData = "select model_name from SFIS1.C_MODEL_DESC_T order by model_name asc";
+                DataTable dtCheck = DBConnect.GetData(strGetData, databaseName);
+                return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
+            }
         }
 
-        [System.Web.Http.Route("Config19GetCustomer")]
-        [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> Config19GetCustomer(Config19Element model)
-        {
-            string strGetData = "select customer,cust_code from SFIS1.C_CUSTOMER_T where customer not like '10.%' and customer not like '%?%' order by customer ";
-            DataTable dtCheck = DBConnect.GetData(strGetData, model.database_name);
-            return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
-        }
         [System.Web.Http.Route("InsertUpdateConfig19")]
         [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> InsertUpdateConfig1(Config19Element model)
+        public async Task<HttpResponseMessage> InsertUpdateConfig19(Config19Element model)
         {
             try
             {
                 //check privilege
-                string strPrivilege = $" select substr(FUN,13,7) SubFun ,PRIVILEGE from SFIS1.C_PRIVILEGE where EMP = '{model.EMP}' AND FUN like 'CUST SNRULE_%' AND PRG_NAME = 'CONFIG' AND (TRIM(substr(FUN,13,7)) = 'EDIT' OR  TRIM(substr(FUN,13,7)) = 'DELETE') ORDER BY PRIVILEGE ";
+                string strPrivilege = $" select substr(FUN,13,7) SubFun ,PRIVILEGE from SFIS1.C_PRIVILEGE where EMP = '{model.EMP_NO}' AND FUN like 'CUST SNRULE_%' AND PRG_NAME = 'CONFIG' AND (TRIM(substr(FUN,13,7)) = 'EDIT' OR  TRIM(substr(FUN,13,7)) = 'DELETE') ORDER BY PRIVILEGE ";
                 StringBuilder sb = new StringBuilder();
 
                 StringBuilder sbLog = new StringBuilder();
@@ -111,7 +108,7 @@ namespace SN_API.Controllers
                     sb.Append($" '{model.CUST_PALLET_LENG}', "); //CUST_PALLET_LENG,
                     sb.Append($" '{model.CUST_PALLET_STR}', "); //CUST_PALLET_STR,
                     sb.Append($" '{model.PALLET_LAB_NAME}', "); //PALLET_LAB_NAME,
-                    sb.Append($" '{model.EMP}', "); //EMP_NO,
+                    sb.Append($" '{model.EMP_NO}', "); //EMP_NO,
                     sb.Append($" sysdate, "); //IN_STATION_TIME,
                     sb.Append($" '{model.MACID_PREFIX}', "); //MACID_PREFIX,
                     sb.Append($" '{model.D1}', "); //D1,
@@ -156,14 +153,14 @@ namespace SN_API.Controllers
                     sb.Append($" CUST_BOX_LENG = '{model.CUST_BOX_LENG}', ");  //CUST_BOX_LENG
                     sb.Append($" CUST_BOX_STR = '{model.CUST_BOX_STR}', "); //CUST_BOX_STR
                     sb.Append($" FINISH_GOOD = '{model.FINISH_GOOD}' "); //FINISH_GOOD
-                    sb.Append($" WHERE ROWID = '{model.ID}' ");
+                    sb.Append($" WHERE model_name = '{model.MODEL_NAME}' and version_code ='{model.VERSION_CODE}' ");
 
                     #region history change data to update
                     modify = " UPDATE: ";
-                    string query = $"select  VERSION_CODE,CUST_MODEL_NAME,CUST_VERSION_CODE,CUST_MODEL_DESC,CARTON_LAB_NAME,UPCEANDATA,CUST_SN_PREFIX," +
+                    string query = $"select VERSION_CODE,CUST_MODEL_NAME,CUST_VERSION_CODE,CUST_MODEL_DESC,CARTON_LAB_NAME,UPCEANDATA,CUST_SN_PREFIX," +
                         $"CUST_VENDER_CODE,CUST_SN_POSTFIX, CUST_SN_LENG,CUST_SN_STR,CUST_CARTON_PREFIX,CUST_CARTON_POSTFIX,CUST_CARTON_LENG," +
                         $"CUST_CARTON_STR,CUST_PALLET_PREFIX,CUST_PALLET_POSTFIX, CUST_PALLET_LENG,CUST_PALLET_STR,PALLET_LAB_NAME,MACID_PREFIX,D1," +
-                        $"CUST_BOX_PREFIX,CUST_BOX_LENG,CUST_BOX_STR,FINISH_GOOD from sfis1.c_cust_snrule_t  WHERE ROWID = '{model.ID}' ";
+                        $"CUST_BOX_PREFIX,CUST_BOX_LENG,CUST_BOX_STR,FINISH_GOOD from sfis1.c_cust_snrule_t  WHERE model_name = '{model.MODEL_NAME}' and version_code ='{model.VERSION_CODE}' ";
                     DataTable dtModifly = DBConnect.GetData(query, model.database_name);
                     foreach (DataRow row in dtModifly.Rows)
                     {
@@ -276,70 +273,48 @@ namespace SN_API.Controllers
                 }
                 sbLog.Append(" INSERT INTO sfism4.r_system_log_t (EMP_NO,PRG_NAME,ACTION_TYPE,ACTION_DESC) ");
                 sbLog.Append(" VALUES ( ");
-                sbLog.Append($" '{model.EMP}', ");
+                sbLog.Append($" '{model.EMP_NO}', ");
                 sbLog.Append($" 'CONFIG', ");
                 sbLog.Append($" '{actionString}', ");
-                sbLog.Append($"  'CONFIG19 {model.MODEL_NAME};{model.VERSION_CODE};{modify};IP:{AuthorizationController.UserIP()}' ");
+                sbLog.Append($"  'CONFIG19 {model.MODEL_NAME}, {model.VERSION_CODE}, {modify}, IP:{AuthorizationController.UserIP()}' ");
                 sbLog.Append(" ) ");
 
                 string strInsertLog = sbLog.ToString();
                 string strInserUpdate = sb.ToString();
-                DBConnect.ExecuteNoneQuery(strInserUpdate, model.database_name);  //Execute insert update config 19
-                DBConnect.ExecuteNoneQuery(strInsertLog, model.database_name);  //Execute insert log
-                return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok" });
-            }
-            catch (Exception ex)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, new { result = ex.Message });
-            }
-        }
-        public string GetSelectByList(List<ConfigIds> list, string type)
-        {
-            StringBuilder sb = new StringBuilder();
-            if (list.Count > 0)
-            {
-                var sbContent = new StringBuilder();
-                sbContent.Append(" IN (");
-
-                for (int i = 0; i < list.Count; i++)
-                {
-                    string mo = list[i].ID.ToString();
-
-                    sbContent.AppendFormat("'{0}'", mo);
-                    if (i < list.Count - 1)
-                    {
-                        sbContent.Append(",");
-                    }
-                }
-                sbContent.Append(")");
-                sb.Append($" {type} {sbContent} ");
-            }
-            return sb.ToString();
-        }
-        [System.Web.Http.Route("DeleteConfig19")]
-        [System.Web.Http.HttpPost]
-        public async Task<HttpResponseMessage> DeleteConfig19(Config19Element model)
-        {            
-            string strDelete = $" delete SFIS1.C_CUST_SNRULE_T where  ROWID = '{model.ID}' ";
-            try
-            {
-                DBConnect.ExecuteNoneQuery(strDelete, model.database_name);
-                StringBuilder sbLog = new StringBuilder();
-                sbLog.Append(" INSERT INTO sfism4.r_system_log_t (EMP_NO,PRG_NAME,ACTION_TYPE,ACTION_DESC) ");
-                sbLog.Append(" VALUES ( ");
-                sbLog.Append($" '{model.EMP}', ");
-                sbLog.Append($" 'CONFIG', ");
-                sbLog.Append($" 'DELETE', ");
-                sbLog.Append($"  'CONFIG19 {model.MODEL_NAME};{model.VERSION_CODE};IP:{AuthorizationController.UserIP()}' ");
-                sbLog.Append(" ) ");
-
-                string strInsertLog = sbLog.ToString();
+                DBConnect.ExecuteNoneQuery(strInserUpdate, model.database_name);
                 DBConnect.ExecuteNoneQuery(strInsertLog, model.database_name);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok" });
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.OK, new { result = ex.Message });
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An error occurred", message = ex.Message });
+            }
+        }
+
+        [System.Web.Http.Route("DeleteConfig19")]
+        [System.Web.Http.HttpDelete]
+        public async Task<HttpResponseMessage> DeleteConfig19(string databaseName, string empNo, string modelName, string versionCode)
+        {            
+            string strDelete = $" delete SFIS1.C_CUST_SNRULE_T where  model_name ='{modelName}' and version_code ='{versionCode}' ";
+            try
+            {
+                DBConnect.ExecuteNoneQuery(strDelete, databaseName);
+                StringBuilder sbLog = new StringBuilder();
+                sbLog.Append(" INSERT INTO sfism4.r_system_log_t (EMP_NO,PRG_NAME,ACTION_TYPE,ACTION_DESC) ");
+                sbLog.Append(" VALUES ( ");
+                sbLog.Append($" '{empNo}', ");
+                sbLog.Append($" 'CONFIG', ");
+                sbLog.Append($" 'DELETE', ");
+                sbLog.Append($"  'CONFIG19 {modelName}, {versionCode}, IP:{AuthorizationController.UserIP()}' ");
+                sbLog.Append(" ) ");
+
+                string strInsertLog = sbLog.ToString();
+                DBConnect.ExecuteNoneQuery(strInsertLog, databaseName);
+                return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok" });
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { error = "An unexpected error occurred.", message = ex.Message });
             }
         }
     }

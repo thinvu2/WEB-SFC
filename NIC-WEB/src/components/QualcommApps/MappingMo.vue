@@ -166,7 +166,8 @@ export default {
       let databaseName = this.databaseName;
       let empNo = this.empNo;
       let inActionType = "GET_LOTNO_BELLOW";
-      let lotNo = this.model.lotNo;
+      console.log("aaabb", this.model.lotNo);
+      let lotNo = encodeURIComponent(this.model.lotNo);
       let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
       try {
@@ -178,6 +179,7 @@ export default {
       } catch (error) {
         console.error("queryLotNoBellow Error:", error);
         const message =
+        error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -188,9 +190,12 @@ export default {
       let databaseName = this.databaseName;
       let empNo = this.empNo;
       let inActionType = "GET_MO_BELLOW";
-      let lotNo = this.model.lotNo;
+      console.log("aa",this.model.lotNo)
+      let lotNo = encodeURIComponent(this.model.lotNo);
       let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
+
+      console.log("lotNo", lotNo)
       try {
         const { data } = await Repository.getApiServer(
           `GetMappingMo?databaseName=${databaseName}&empNo=${empNo}&inActionType=${inActionType}&lotNo=${lotNo}&moNumber=${moNumber}&valueSearch=${valueSearch}`
@@ -200,6 +205,7 @@ export default {
       } catch (error) {
         console.error("queryMoBellow Error:", error);
         const message =
+        error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -210,7 +216,7 @@ export default {
       let databaseName = this.databaseName;
       let empNo = this.empNo;
       let inActionType = "GET_GRID";
-      let lotNo = this.model.lotNo;
+      let lotNo = encodeURIComponent(this.model.lotNo);
       let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
       try {
@@ -226,6 +232,7 @@ export default {
       } catch (error) {
         console.error("querySearch Error:", error);
         const message =
+        error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -240,7 +247,7 @@ export default {
       let databaseName = this.databaseName;
       let empNo = this.empNo;
       let inActionType = "LINK";
-      let lotNo = this.model.lotNo;
+      let lotNo = encodeURIComponent(this.model.lotNo);
       let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
       try {
@@ -256,6 +263,7 @@ export default {
       } catch (error) {
         console.error("saveData Error:", error);
         const message =
+        error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -266,7 +274,7 @@ export default {
       let databaseName = this.databaseName;
       let empNo = this.empNo;
       let inActionType = "GET_GRID";
-      let lotNo = this.model.lotNo;
+      let lotNo = encodeURIComponent(this.model.lotNo);
       let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
       try {
@@ -282,6 +290,7 @@ export default {
       } catch (error) {
         console.error("loadDataTable Error:", error);
         const message =
+        error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -292,7 +301,8 @@ export default {
       let databaseName = this.databaseName;
       let empNo = this.empNo;
       let inActionType = "GET_LOTNO";
-      let lotNo = this.model.lotNo;
+      console.log(this.model.lotNo)
+      let lotNo = encodeURIComponent(this.model.lotNo);
       let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
       try {
@@ -305,6 +315,7 @@ export default {
       } catch (error) {
         console.error("queryLotNo Error:", error);
         const message =
+        error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -319,7 +330,7 @@ export default {
       let databaseName = this.databaseName;
       let empNo = this.empNo;
       let inActionType = "GET_MO";
-      let lotNo = this.model.lotNo;
+      let lotNo = encodeURIComponent(this.model.lotNo);
       let moNumber = this.model.moNumber;
       let valueSearch = this.valueSearch;
       try {
@@ -332,6 +343,7 @@ export default {
       } catch (error) {
         console.error("queryMoNumber Error:", error);
         const message =
+        error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -352,7 +364,7 @@ export default {
       this.loadDataTable();
     },
     BackToParent() {
-      this.$router.push({ path: "/Home/Qualcomm_Application" });
+      this.$router.push({ path: "/Home/QualcommApps" });
     },
   },
 };

@@ -4,7 +4,7 @@
       <nav>
         <ul class="breadcrumb">
           <li class="breadcrumb-item">
-            <router-link to="/Home/Qualcomm_Application">Qualcomm</router-link>
+            <router-link to="/Home/QualcommApps">Qualcomm</router-link>
           </li>
           <li class="breadcrumb-item">
             <router-link to="/Home/ConfigApp/QWIP_Trans"
@@ -22,6 +22,9 @@
       <div class="title row col-12">
         <div class="titleReceviceLot col-3">
           <p>Choose LOT_NO:</p>
+        </div>
+        <div class="titleReceviceLot col-2">
+          <p>PROCESS NAME:</p>
         </div>
         <div class="titleReceviceLot col-2" style="margin-left: -15px">
           <p>Input Qty:</p>
@@ -75,7 +78,16 @@
         </div>
 
         <span class="dropdown-icon" @click="toggleDropdown">▼</span>
-
+        <div class="valueReceviceLot col-2">
+          <DropdownSearch
+            class="form-control"
+            :listAll="listStage"
+            @update-selected-item="UpdateStage"
+            :textContent="Stage"
+            type="model"
+            textPlaceHolder="Enter stage"
+          />
+        </div>
         <div class="valueReceviceLot col-2">
           <input
             class="form-control"
@@ -130,7 +142,11 @@
 
 <script>
 import Repository from "../../../services/Repository";
+import DropdownSearch from "../../Template/DropdownSearch.vue";
 export default {
+  components: {
+    DropdownSearch,
+  },
   name: "WipHold",
   created() {
     this.loadComponents();
@@ -141,12 +157,17 @@ export default {
       listHeader: [],
       listCreateLot: [],
       listCreateLotOwner: [],
+      listStage: [],
       labelResult: "",
       isShowCreatedLot: false,
       createValue: "",
       reasonValue: "",
       searchKey: "",
       Qty: 0,
+      Stage: "",
+      StageValue: "",
+      IN_STAGE_OUT: "",
+      IN_STAGE_IN: "",
       action: "Hold",
       transaction: "WIPHoldTransaction",
       filteredList: [],
@@ -178,14 +199,18 @@ export default {
       if (this.showDropdown) this.filterOptions();
     },
 
+    UpdateStage(value) {
+      this.Stage = value;
+    },
     UpdateQty: function (event) {
       this.createValue = event.target.value;
-      this.btnSearchClick(event.target.value);
+      //this.btnSearchClick(event.target.value);;
     },
     async loadComponents() {
       this.CheckPrivilege();
       this.RefreshState();
       this.loadCreateLot();
+      this.LoadStage();
       try {
         var event = "";
         let { data } = await Repository.getApiServer(
@@ -220,7 +245,22 @@ export default {
         this.listCreateLot = data.data;
       }
     },
-
+    async LoadStage() {
+      var payload = {
+        database_name: localStorage.databaseName,
+        qty: "20",
+        in_move_type: "GET_STAGE",
+        transaction: "WIPMoveTransaction",
+      };
+      this.listStage = [];
+      var { data } = await Repository.getRepo("InsertQWipTrans", payload);
+      if (data.result == "ok") {
+        let result = data.data.split("|");
+        this.listStage.push(result[0]);
+        this.listStage.push(result[1]);
+        this.listStage.push(result[2]);
+      }
+    },
     CheckQty: function (event) {
       if (this.Qty > 0 && this.createValue.length > 0) {
         this.CheckQty_Qwip(event.target.value);
@@ -236,13 +276,14 @@ export default {
         reason: "",
         qty: qty,
         transaction: this.transaction,
+        in_stage: this.Stage,
       };
 
       var { data } = await Repository.getRepo("CheckQty_Qwip", payload);
 
       if (data.result != "ok") {
+        this.$swal("", "The Qty wrong or too large!", "error");
         this.Qty = 0;
-        this.$swal("", "quantity exceeds total lot_qty", "error");
       }
     },
     async btnClick(event) {
@@ -259,6 +300,8 @@ export default {
           reason: this.reasonValue,
           transaction: this.transaction,
           qty: this.Qty,
+          in_move_type: this.StageValue,
+          in_stage: this.Stage,
         };
 
         var { data } = await Repository.getRepo("InsertQWipTrans", payload);

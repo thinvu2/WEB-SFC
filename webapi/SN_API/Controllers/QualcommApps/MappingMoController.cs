@@ -15,6 +15,7 @@ using System.Text.RegularExpressions;
 using System.Data.SqlClient;
 using Oracle.ManagedDataAccess.Client;
 using SN_API.Services;
+using System.Web;
 
 namespace SN_API.Controllers
 {
@@ -38,7 +39,7 @@ namespace SN_API.Controllers
                         command.CommandType = CommandType.StoredProcedure;
                         command.Parameters.Add("IN_ACTION_TYPE", OracleDbType.Varchar2).Value = inActionType;
                         command.Parameters.Add("IN_EMP", OracleDbType.Varchar2).Value = empNo;
-                        command.Parameters.Add("IN_LOTNO", OracleDbType.Varchar2).Value = lotNo;
+                        command.Parameters.Add("IN_LOTNO", OracleDbType.Varchar2).Value = HttpUtility.UrlDecode(lotNo); ;
                         command.Parameters.Add("IN_MO", OracleDbType.Varchar2).Value = moNumber;
                         command.Parameters.Add("IN_DATA", OracleDbType.Varchar2).Value = valueSearch;
                         command.Parameters.Add("STRSQL", OracleDbType.Varchar2, 4000).Direction = ParameterDirection.Output;

@@ -29,11 +29,11 @@ namespace SN_API.Controllers.Telit
                 string strGetData = "";
                 if (string.IsNullOrEmpty(F_PO))
                 {
-                    strGetData = $"select distinct F_PO, F_PIP_TYPE, F_TIMESTAMP, F_VENDOR, F_PO_ITEM, F_CONF_CTG, F_DEL_DATE, F_QTY, F_REFERENCE, F_CREATION_DATE, F_LASTEDIT_DT, F_FILENAME, F_TIMES from SFISM4.R_TB_EDI_855 order by F_LASTEDIT_DT desc";
+                    strGetData = $"select F_PO, F_SITE, F_PIP_TYPE, F_MSGID, F_TIMESTAMP, F_VENDOR, F_PO_ITEM, F_CONF_CTG, F_DEL_DATE, F_QTY, F_REFERENCE, F_CREATION_DATE, F_LASTEDIT_DT, F_FILENAME, F_TIMES from SFISM4.R_TB_EDI_855 order by F_LASTEDIT_DT desc";
                 }
                 else
                 {
-                    strGetData = $"select distinct F_PO, F_PIP_TYPE, F_TIMESTAMP, F_VENDOR, F_PO_ITEM, F_CONF_CTG, F_DEL_DATE, F_QTY, F_REFERENCE, F_CREATION_DATE, F_LASTEDIT_DT, F_FILENAME, F_TIMES from SFISM4.R_TB_EDI_855 WHERE F_PO = '{F_PO}' ";
+                    strGetData = $"select F_PO, F_SITE, F_PIP_TYPE, F_MSGID, F_TIMESTAMP, F_VENDOR, F_PO_ITEM, F_CONF_CTG, F_DEL_DATE, F_QTY, F_REFERENCE, F_CREATION_DATE, F_LASTEDIT_DT, F_FILENAME, F_TIMES from SFISM4.R_TB_EDI_855 WHERE F_PO = '{F_PO}' ";
                 }
                 DataTable dtCheck = DBConnect.GetData(strGetData, databaseName);
                 return Request.CreateResponse(HttpStatusCode.OK, new { result = "ok", data = dtCheck });
@@ -177,7 +177,7 @@ namespace SN_API.Controllers.Telit
                 string insertLog = $@"insert into SFISM4.R_SYSTEM_LOG_T
                                     (EMP_NO, PRG_NAME, ACTION_TYPE, ACTION_DESC, TIME)
                                     values
-                                    ('{emp_no}', 'TELIT_EDI', 'INSERT', :actionDesc, sysdate)";
+                                    ('{emp_no}', 'TELIT_855', 'INSERT', :actionDesc, sysdate)";
                 var actionDesc = $"Po: {fPo}, Del_Date: {minTime}, Schedule_qty: {scheduleQty}";
 
                 string insertTbEdi855 = $@" INSERT INTO SFISM4.R_TB_EDI_855 (
@@ -256,8 +256,6 @@ namespace SN_API.Controllers.Telit
             }
             catch (Exception ex)
             {
-                //Debug.WriteLine($"Error: {ex.Message}");
-                //Debug.WriteLine($"Stack Trace: {ex.StackTrace}");
                 throw;
             }
         }

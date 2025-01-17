@@ -4,7 +4,7 @@
       <nav>
         <ul class="breadcrumb">
           <li class="breadcrumb-item">
-            <router-link to="/Home/Qualcomm_Application">Qualcomm</router-link>
+            <router-link to="/Home/QualcommApps">Qualcomm</router-link>
           </li>
           <li class="breadcrumb-item">
             <router-link to="/Home/ConfigApp/QWIP_Trans"
@@ -266,6 +266,7 @@ export default {
         reason: "",
         qty: qty,
         transaction: this.transaction,
+        in_stage: this.Stage,
       };
 
       var { data } = await Repository.getRepo("CheckQty_Qwip", payload);

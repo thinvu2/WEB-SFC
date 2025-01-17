@@ -11,7 +11,7 @@
     <div class="div-searchbox row">
       <div class="div-searchbox-content">
         <input
-          v-on:keyup.enter="QuerySearch()"
+          v-on:keyup.enter="LoadComponent()"
           v-model="valueSearch"
           type="text"
           ref="input"
@@ -23,14 +23,13 @@
               : 'Nhập tên model...'
           "
         />
-        <button @click="QuerySearch()" class="btn">
+        <button @click="LoadComponent()" class="btn">
           <Icon icon="search" class="sidenav-icon" />
         </button>
       </div>
     </div>
     <div class="main-contain">
       <div class="row col-sm-12 div-content">
-        <template v-if="DataTableHeader">
           <table id="tableMain" class="table mytable">
             <thead>
               <tr>
@@ -41,7 +40,7 @@
                   {{ $store.state.language == "En" ? "Edit" : "Sửa" }}
                 </th>
                 <template v-for="(item, index) in DataTableHeader" :key="index">
-                  <th v-if="item != 'ID'">
+                  <th>
                     {{ item }}
                   </th>
                 </template>
@@ -78,12 +77,11 @@
                   </svg>
                 </td>
                 <template v-for="(item1, index1) in item" :key="index1">
-                  <td v-if="index1 != 'ID'">{{ item1 }}</td>
+                  <td>{{ item1 }}</td>
                 </template>
               </tr>
             </template>
           </table>
-        </template>
       </div>
     </div>
     <div class="div-button">
@@ -154,6 +152,7 @@
             type="text"
             class="input-class"
             id="cust-sn-str-input"
+            autocomplete="off"
             v-model="model.CUST_SN_STR"
           />
         </div>
@@ -164,6 +163,7 @@
             id="version-code-input"
             type="text"
             class="input-class"
+            autocomplete="off"
             v-model="model.VERSION_CODE"
           />
         </div>
@@ -173,6 +173,7 @@
             type="text"
             class="input-class"
             id="cust-box-prefix-input"
+            autocomplete="off"
             v-model="model.CUST_BOX_PREFIX"
           />
         </div>
@@ -183,6 +184,7 @@
             type="text"
             class="input-class"
             id="cust-model-name-input"
+            autocomplete="off"
             v-model="model.CUST_MODEL_NAME"
           />
         </div>
@@ -201,6 +203,7 @@
             type="text"
             class="input-class"
             id="cust-version-code-input"
+            autocomplete="off"
             v-model="model.VERSION_CODE"
           />
         </div>
@@ -210,6 +213,7 @@
             type="text"
             class="input-class"
             id="cust-box-str-input"
+            autocomplete="off"
             v-model="model.CUST_BOX_STR"
           />
         </div>
@@ -219,6 +223,7 @@
             type="text"
             class="input-class"
             id="cust-model-desc-input"
+            autocomplete="off"
             v-model="model.CUST_MODEL_DESC"
           />
         </div>
@@ -228,6 +233,7 @@
             type="text"
             class="input-class"
             id="cust-carton-prefix-input"
+            autocomplete="off"
             v-model="model.CUST_CARTON_PREFIX"
           />
         </div>
@@ -238,6 +244,7 @@
             type="text"
             class="input-class"
             id="carton-label-name-input"
+            autocomplete="off"
             v-model="model.CARTON_LAB_NAME"
           />
         </div>
@@ -247,6 +254,7 @@
             type="text"
             class="input-class"
             id="cust-carton-postfix-input"
+            autocomplete="off"
             v-model="model.CUST_CARTON_POSTFIX"
           />
         </div>
@@ -256,6 +264,7 @@
             type="text"
             class="input-class"
             id="upceandata-input"
+            autocomplete="off"
             v-model="model.UPCEANDATA"
           />
         </div>
@@ -265,6 +274,7 @@
             type="number"
             class="input-class"
             id="cust-carton-length-input"
+            autocomplete="off"
             v-model="model.CUST_CARTON_LENG"
           />
         </div>
@@ -274,6 +284,7 @@
             type="text"
             class="input-class"
             id="cust-sn-prefix-input"
+            autocomplete="off"
             v-model="model.CUST_SN_PREFIX"
           />
         </div>
@@ -283,6 +294,7 @@
             type="text"
             class="input-class"
             id="cust-carton-str-input"
+            autocomplete="off"
             v-model="model.CUST_CARTON_STR"
           />
         </div>
@@ -292,6 +304,7 @@
             type="text"
             class="input-class"
             id="cust-pallet-str-input"
+            autocomplete="off"
             v-model="model.CUST_PALLET_STR"
           />
         </div>
@@ -301,6 +314,7 @@
             type="text"
             class="input-class"
             id="cust-pallet-prefix-input"
+            autocomplete="off"
             v-model="model.CUST_PALLET_PREFIX"
           />
         </div>
@@ -311,7 +325,7 @@
             type="number"
             class="input-class"
             id="snqty-label-input"
-            v-model="model.SN_QTY_LABEL"
+            v-model="model.D1"
           />
         </div>
 
@@ -321,6 +335,7 @@
             type="text"
             class="input-class"
             id="cust-pallet-postfix-input"
+            autocomplete="off"
             v-model="model.CUST_PALLET_POSTFIX"
           />
         </div>
@@ -330,7 +345,7 @@
             type="number"
             class="input-class"
             id="cust-pallet-legnth-input"
-            v-model="model.CUST_PALLET_LENGTH"
+            v-model="model.CUST_PALLET_LENG"
           />
         </div>
         <div class="form-row">
@@ -339,6 +354,7 @@
             type="text"
             class="input-class"
             id="pallet-label-name-input"
+            autocomplete="off"
             v-model="model.PALLET_LAB_NAME"
           />
         </div>
@@ -367,10 +383,11 @@ export default {
       line_code: "",
       line_desc: "",
       ListModel: [],
+      databaseName: localStorage.databaseName,
+      empNo: localStorage.username,
       model: {
-        ID: "",
         database_name: localStorage.databaseName,
-        EMP: localStorage.username,
+        EMP_NO: localStorage.username,
         fun: "CUST SNRULE_",
         CUSTOMER: "FOXCONN",
         CUST_NAME: "",
@@ -392,13 +409,12 @@ export default {
         CUST_CARTON_STR: "",
         CUST_PALLET_PREFIX: "",
         CUST_PALLET_POSTFIX: "",
-        CUST_PALLET_LENGTH: "6",
+        CUST_PALLET_LENG: "6",
         CUST_PALLET_STR: "",
         CUST_LAST_SN: "",
         CUST_LAST_CARTON: "",
         CUST_LAST_PALLET: "",
-        EMP_NO: "",
-        SN_QTY_LABEL: "",
+        D1: "",
         IN_STATION_TIME: "",
         PALLET_LAB_NAME: "P_DEFAULT.LAB",
         MACID_PREFIX: "",
@@ -409,7 +425,6 @@ export default {
         FINISH_GOOD: "",
       },
       listChecked: [],
-      //ListCustomer: [],
     };
   },
   created() {
@@ -431,45 +446,58 @@ export default {
     },
   },
   mounted() {
-    this.CheckPrivilege();
+    this.LoadComponent();
     this.GetModel();
-    //this.GetCustomer();
   },
   methods: {
-    // UpdateCustReceive(value) {
-    //   this.model.CUST_NAME = value.CUSTOMER;
-    //   this.model.CUST_CODE = value.CUST_CODE;
-    // },
     UpdateModelReceive(value) {
       this.model.MODEL_NAME = value;
       this.model.CUST_MODEL_NAME = value;
-     // this.model.PALLET_LAB_NAME = `P_${this.model.MODEL_NAME}.LAB`;
       this.model.CARTON_LAB_NAME = `${this.model.MODEL_NAME}.LAB`;
     },
+    ChangeModelName() {
+      this.model.CARTON_LAB_NAME = `${this.model.MODEL_NAME}.LAB`;
+    },
+
     async GetModel() {
-      var payload = {
-        database_name: localStorage.databaseName,
-      };
-      var { data } = await Repository.getRepo("Config19GetAllModel", payload);
+      let databaseName = this.databaseName;
+      try{
+        let { data } = await Repository.getApiServer(`Config19GetAllModel?databaseName=${databaseName}`);
       data.data.forEach((element) => {
         this.ListModel.push(element.MODEL_NAME);
       });
+      }catch (error) {
+        console.error("GetModel Error:", error);
+        const message =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
+      }
     },
-    SetTextDropDown(text) {
-      this.textContent = text;
-      this.isVisible = false;
+
+    async LoadComponent() {
+      let databaseName = this.databaseName;
+      let modelName = this.valueSearch;
+      try{
+        let { data } = await Repository.getApiServer(`GetConfig19Content?databaseName=${databaseName}&modelName=${modelName}`);
+      this.DataTable = data.data;
+
+          if (this.DataTable) {
+          this.DataTableHeader = Object.keys(this.DataTable[0]);
+        }
+    }catch (error) {
+        console.error("LoadForm Error:", error);
+        const message =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
+      }
     },
-    // async GetCustomer() {
-    //   var payload = {
-    //     database_name: localStorage.databaseName,
-    //   };
-    //   var { data } = await Repository.getRepo("Config19GetCustomer", payload);
-    //   this.ListCustomer = data.data;
-    // },
-    ChangeModelName() {
-      //this.model.PALLET_LAB_NAME = `P_${this.model.MODEL_NAME}.LAB`;
-      this.model.CARTON_LAB_NAME = `${this.model.MODEL_NAME}.LAB`;
-    },
+
     async SaveData() {
       if (this.model.MODEL_NAME == "" || this.model.VERSION_CODE == "") {
         if (localStorage.language == "En") {
@@ -478,8 +506,8 @@ export default {
           this.$swal("", "Không được bỏ trống", "error");
         }
       } else {
-        var titleValue = "";
-        var textValue = "";
+        let titleValue = "";
+        let textValue = "";
         if (localStorage.language == "En") {
           titleValue = "Are you sure edit?";
           textValue = "Once OK, data will be updated!";
@@ -496,7 +524,9 @@ export default {
         }).then(async (willDelete) => {
           if (willDelete.isConfirmed == false) return;
 
-          var { data } = await Repository.getRepo(
+          console.log(this.model);
+          try{
+            let { data } = await Repository.getRepo(
             "InsertUpdateConfig19",
             this.model
           );
@@ -507,7 +537,7 @@ export default {
               this.$swal("", "Bạn không có quyền thêm sửa", "error");
             }
           } else if (data.result == "ok") {
-            await this.QuerySearch();
+           this.ClearForm();
             if (localStorage.language == "En") {
               this.$swal("", "Apply successfully", "success");
             } else {
@@ -516,20 +546,25 @@ export default {
           } else {
             this.$swal("", data.result, "error");
           }
+          }catch (error) {
+        console.log(error);
+        console.error("Delete Error:", error);
+        const message =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
+      }
+          
         });
       }
     },
+
     DeleteRecord(item) {
-      var titleValue = "";
-      var textValue = "";
-      if (localStorage.language == "En") {
-        titleValue = "Are you sure?";
-        textValue =
+       let titleValue = "Are you sure?";
+      let textValue =
           "Once deleted, you will not be able to recover this record!";
-      } else {
-        titleValue = "Chắc chắn xóa?";
-        textValue = "Sau khi xóa sẽ không thể khôi phục!";
-      }
       this.$swal({
         title: titleValue,
         text: textValue,
@@ -538,68 +573,33 @@ export default {
         dangerMode: true,
       }).then(async (willDelete) => {
         if (willDelete.isConfirmed == false) return;
-        var payload = {
-          database_name: localStorage.databaseName,
-          ID: item.ID,
-          EMP: localStorage.username,
-          MODEL_NAME: item.MODEL_NAME,
-          VERSION_CODE: item.VERSION_CODE,
-        };
-        var { data } = await Repository.getRepo("DeleteConfig19", payload);
+
+        let  databaseName = this.databaseName;
+         let empNo = this.empNo;
+          let modelName = item.MODEL_NAME;
+          let versionCode = item.VERSION_CODE;
+          try{
+            let { data } = await Repository.HttpDelete(`DeleteConfig19?databaseName=${databaseName}&empNo=${empNo}&modelName=${modelName}&versionCode=${versionCode}`);
         if (data.result == "ok") {
-          await this.QuerySearch();
-          if (localStorage.language == "En") {
-            this.$swal("", "Apply successfully", "success");
-          } else {
-            this.$swal("", "Cập nhật thành công", "success");
-          }
-        } else {
-          this.$swal("", data.result, "error");
+         this.ClearForm();
+          this.$swal("", "Apply successfully", "success");
         }
+        }
+        catch (error) {
+        console.log(error);
+        console.error("Delete Error:", error);
+        const message =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
+      }
+
       });
-      this.line_name = "";
-      this.line_type = "";
-      this.line_code = "";
-      this.line_desc = "";
     },
-    ClearForm() {
-      this.model.ID = "";
-      this.model.CUST_CODE = "";
-      this.model.MODEL_NAME = "";
-      this.model.VERSION_CODE = "";
-      this.model.CUST_MODEL_NAME = "";
-      this.model.CUST_MODEL_DESC = "";
-      this.model.CARTON_LAB_NAME = "C_DEFAULT.LAB";
-      this.model.UPCEANDATA = "";
-      this.model.CUST_SN_PREFIX = "";
-      this.model.CUST_VENDER_CODE = "";
-      this.model.CUST_SN_POSTFIX = "";
-      this.model.CUST_SN_LENG = "";
-      this.model.CUST_SN_STR = "";
-      this.model.CUST_CARTON_PREFIX = "AMBIT";
-      this.vCUST_CARTON_POSTFIX = "";
-      this.model.CUST_CARTON_LENG = "6";
-      this.model.CUST_CARTON_STR = "";
-      this.model.CUST_PALLET_PREFIX = "AMBIT";
-      this.model.CUST_PALLET_POSTFIX = "";
-      this.model.CUST_PALLET_LENGTH = "6";
-      this.model.CUST_PALLET_STR = "";
-      this.model.CUST_LAST_SN = "";
-      this.model.CUST_LAST_CARTON = "";
-      this.model.CUST_LAST_PALLET = "";
-      this.model.EMP_NO = "";
-      this.model.SN_QTY_LABEL = "";
-      this.model.IN_STATION_TIME = "";
-      this.model.PALLET_LAB_NAME = "P_DEFAULT.LAB";
-      this.model.MACID_PREFIX = "";
-      this.model.CUST_BOX_PREFIX = "";
-      this.model.CUST_BOX_LENG = "0";
-      this.model.CUST_LAST_BOX = "";
-      this.model.CUST_BOX_STR = "";
-      this.model.FINISH_GOOD = "";
-    },
+
     ShowDetail(detail) {
-      this.model.ID = detail.ID;
       this.model.CUST_NAME = detail.CUSTOMER;
       this.model.CUST_CODE = detail.CUST_CODE;
       this.model.MODEL_NAME = detail.MODEL_NAME;
@@ -619,13 +619,12 @@ export default {
       this.model.CUST_CARTON_STR = detail.CUST_CARTON_STR;
       this.model.CUST_PALLET_PREFIX = detail.CUST_PALLET_PREFIX;
       this.model.CUST_PALLET_POSTFIX = detail.CUST_PALLET_POSTFIX;
-      this.model.CUST_PALLET_LENGTH = detail.CUST_PALLET_LENGTH;
+      this.model.CUST_PALLET_LENG = detail.CUST_PALLET_LENG;
       this.model.CUST_PALLET_STR = detail.CUST_PALLET_STR;
       this.model.CUST_LAST_SN = detail.CUST_LAST_SN;
       this.model.CUST_LAST_CARTON = detail.CUST_LAST_CARTON;
       this.model.CUST_LAST_PALLET = detail.CUST_LAST_PALLET;
-      this.model.EMP_NO = detail.EMP_NO;
-      this.model.SN_QTY_LABEL = detail.SN_QTY_LABEL;
+      this.model.D1 = detail.D1;
       this.model.IN_STATION_TIME = detail.IN_STATION_TIME;
       this.model.PALLET_LAB_NAME = detail.PALLET_LAB_NAME;
       this.model.MACID_PREFIX = detail.MACID_PREFIX;
@@ -635,64 +634,48 @@ export default {
       this.model.CUST_BOX_STR = detail.CUST_BOX_STR;
       this.model.FINISH_GOOD = detail.FINISH_GOOD;
     },
+
+    ClearForm() {
+      this.model.CUST_CODE = "";
+      this.model.MODEL_NAME = "";
+      this.model.VERSION_CODE = "";
+      this.model.CUST_MODEL_NAME = "";
+      this.model.CUST_MODEL_DESC = "";
+      this.model.CARTON_LAB_NAME = "C_DEFAULT.LAB";
+      this.model.UPCEANDATA = "";
+      this.model.CUST_SN_PREFIX = "";
+      this.model.CUST_VENDER_CODE = "";
+      this.model.CUST_SN_POSTFIX = "";
+      this.model.CUST_SN_LENG = "";
+      this.model.CUST_SN_STR = "";
+      this.model.CUST_CARTON_PREFIX = "AMBIT";
+      this.vCUST_CARTON_POSTFIX = "";
+      this.model.CUST_CARTON_LENG = "6";
+      this.model.CUST_CARTON_STR = "";
+      this.model.CUST_PALLET_PREFIX = "AMBIT";
+      this.model.CUST_PALLET_POSTFIX = "";
+      this.model.CUST_PALLET_LENG = "6";
+      this.model.CUST_PALLET_STR = "";
+      this.model.CUST_LAST_SN = "";
+      this.model.CUST_LAST_CARTON = "";
+      this.model.CUST_LAST_PALLET = "";
+      this.model.D1 = "";
+      this.model.IN_STATION_TIME = "";
+      this.model.PALLET_LAB_NAME = "P_DEFAULT.LAB";
+      this.model.MACID_PREFIX = "";
+      this.model.CUST_BOX_PREFIX = "";
+      this.model.CUST_BOX_LENG = "0";
+      this.model.CUST_LAST_BOX = "";
+      this.model.CUST_BOX_STR = "";
+      this.model.FINISH_GOOD = "";
+      this.LoadComponent();
+    },
+
     BackToParent() {
       this.$router.push({ path: "/Home/ConfigApp" });
-    },
-    async CheckPrivilege() {
-      var payload = {
-        database_name: localStorage.databaseName,
-        emp_no: localStorage.username,
-        fun: "CUST SNRULE",
-      };
-      var { data } = await Repository.getRepo("CheckConfigPrivilege", payload);
-      if (data.result != "ok") {
-        this.$router.push({ path: "/Home/ConfigApp" });
-      } else {
-        this.LoadComponent();
-      }
-    },
-    async LoadComponent() {
-      this.valueSearch = "";
-      var payload = {
-        database_name: localStorage.databaseName,
-      };
-      var { data } = await Repository.getRepo("GetConfig19Content", payload);
-      this.DataTable = [];
-      this.DataTable = data.data;
-      if (typeof this.DataTable != "undefined") {
-        if (this.DataTable.length != 0) {
-          this.DataTableHeader = Object.keys(this.DataTable[0]);
-          this.DataTableHeader.forEach((element) => {
-            this.columnName.push({
-              label: element,
-              field: element,
-            });
-          });
-        }
-      }
-    },
-    async QuerySearch() {
-      var payload = {
-        database_name: localStorage.databaseName,
-        model_name: this.valueSearch,
-      };
-      var { data } = await Repository.getRepo("GetConfig19Content", payload);
-      this.DataTable = [];
-      this.DataTable = data.data;
-      if (typeof this.DataTable != "undefined") {
-        if (this.DataTable.length != 0) {
-          this.DataTableHeader = Object.keys(this.DataTable[0]);
-          this.DataTableHeader.forEach((element) => {
-            this.columnName.push({
-              label: element,
-              field: element,
-            });
-          });
-        }
-      }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -746,8 +729,10 @@ export default {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: repeat(12, 30px);
   row-gap: 5px;
-  width: 80%;
+  width: 100%;
   margin: 0 auto;
+  padding: 10px;
+  background-color: #2484c1;
 }
 .form-row {
   display: flex;
@@ -755,7 +740,7 @@ export default {
 }
 .form-row label{
   font-size: 16px;
-  color: #000;
+  color: #e4e2e2;
   width: 30%;
 }
 .input-class {
@@ -856,22 +841,21 @@ export default {
     }
   }
 }
-.selected-item {
-    height: 100%;
-    width: 100%;
-    border: 1px solid;
-    color: black;
-    align-items: center;
-    font-size: 14px;
-    font-weight: 555;
-    display: flex;
-    justify-content: space-between;
+
+#model-name-input {
+    background-color: rgb(243, 243, 11);
+    color: #000;
+    font-size: 1.5rem;
+}
+
+.row {
+  margin: 0;
 }
 .dropdown-wrapper {
   max-width: 100%;
   position: relative;
   margin: 0;
-  border: 1px solid black;
+  //border: 1px solid black;
 }
 .dropdown-popover.visible {
   margin: 0;

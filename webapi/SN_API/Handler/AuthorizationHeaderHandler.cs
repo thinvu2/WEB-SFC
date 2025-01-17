@@ -34,13 +34,12 @@ namespace SN_API.Handler
 
                 if (_payload != null)
                 {
-                   // string cc = a.unique_name;
                     var identity = new GenericIdentity(_unique_name);
                     SetPrincipal(new GenericPrincipal(identity, null));
                 }
                 return base.SendAsync(request, cancellationToken);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return base.SendAsync(request, cancellationToken);
             }

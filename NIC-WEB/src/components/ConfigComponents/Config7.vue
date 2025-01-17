@@ -283,12 +283,6 @@ export default {
       this.$store.commit(modalType);
     },
     async SaveData() {
-      
-      if(this.model.EMP_PASS.length<8){
-          this.$swal("", "Password phải lớn hơn 8 ký tự\nPassword  ", "error");
-          return;
-        }
-
       if (
         this.model.EMP_NO == "" ||
         this.model.EMP_NAME == "" 
@@ -317,7 +311,9 @@ export default {
           dangerMode: true,
         }).then(async (willDelete) => {
           if (willDelete.isConfirmed == false) return;
-          let payload = {
+
+          try{
+            let payload = {
             database_name: localStorage.databaseName,
             ID: this.model.ID,
             EMP: localStorage.username,
@@ -327,9 +323,7 @@ export default {
             CLASS_NAME:this.model.CLASS_NAME,
             QuitDate:this.dateFrom,
             listGroup:this.$store.state.listSelectDualModel,
-          };
-          console.log("payload: ", payload);
-          
+          };  
           let { data } = await Repository.getRepo("InsertOrUpdateConfig7", payload);
           if (data.result == "privilege") {
             if (localStorage.language == "En") {
@@ -338,7 +332,7 @@ export default {
               this.$swal("", "Bạn không có quyền thêm sửa", "error");
             }
           } else if (data.result == "ok") {
-            await this.LoadComponent();
+            this.ClearForm();
             if (localStorage.language == "En") {
               this.$swal("", "Apply successfully", "success");
             } else {
@@ -348,6 +342,17 @@ export default {
           } else {
             this.$swal("", data.result, "error");
           }
+          }catch (error) {
+        console.log(error);
+        console.error("Save Error:", error);
+        const message =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
+      }
+          
         });
       }
     },
@@ -371,6 +376,7 @@ export default {
         dangerMode: true,
       }).then(async (willDelete) => {
         if (willDelete.isConfirmed == false) return;
+
         let payload = {
           database_name: localStorage.databaseName,
           ID: item.ID,
@@ -379,7 +385,7 @@ export default {
         };
         let { data } = await Repository.getRepo("DeleteConfig7", payload);
         if (data.result == "ok") {
-          await this.LoadComponent();
+          this.ClearForm();
           if (localStorage.language == "En") {
             this.$swal("", "Apply successfully", "success");
           } else {
@@ -398,6 +404,7 @@ export default {
       });
       
     },
+
     ClearForm() {
       this.model.ID = "";
       this.model.EMP_NO="";
@@ -407,17 +414,17 @@ export default {
       this.dateFrom=new Date();
       this.$store.state.listSelectDualModel=[];
       this.valueSearch="";
+      this.LoadComponent();
     },
+
     ShowDetail(detail) {
-      console.log("detail: ", detail);
-      this.ClearForm();
       this.model.ID = detail.ID;
-      this.model.EMP_NO=detail.EMP_NO;
-      this.model.EMP_NAME=detail.EMP_NAME;
-      this.model.EMP_PASS=detail.EMP_PASS;
-      this.model.CLASS_NAME=detail.CLASS_NAME;
+      this.model.EMP_NO= detail.EMP_NO;
+      this.model.EMP_NAME= detail.EMP_NAME;
+      this.model.EMP_PASS= detail.EMP_PASS;
+      this.model.CLASS_NAME= detail.CLASS_NAME;
       this.dateFrom=new Date(detail.QUIT_DATE);
-        this.GetGroupOfEmNo(this.model.EMP_NO);
+      this.GetGroupOfEmNo(this.model.EMP_NO);
       
     },
     async GetGroupOfEmNo(emp_no){

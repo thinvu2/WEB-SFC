@@ -23,6 +23,15 @@
         </button>
       </div>
     </div>
+        <!-- export excel -->
+        <div class="export-excel" v-if="!isShowForm">
+      <img
+        @click="exportexcelxlsx()"
+        class="img-excel"
+        src="assets/img/xlsx-icon.jpg"
+        alt=""
+      />
+    </div>
     <!-- Form input data -->
     <div class="container" v-if="isShowForm === true">
       <div class="title-class">
@@ -165,7 +174,12 @@
             <tbody>
               <tr v-for="(row, index) in DataTable" :key="index">
                 <template v-for="(value, key) in row" :key="key">
-                  <td @click="key === 'F_PO' && showDetail(index)">
+                  <td 
+                  :style="{
+                      backgroundColor:
+                        key === 'F_DEL_DATE' && value === '2099-01-01 00:00:00' ? 'rgb(224 236 12)' : ''
+                    }"
+                  @click="key === 'F_PO' && showDetail(index)">
                     {{ value }}
                   </td>
                 </template>
@@ -178,6 +192,7 @@
   </div>
 </template>
 <script>
+import xlsx from "xlsx";
 import Repository from "../../services/Repository";
 export default {
   data() {
@@ -262,6 +277,7 @@ export default {
       } catch (error) {
         console.error("LoadForm Error:", error);
         const message =
+        error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -311,6 +327,7 @@ export default {
       } catch (error) {
         console.error("ShowForm Error:", error);
         const message =
+        error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -324,7 +341,6 @@ export default {
           filleredRows.push({ ...row });
         }
       });
-
       let QuantitiesBefore = 0;
       QuantitiesBefore = filleredRows.reduce((sum, qty) => {
         if (parseInt(qty.scheduleQty) < 0) {
@@ -342,7 +358,6 @@ export default {
         );
         return;
       }
-
       let compareArrDate = [];
       let compareSetDate = [];
       compareArrDate = filleredRows.map((item) => item.minTime);
@@ -367,7 +382,6 @@ export default {
       } catch (err) {
         console.error("SweetAlert Error:", err);
       }
-
       let payload = {
         empNo: this.empNo,
         databaseName: this.databaseName,
@@ -398,6 +412,7 @@ export default {
       } catch (error) {
         console.error("submitForm Error:", error);
         const message =
+        error.response?.data?.message ||
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
@@ -406,6 +421,12 @@ export default {
     },
     pad(number) {
       return number < 10 ? `0${number}` : `${number}`;
+    },
+    exportexcelxlsx() {
+      let ws = xlsx.utils.json_to_sheet(this.DataTable);
+      let wb = xlsx.utils.book_new();
+      xlsx.utils.book_append_sheet(wb, ws, "data");
+      xlsx.writeFile(wb, "download.xlsx");
     },
     async clearForm() {
       this.DataTable = [];
@@ -514,6 +535,16 @@ export default {
   display: flex;
   gap: 5px;
   margin-bottom: 1px;
+}
+.export-excel {
+  display: inline-block;
+  right: 25px;
+  position: absolute;
+}
+.img-excel {
+  height: 40px;
+  width: 40px;
+  cursor: pointer;
 }
 .container {
   display: grid;

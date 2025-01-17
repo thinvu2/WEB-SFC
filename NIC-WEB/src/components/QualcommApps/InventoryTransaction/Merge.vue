@@ -3,119 +3,180 @@
     <div class="breadcrumb-content">
       <nav>
         <ul class="breadcrumb">
+          <li @click="isShowForm ? ReturnForm() : BackToParent()">
+            <button class="return-btn">&#8592;</button>
+          </li>
           <li class="breadcrumb-item">
-            <router-link to="/Home/Qualcomm_Application">Qualcomm</router-link>
+            <router-link to="/Home/QualcommApps">Qualcomm</router-link>
           </li>
           <li class="breadcrumb-item">
             <router-link to="/Home/ConfigApp/QWIP_Trans"
               >Inventory_Transactions</router-link
             >
           </li>
-          <li class="breadcrumb-item active" id="breadcrumb-active">
-            {{ action.toUpperCase().replace("LOT", "_LOT") }}
-          </li>
+          <li class="breadcrumb-item active" id="breadcrumb-active">MERGE</li>
         </ul>
       </nav>
     </div>
-
-    <div class="input-center">
-      <div class="title row col-12">
-        <div class="titleReceviceLot col-3">
-          <p>Choose LOT_NO:</p>
-        </div>
-        <div class="titleReceviceLot col-2" style="margin-left: -15px">
-          <p>Qty:</p>
-        </div>
-      </div>
-      <div class="optionInput row col-12">
-        <div style="position: relative" class="valueReceviceLot col-3">
-          <input
-            class="form-control"
-            id="CreateLot"
-            name="CreateLot"
-            v-model="createValue"
-            @focus="showDropdown = true"
-            @input="filterOptions"
-            @blur="hideDropdown"
-            v-on:change="UpdateQty"
-          />
-
-          <!-- Danh sách tùy chỉnh -->
-          <ul
-            v-show="showDropdown && filteredList.length"
-            style="
-              position: absolute;
-              top: 105%;
-              left: 15px;
-              width: 90%;
-              border: 1px solid #ccc;
-              background: white;
-              max-height: 200px;
-              overflow-y: auto;
-              z-index: 1000;
-              list-style: none;
-              margin: 0;
-              padding: 0;
-            "
-          >
-            <li
-              v-for="(item, index) in filteredList"
-              :key="index"
-              @mousedown="selectOption(item.RECEIVELOT)"
-              style="padding: 8px; cursor: pointer"
-              class="form-control"
-              v-on:change="UpdateQty"
-            >
-              {{ item.RECEIVELOT }}
-            </li>
-          </ul>
-        </div>
-
-        <span class="dropdown-icon" @click="toggleDropdown">▼</span>
-        <div class="valueReceviceLot col-2">
-          <input
-            class="form-control"
-            type="number"
-            v-model="Qty"
-            v-on:change="CheckQty"
-          />
-        </div>
-        <div class="valueActionArea col-2">
-          <button class="btn-MappingLot" @click="btnClick($event)">
-            {{ action.replace("lot", "").toUpperCase() }}
-          </button>
-        </div>
+    <div class="searchbox" v-if="!isShowForm">
+      <div class="searchbox-content">
+        <input
+          :disabled="showTimeForm"
+          v-on:keyup.enter="LoadComponent()"
+          v-model="valueSearch"
+          type="text"
+          class="form-control"
+          placeholder="Enter Po... "
+        />
+        <button @click="LoadComponent()" class="btn-button">
+          <Icon icon="search" class="sidenav-icon" />
+        </button>
       </div>
     </div>
-    <div class="output-content">
-      <div class="row col-12">
-        <p class="card-title">
-          Output Center
-          <span> | Show result query data. </span>
-        </p>
+    <div class="output-content" v-if="isShowForm === true">
+      <div id="app">
+        <div class="listbox-container">
+          <div class="row col-12">
+            <div class="col-3">
+              <!-- ListBox 1 -->
+              <div class="listbox">
+                <h3>List LOT_NO</h3>
+                <select v-model="selectedItem1" multiple>
+                  <option v-for="item in listBox1" :key="item" :value="item">
+                    {{ item }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="col-1 controls">
+              <!-- Control Buttons -->
+              <button
+                @click="moveToRight"
+                :disabled="!selectedItem1.length"
+                class="btn"
+              >
+                <Icon icon="angle-double-right" />
+              </button>
+              <div class="btnchange">
+                <Icon icon="exchange-alt" />
+              </div>
+              <button
+                @click="moveToLeft"
+                :disabled="!selectedItem2.length"
+                class="btn"
+              >
+                <Icon icon="angle-double-left" />
+              </button>
+            </div>
+            <div class="col-3">
+              <!-- ListBox 2 -->
+              <div class="listbox">
+                <h3>List CHOOSE</h3>
+                <select v-model="selectedItem2" multiple>
+                  <option v-for="item in listBox2" :key="item" :value="item">
+                    {{ item }}
+                  </option>
+                </select>
+              </div>
+            </div>
+            <div class="col-1 controls1">
+              <!-- Control Buttons -->
+
+              <div
+                class="btn"
+                @click="moveToMerge"
+                :disabled="selectedItem2.length > 1"
+              >
+                &#8658;
+              </div>
+            </div>
+            <div class="col-3">
+              <!-- ListBox 2 -->
+              <div class="listbox" :hidden="disMerge">
+                <h3>List MERGE</h3>
+                <div v-for="item in listBox3" :key="item" class="radio-item">
+                  <label>
+                    <input
+                      type="radio"
+                      :value="item"
+                      v-model="selectedProduct"
+                    />
+                    {{ item }}
+                  </label>
+                </div>
+                <!-- <select v-model="selectedItem3" multiple>
+                  <option v-for="item in listBox3" :key="item" :value="item">
+                    {{ item }}
+                  </option>
+                </select> -->
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="div-CreateLOT" v-if="isShowCreatedLot">
-        <p>
-          <span>{{ labelResult }} SUCCESSED ➪[</span> LOT No:
-          <b>{{ createValue }}</b
-          ><span>]</span>
-        </p>
+      <div class="submit-form">
+        <input
+          type="button"
+          id="submit-form"
+          value="Submit"
+          @click="SubmitForm()"
+        />
       </div>
-      <div class="div-table">
-        <table class="mytable" id="my-table">
-          <thead>
-            <tr>
-              <template v-for="(item, index) in listHeader" :key="index">
-                <th>{{ item }}</th>
-              </template>
-            </tr>
-          </thead>
-          <tr v-for="(item, index) in listResult" :key="index">
-            <template v-for="(itemContent, index1) in item" :key="index1">
-              <td>{{ itemContent }}</td>
-            </template>
-          </tr>
-        </table>
+    </div>
+    <div class="main-contain" v-if="isShowForm === false">
+      <div class="row col-sm-12 div-content">
+        <template v-if="DataTableHeader">
+          <table id="tableMain" class="table mytable">
+            <thead v-if="DataTable.length > 0">
+              <tr>
+                <template v-for="(item, index) in DataTableHeader" :key="index">
+                  <th>
+                    {{ item }}
+                  </th>
+                </template>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, index) in DataTable" :key="index">
+                <template v-for="(value, key) in row" :key="key">
+                  <td @click="key === 'PO_NO' && ShowDetail(index)">
+                    {{ value }}
+                  </td>
+                </template>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </div>
+    </div>
+
+    <div class="main-contain1" v-if="isShowForm === true">
+      <div class="row col-sm-12 div-content">
+        <template v-if="DataTableHeader1">
+          <table id="tableMain" class="table mytable">
+            <thead v-if="DataTable1.length > 0">
+              <tr>
+                <template
+                  v-for="(item, index) in DataTableHeader1"
+                  :key="index"
+                >
+                  <th>
+                    {{ item }}
+                  </th>
+                </template>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, index) in DataTable1" :key="index">
+                <template v-for="(value, key) in row" :key="key">
+                  <td @click="key === 'PO_NO' && ShowDetail(index)">
+                    {{ value }}
+                  </td>
+                </template>
+              </tr>
+            </tbody>
+          </table>
+        </template>
       </div>
     </div>
   </div>
@@ -144,6 +205,19 @@ export default {
       transaction: "InventoryMergeTransaction",
       filteredList: [],
       showDropdown: false,
+      listBox1: ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5"],
+      listBox2: [],
+      listBox3: [],
+      selectedItem3: [],
+      selectedItem1: [],
+      selectedItem2: [],
+      disMerge: true,
+      selectedProduct: "",
+      DataTableHeader: [],
+      DataTable: [],
+      DataTableHeader1: [],
+      DataTable1: [],
+      isShowForm: false,
     };
   },
   mounted() {
@@ -151,25 +225,38 @@ export default {
     this.RefreshState();
   },
   methods: {
-    //inputselect
-    filterOptions() {
-      this.filteredList = this.listCreateLot.filter((item) =>
-        item.RECEIVELOT.toLowerCase().includes(this.createValue.toLowerCase())
+    moveToRight() {
+      // Chuyển các mục được chọn từ listBox1 sang listBox2
+      this.listBox2.push(...this.selectedItem1);
+      this.listBox1 = this.listBox1.filter(
+        (item) => !this.selectedItem1.includes(item)
       );
+      this.selectedItem1 = "";
+
+      this.selectedProduct = [];
+      this.disMerge = true;
     },
-    selectOption(value) {
-      this.createValue = value;
-      this.showDropdown = false;
+    moveToLeft() {
+      // Chuyển các mục được chọn từ listBox2 sang listBox1
+      this.listBox1.push(...this.selectedItem2);
+      this.listBox2 = this.listBox2.filter(
+        (item) => !this.selectedItem2.includes(item)
+      );
+      this.selectedItem2 = [];
+
+      this.selectedProduct = "";
+      this.disMerge = true;
     },
-    hideDropdown() {
-      setTimeout(() => {
-        this.showDropdown = false;
-      }, 100);
+    moveToMerge() {
+      if (this.listBox2.length > 1) {
+        this.listBox3 = this.listBox2;
+        this.disMerge = false;
+      } else {
+        this.$swal("", "Choose two or more options", "warning");
+      }
     },
-    toggleDropdown() {
-      this.showDropdown = !this.showDropdown;
-      if (this.showDropdown) this.filterOptions();
-    },
+    //inputselect
+
     async CheckPrivilege() {
       var payload = {
         database_name: localStorage.databaseName,
@@ -186,31 +273,34 @@ export default {
         this.$router.push({ path: "/Home/ConfigApp/QWIP_Trans" });
       }
     },
-    UpdateQty: function (event) {
-      this.createValue = event.target.value;
-      this.btnSearchClick(event.target.value);
-    },
 
     async loadComponents() {
       this.CheckPrivilege();
-      this.RefreshState();
-      this.loadCreateLot();
+      //this.RefreshState();
+
+      let databaseName = localStorage.databaseName;
+      let lot_no = this.valueSearch;
+      let payload = {
+        database_name: databaseName,
+        IN_FUNC: this.transaction,
+        IN_SUB_FUNC: "ShowListItem",
+        IN_EMP: localStorage.username,
+        IN_LOTNO: lot_no,
+        IN_ACTION_QTY: "",
+        IN_DATA: "",
+      };
       try {
-        var event = "";
-        let { data } = await Repository.getApiServer(
-          `GetLoadFormQWip?database_name=${localStorage.databaseName}&trans_name=${this.transaction}&lot_no=${event}`
-        );
+        let { data } = await Repository.getRepo("GetDataMerge", payload);
         if (data.result == "ok") {
-          this.listResult = data.data;
-          this.listHeader = Object.keys(this.listResult[0]);
-          this.setHeader();
+          this.DataTable = data.data;
+          if (this.DataTable.length > 0) {
+            this.DataTableHeader = Object.keys(this.DataTable[0]);
+          }
+        } else {
+          this.$swal("", data.result, "error");
         }
       } catch (error) {
-        if (error.response && error.response.data) {
-          this.$swal("", error.response.data.error, "error");
-        } else {
-          this.$swal("", error.Message, "error");
-        }
+        console.error("LoadForm Error:", error);
       }
     },
     setHeader() {
@@ -220,69 +310,40 @@ export default {
         header.style.width = `${width}px`;
       });
     },
-    async loadCreateLot() {
-      let databaseName = localStorage.databaseName;
-      var { data } = await Repository.getApiServer(
-        `GetLoadLotNoQWip?database_name=${databaseName}&type=`
-      );
-      if (data.result == "ok") {
-        this.listCreateLot = data.data;
-      }
-    },
-    CheckQty: function (event) {
-      if (this.Qty > 0 && this.createValue.length > 0) {
-        this.CheckQty_Qwip(event.target.value);
+
+    async SubmitForm() {
+      if (this.selectedProduct.length == 0) {
+        this.$swal("", "Your choose once option ListMerge", "error");
       } else {
-        this.Qty = 0;
-        this.$swal("", "Lot_no cannot empty", "error");
-      }
-    },
-    async CheckQty_Qwip(qty) {
-      var payload = {
-        database_name: localStorage.databaseName,
-        lot_no: this.createValue,
-        reason: "",
-        qty: qty,
-        transaction: this.transaction,
-      };
+        const jsonObject = {};
+        this.listBox2.forEach((item, index) => {
+          jsonObject[`LOT${index + 1}`] = item;
+        });
+        let IN_data = JSON.stringify(jsonObject);
 
-      var { data } = await Repository.getRepo("CheckQty_Qwip", payload);
-
-      if (data.result != "ok") {
-        this.Qty = 0;
-        this.$swal("", "quantity exceeds total lot_qty", "error");
-      }
-    },
-
-    async btnClick(event) {
-      if (this.createValue.length == 0) {
-        this.$swal("", "Choose LOT_NO & LOT_OWNER Retry...", "error");
-      } else {
-        var payload = {
+        let payload = {
           database_name: localStorage.databaseName,
-          lot_no: this.createValue,
-          reason: "",
-          transaction: this.transaction,
-          qty: this.Qty,
+          IN_FUNC: this.transaction,
+          IN_SUB_FUNC: "InsertData",
+          IN_EMP: localStorage.username,
+          IN_LOTNO: this.selectedProduct,
+          IN_ACTION_QTY: this.listBox2.length,
+          IN_DATA: IN_data,
         };
 
-        var { data } = await Repository.getRepo("InsertQWipTrans", payload);
+        var { data } = await Repository.getRepo("GetDataMerge", payload);
 
+        this.DataTable1 = [];
         if (data.result == "ok") {
-          this.$swal({
-            title: "",
-            text: this.createValue.toLocaleUpperCase() + " SUCCESSFULLY",
-            icon: "success",
-            timer: 1000,
-            showConfirmButton: false,
-          }).then(() => {});
-          this.listResult = data.data;
-          this.listHeader = Object.keys(this.listResult[0]);
-          this.setHeader();
-          this.labelResult = event.target.innerText.trim();
-          this.isShowCreatedLot = true;
+          this.DataTable1 = data.data;
+          this.DataTableHeader1 = Object.keys(this.DataTable1[0]);
 
-          //this.createValue = "";
+          this.$swal({
+            title: "Success!",
+            text: "Operation completed successfully.",
+            icon: "success", // Biểu tượng thành công
+            confirmButtonText: "OK", // Nút xác nhận
+          });
         } else {
           this.$swal("", data.result, "error");
         }
@@ -303,18 +364,98 @@ export default {
         this.$swal("", "LOT_NO not exists!", "error");
       }
     },
-
+    async ShowDetail(index) {
+      let databaseName = localStorage.databaseName;
+      let lot_no = this.DataTable[index].ITEM_NO;
+      let payload = {
+        database_name: databaseName,
+        IN_FUNC: this.transaction,
+        IN_SUB_FUNC: "ShowDataByItem",
+        IN_EMP: localStorage.username,
+        IN_LOTNO: "",
+        IN_ACTION_QTY: "",
+        IN_DATA: lot_no,
+      };
+      try {
+        this.DataTable1 = [];
+        let { data } = await Repository.getRepo("GetDataMerge", payload);
+        this.ShowDataDetail = data.data;
+        if (this.ShowDataDetail.length > 0) {
+          this.listBox1 = [];
+          this.ShowDataDetail.forEach((element) => {
+            this.listBox1.push(element.LOT_NO);
+          });
+          this.DataTable1 = data.data;
+          this.DataTableHeader1 = Object.keys(this.DataTable1[0]);
+          this.isShowForm = true;
+        } else {
+          this.$swal("", data.result, "error");
+          this.isShowForm = false;
+        }
+      } catch (error) {
+        console.error("ShowForm Error:", error);
+      }
+    },
     RefreshState() {
       this.isShowCreatedLot = false;
       this.createValue = "";
       this.WOValue = "";
       this.labelResult = "";
     },
+    ReturnForm() {
+      this.DataTable = [];
+      this.DataTableHeader = [];
+      this.isShowForm = false;
+      this.isShowSubmitForm = true;
+      this.listBox1 = [];
+      this.LoadComponent();
+    },
+    BackToParent() {
+      this.$router.push({ path: "/Home/ConfigApp/QWIP_Trans" });
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.breadcrumb {
+  margin-top: 10px;
+  font-size: 18px;
+  background-color: transparent;
+  font-weight: 500;
+  color: #333;
+
+  .breadcrumb-item {
+    margin-top: 5px;
+    color: #adc3c9;
+  }
+
+  #breadcrumb-active {
+    color: #054a5c;
+    font-weight: 400;
+    cursor: pointer; /* Đổi con trỏ thành bàn tay */
+  }
+}
+.return-btn {
+  margin-right: 10px;
+  padding: 5px 10px;
+  font-size: 20px;
+  color: white;
+  background-color: #adc3c9; /* Màu cam */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.return-btn:hover {
+  background-color: #e66920; /* Màu cam đậm hơn khi hover */
+}
+
+.return-btn:focus {
+  outline: none;
+}
 .WOMapping-content {
   width: 100%;
   position: relative;
@@ -356,144 +497,20 @@ export default {
     }
   }
 
-  .input-center {
-    z-index: 2;
-    background-color: white;
-    position: absolute;
-    top: 15%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    height: 13%;
-    width: 98%;
-    border-radius: 15px;
-    box-shadow: 10px 10px 20px rgba(19, 84, 95, 0.233);
-
-    .title {
-      height: 48%;
-      width: 100%;
-      .titleSearchArea {
-        font-style: italic;
-        font-weight: 600;
-        font-size: 18px;
-        top: 16%;
-        margin-top: 10px;
-      }
-      .titleReceviceLot {
-        font-weight: 600;
-        font-size: 15px;
-        top: 16%;
-        margin-top: 10px;
-      }
-      .btn-CreateLot {
-        text-align: center;
-        vertical-align: middle;
-        background-color: transparent;
-        color: #054a5c;
-        border: solid 1px #054a5c;
-        border-radius: 5px;
-        font-size: 17px;
-        height: 80%;
-        width: 80%;
-        box-shadow: 3px 3px #748db8;
-        outline: none;
-        margin-top: 5px;
-        &:hover {
-          color: #054a5c;
-        }
-        &:active {
-          transform: translate(4px, 4px);
-          box-shadow: none;
-          outline: none;
-        }
-      }
-    }
-
-    .optionInput {
-      height: 40%;
-      width: 100%;
-      .valueSearchArea {
-        top: -10%;
-        display: flex;
-        align-items: center;
-        position: relative;
-        img {
-          height: 20px;
-          width: 20px;
-          margin-top: 2px;
-          position: absolute;
-          left: 25px;
-        }
-        .search_input {
-          width: 100%;
-          height: 80%;
-          border-radius: 20px;
-          background-color: transparent;
-          font-size: 15px;
-          line-height: 10px;
-          text-align: left;
-          padding-left: 35px;
-          border: solid 1px #adc3c9;
-          color: #021317;
-
-          &::placeholder {
-            font-size: 14px;
-            color: #3c3e3e;
-          }
-        }
-      }
-      .valueReceviceLot {
-        top: -10%;
-        display: flex;
-        align-items: center;
-        position: relative;
-        select {
-          width: 100%;
-          height: 85%;
-          border: 1px solid #adc3c9;
-          background-color: white;
-          color: #054a5c;
-        }
-      }
-      .valueWO {
-        @extend .valueReceviceLot;
-      }
-
-      .btn-MappingLot {
-        text-align: center;
-        vertical-align: middle;
-        background-color: transparent;
-        color: #054a5c;
-        border: solid 1px #054a5c;
-        border-radius: 5px;
-        font-size: 17px;
-        height: 160%;
-        width: 80%;
-        box-shadow: 3px 3px #748db8;
-        outline: none;
-        margin-top: -15%;
-        &:hover {
-          color: #054a5c;
-        }
-        &:active {
-          transform: translate(4px, 4px);
-          box-shadow: none;
-          outline: none;
-        }
-      }
-    }
-  }
-
   .output-content {
     z-index: 1;
     background-color: white;
     position: absolute;
-    top: 60%;
+    top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
-    height: 73%;
+    height: 63%;
     width: 98%;
     border-radius: 15px;
     box-shadow: 10px 10px 20px rgba(19, 84, 95, 0.233);
+
+    overflow-x: auto;
+    overflow-y: auto;
     // overflow: auto;
     .div-table {
       overflow-x: auto;
@@ -570,12 +587,223 @@ export default {
         }
       }
     }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      padding: 20px;
+    }
+
+    .listbox-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .listbox {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .listbox h3 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    select {
+      width: 300px;
+      height: 300px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 5px;
+      background-color: #fff;
+      color: #333;
+      font-size: 18px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8%;
+    }
+    .controls1 {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12%;
+    }
+    .btnchange {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      border: none;
+      background-color: gray;
+      color: #fff;
+      font-size: 18px;
+      border-radius: 50%;
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      border: none;
+      background-color: #4594fc;
+      color: #fff;
+      font-size: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn:hover:not(:disabled) {
+      background-color: rgb(255, 125, 86);
+
+      transform: scale(1.1);
+    }
+
+    .btn i {
+      pointer-events: none; /* Prevent pointer events on icon */
+    }
+    .submit-form {
+      margin-top: 3%;
+      text-align: center;
+      height: 45px;
+    }
+    .submit-form input {
+      margin-right: 5%;
+    }
+    #submit-form {
+      font-weight: 555;
+      margin-top: 5px;
+      padding: 8px 11px;
+      font-size: 17px;
+      text-align: center;
+      cursor: pointer;
+      outline: none;
+      color: #fff;
+      background-color: #04aa6d;
+      border: none;
+      border-radius: 14px;
+      box-shadow: 0 5px #999;
+    }
+    #submit-form:hover {
+      background-color: #3e8e41;
+    }
+    #submit-form:active {
+      background-color: #3e8e41;
+      box-shadow: 0 5px #666;
+      transform: translateY(4px);
+    }
   }
-}
-.dropdown-icon {
-  z-index: 3;
-  cursor: pointer;
-  padding: 8px;
-  margin-left: -3.5%;
+
+  .searchbox-time {
+    height: 40px;
+  }
+  .searchbox-time1 {
+    margin-right: 5px;
+  }
+  .form-control:disabled,
+  .form-control[readonly] {
+    background-color: #e9ecef;
+    opacity: 1;
+    height: 35px;
+    border-radius: 3px;
+  }
+  .searchbox {
+    display: inline-block;
+    margin-bottom: 5px;
+    width: 30%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+  .btn-button {
+    padding: 5px 15px;
+    font-size: 20px;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+    color: #fff;
+    background-color: #f5944f;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 3px #999;
+  }
+  .btn-button:hover {
+    background-color: #f37318;
+  }
+  .btn-button:active {
+    background-color: #f37318;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+  }
+  .searchbox-content {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 1px;
+  }
+  .main-contain {
+    max-height: 100vh;
+    overflow: auto;
+  }
+
+  .main-contain1 {
+    margin-top: 35%;
+    max-height: 50vh;
+    overflow: auto;
+  }
+  .mytable {
+    margin-top: 0px;
+    overflow: auto;
+    thead {
+      th:first {
+        border-radius: 20%;
+      }
+      th {
+        background-color: #024873;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        color: #fff;
+        min-width: 60px;
+        padding: 3px;
+        font-size: 16px;
+        padding: 0.5rem 1.5rem;
+      }
+    }
+    tr {
+      &:hover {
+        background: #89cfed;
+      }
+      td:nth-child(1) {
+        cursor: pointer;
+        text-decoration: underline;
+      }
+      td {
+        overflow-x: auto;
+        white-space: nowrap;
+        z-index: 1;
+        padding: 2px;
+        min-width: 60px;
+        border: 0.5px solid #cdc;
+        font-size: 17px;
+        color: #000;
+        //font-weight: 555;
+      }
+    }
+  }
 }
 </style>

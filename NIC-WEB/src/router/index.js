@@ -2,21 +2,28 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import Login from '../views/Login.vue'
 import SOP from '../views/SOP.vue'
+//import store from "@/store";
 const routes = [{
+
     path: '/',
     alias: ['/', '/Home', '/Home/'],
     name: 'Home',
     component: Home,
     children: [
         {
+            path: '/Home',
+            component: () =>
+                import('../views/DashBoard.vue')
+        },
+        {
             path: '/Home/Applications',
             component: () =>
                 import('../views/Applications.vue')
         },
         {
-            path: '/Home/Qualcomm_Application',
+            path: '/Home/QualcommApps',
             component: () =>
-                import('../views/Qualcomm_Application.vue')
+                import('../views/QualcommApps.vue')
         },
         {
             path: '/Home/Telit_Apps',
@@ -32,11 +39,6 @@ const routes = [{
             path: '/Home/Ambit',
             component: () =>
                 import('../views/Ambit.vue')
-        },
-        {
-            path: '/',
-            component: () =>
-                import('../views/DashBoard.vue')
         },
         {
             path: '/Home/LockStation',
@@ -285,11 +287,6 @@ const routes = [{
                 import('../components/ConfigComponents/Config19.vue'),
         },
         {
-            path: '/Home/ConfigApp/Config21',
-            component: () =>
-                import('../components/ConfigComponents/Config21.vue'),
-        },
-        {
             path: '/Home/ConfigApp/Config23',
             component: () =>
                 import('../components/ConfigComponents/Config23.vue'),
@@ -345,19 +342,9 @@ const routes = [{
                 import('../components/ConfigComponents/Config53.vue'),
         },
         {
-            path: '/Home/ConfigApp/Config54',
-            component: () =>
-                import('../components/ConfigComponents/Config54.vue'),
-        },
-        {
             path: '/Home/ConfigApp/Config60',
             component: () =>
                 import('../components/ConfigComponents/Config60.vue'),
-        },
-        {
-            path: '/Home/ConfigApp/Config64',
-            component: () =>
-                import('../components/ConfigComponents/Config64.vue'),
         },
         {
             path: '/Home/ConfigApp/Config65',
@@ -368,11 +355,6 @@ const routes = [{
             path: '/Home/ConfigApp/Config67',
             component: () =>
                 import('../components/ConfigComponents/Config67.vue'),
-        },
-        {
-            path: '/Home/ConfigApp/Config69',
-            component: () =>
-                import('../components/ConfigComponents/Config69_.vue'),
         },
         {
             path: '/Home/ConfigApp/Config76',
@@ -389,12 +371,6 @@ const routes = [{
             component: () =>
                 import('../components/ConfigComponents/Config74.vue'),
         },
-        //HAU ADD CONFIG 76
-        //  {
-        //     path: '/Home/ConfigApp/Config76_',
-        //     component: () =>
-        //         import('../components/ConfigComponents/Config76_.vue'),
-        // },
         {
             path: '/Home/ConfigApp/Config88',
             component: () =>
@@ -586,7 +562,7 @@ const routes = [{
         },    
         // Qualcomm model
         {
-            path: '/Home/ConfigApp/QAsnIn',
+            path: '/Home/QualcommApps/QAsnIn',
             component: () =>
                 import('../components/QualcommApps/QAsnIn.vue'),
         },
@@ -644,20 +620,27 @@ const routes = [{
     name: 'SOP',
     component: SOP,
 },
-// {
-//     path: '/LockStation',
-//     name: 'LockStation',
-//     component: () =>
-//     import ('../views/LockStation.vue'),
-// },
 {
     path: '/about',
     name: 'About',
     component: () =>
         import('../views/About.vue')
 },
-
 ]
+
+
+// router.beforeEach((to, from, next) => {
+//     const requiredPrivilege = to.meta.requiredPrivilege;
+//     const userPrivileges = store.state.dataShowIcon;
+  
+//     if (requiredPrivilege && !userPrivileges.includes(requiredPrivilege)) {
+//       // Hiển thị thông báo
+//       Vue.swal("Access Denied", "You don't have permission to access this page", "error");
+//       return next({ path: "/" });
+//     }
+  
+//     next();
+//   });  
 
 const router = createRouter({
     history: createWebHashHistory(),

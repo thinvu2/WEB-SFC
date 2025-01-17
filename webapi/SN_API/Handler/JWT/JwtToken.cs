@@ -20,7 +20,7 @@ namespace SN_API.Handler.JWT
                 new Claim("username", username),
                 new Claim("password", password)
             }),
-                Expires = DateTime.UtcNow.AddMinutes(5),
+                Expires = DateTime.UtcNow.AddMinutes(60),
                 SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature)
             };
             JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
@@ -62,25 +62,6 @@ namespace SN_API.Handler.JWT
             {
                 return null;
             }
-        }
-        public static string ValidateToken(string token)
-        {
-            string username = null;
-            ClaimsPrincipal principal = GetPrincipal(token);
-            if (principal == null)
-                return null;
-            ClaimsIdentity identity = null;
-            try
-            {
-                identity = (ClaimsIdentity)principal.Identity;
-            }
-            catch (NullReferenceException)
-            {
-                return null;
-            }
-            Claim usernameClaim = identity.FindFirst(ClaimTypes.Name);
-            username = usernameClaim.Value;
-            return username;
         }
     }
 }

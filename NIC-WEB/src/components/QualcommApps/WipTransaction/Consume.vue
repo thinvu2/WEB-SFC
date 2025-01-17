@@ -4,7 +4,7 @@
       <nav>
         <ul class="breadcrumb">
           <li class="breadcrumb-item">
-            <router-link to="/Home/Qualcomm_Application">Qualcomm</router-link>
+            <router-link to="/Home/QualcommApps">Qualcomm</router-link>
           </li>
           <li class="breadcrumb-item">
             <router-link to="/Home/ConfigApp/QWIP_Trans"
@@ -198,18 +198,10 @@ export default {
     UpdateQty: function (event) {
       this.createValue = event.target.value;
       this.LoadQty(event.target.value);
-      this.btnSearchClick(event.target.value);
+      // this.btnSearchClick(event.target.value);
     },
     CheckQty: function (event) {
-      if (
-        this.createValue.length > 0 &&
-        this.Qty > 0 &&
-        this.Qty <= this.Qty_remain
-      ) {
-        this.Qty = event.target.value;
-      } else {
-        this.$swal("", "Lot_no cannot empty & Qty =< Qty_remain!", "error");
-      }
+      this.Qty = event.target.value;
     },
     async CheckQty_Qwip(qty) {
       var payload = {
@@ -285,8 +277,12 @@ export default {
     },
     async btnClick(event) {
       if (this.createValue.length == 0 || this.Qty <= 0) {
-        this.$swal("", "Choose LOT_NO & input LOT_NO...", "error");
+        this.$swal("", "Choose LOT_NO & input QTY", "error");
       } else {
+        if (parseInt(this.Qty) > parseInt(this.Qty_remain)) {
+          this.$swal("", "QTY can not bigger Remain_QTY", "warning");
+          return;
+        }
         var payload = {
           database_name: localStorage.databaseName,
           lot_no: this.createValue,

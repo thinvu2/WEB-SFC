@@ -135,17 +135,6 @@
           v-model="model.FREIGHT_CARRIER_CODE"
         />
       </div>
-      <!-- <div class="form-row">
-        <label for="shipment">Shipment:</label>
-        <input
-          type="text"
-          class="text-input-over"
-          id="shipment"
-          name="shipment"
-          readonly
-          v-model="model.SHIP_MCMN_CREATTIME"
-        />
-      </div> -->
       <div class="form-row">
         <label for="estimate-dock">Estimate Dock:</label>
         <input
@@ -204,17 +193,6 @@
           v-model="model.SHIP_MCMN_TOTALOUTERCONTAINERS"
         />
       </div>
-      <!-- <div class="form-row">
-                    <label for="customer-drop-ship">Customer Ship:</label>
-                    <input type="text"
-                        class="text-input"
-                        id="customer-drop-ship" 
-                        name="customer-drop-ship"
-                        readonly
-                        v-model="model.AIRWAYBILL"
-                    />
-                </div> -->
-
       <div class="actual-ship-from">
         <div class="title-actual-ship">
           <label for="supplier-name">Actual ship from:</label>
@@ -227,9 +205,6 @@
             v-model="model.SHIP_MCMN_LOCATIONNAME"
           />
         </div>
-        <!-- <span class="title-actual-ship"
-          >Actual ship from: {{ model.SHIP_MCMN_LOCATIONNAME }}</span
-        > -->
         <div class="form-row-actual">
           <label for="country-code">Country Code:</label>
           <input
@@ -372,17 +347,6 @@
           v-model="model.POLINE_NO"
         />
       </div>
-      <!-- <div class="form-row">
-        <label for="lot-no">Lot No:</label>
-        <input
-          type="text"
-          class="text-input"
-          id="lot-no"
-          name="lot-no"
-          readonly
-          v-model="model.LOT_NO"
-        />
-      </div> -->
       <div class="form-row">
         <label for="item-no">Items No:</label>
         <input
@@ -447,48 +411,6 @@
               </tr>
             </tbody>
         </table>
-        <!-- backup table -->
-        <!-- <table class="table-form">
-          <template v-for="(item, index) in ShowDataTableOuterLpn" :key="index">
-            <thead>
-              <tr>
-                <th>LPN</th>
-                <th>Gross Weight({{ item.OUTERBOX_WEIGHTUNITOFMEASURE }})</th>
-                <th>Net Weight({{ item.INNERBOX_WEIGHTUNITOFMEASURE }})</th>
-                <th>Quantity</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{{ item.OUTERBOX_LPN }}</td>
-                <td>{{ item.OUTERBOX_GROSSWEIGHT }}</td>
-                <td>{{ item.OUTERBOX_NETWEIGHT }}</td>
-                <td>{{ item.OUTERBOX_QTY }}</td>
-              </tr>
-
-              <tr
-                v-for="(itemInnerLPN, indexInnerLPN) in ShowDataTableInnerLPN"
-                :key="indexInnerLPN"
-              >
-                <template
-                  v-for="(itemInnerLPN1, indexInnerLPN1) in itemInnerLPN"
-                  :key="indexInnerLPN1"
-                >
-                  <td
-                    v-if="
-                      indexInnerLPN1 == 'INNERBOX_LPN' ||
-                        indexInnerLPN1 == 'INNERBOX_GROSSWEIGHT' ||
-                        indexInnerLPN1 == 'INNERBOX_NETWEIGHT' ||
-                        indexInnerLPN1 == 'INNERBOX_QTY'
-                    "
-                  >
-                    {{ itemInnerLPN1 }}
-                  </td>
-                </template>
-              </tr>
-            </tbody>
-          </template>
-        </table> -->
       </div>
 
       <div class="form-row">
@@ -808,7 +730,6 @@ export default {
       ShowDataDetail: [],
       ShowDataTableOuterLpn: [],
       ShowDataTableOuterLpnHeader: [],
-      //ShowDataTableInnerLPN: [],
       valueSearch: "",
       model: {
         database_name: localStorage.databaseName,
@@ -909,10 +830,8 @@ export default {
             F_ID: this.model.F_ID,
             actionBtn: actionBtn
           };
-          console.log("payload: ", payload);
           try {
             let { data } = await Repository.getRepo("InsertQasn_in", payload);
-            console.log("data,", data);
             if (data.result == "ok") {
               this.ClearForm();
               this.$swal("", "Successfully applied", "success");
@@ -927,12 +846,14 @@ export default {
               this.$swal("", data.result, "error");
             }
           } catch (error) {
-            if (error.response && error.response.data) {
-              this.$swal("", error.response.data.error, "error");
-            } else {
-              this.$swal("", error.Message, "error");
-            }
-          }
+        console.error("Error:", error);
+        const message =
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
+      }
         });
     },
     async LoadComponent() {
@@ -948,11 +869,13 @@ export default {
           this.DataTableHeader = Object.keys(this.DataTable[0]);
         }
       } catch (error) {
-        if (error.response && error.response.data) {
-          this.$swal("", error.response.data.error, "error");
-        } else {
-          this.$swal("", error.Message, "error");
-        }
+        console.error("Error:", error);
+        const message =
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
     async QuerySearch() {
@@ -978,18 +901,19 @@ export default {
           this.DataTableHeader = Object.keys(this.DataTable[0]);
         }
       } catch (error) {
-        if (error.response && error.response.data) {
-          this.$swal("", error.response.data.error, "error");
-        } else {
-          this.$swal("", error.Message, "error");
-        }
+        console.error("Error:", error);
+        const message =
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
     async ShowDetail(index) {
       let databaseName = localStorage.databaseName;
       let PACKSLIP_NO = this.DataTable[index].PACKSLIP_NO;
       let FLAG = this.DataTable[index].FLAG;
-      // let F_ID = this.DataTable[index].F_ID;
       if (FLAG == "2") {
         this.isShowSubmitForm = true;
       }
@@ -1010,8 +934,6 @@ export default {
           this.ShowDataTableOuterLpnHeader = Object.keys(this.ShowDataTableOuterLpn[0]);
           console.log("ShowDataTableOuterLpnHeader: ", this.ShowDataTableOuterLpnHeader);
         }
-        //this.ShowDataTableInnerLPN = responseData.data.dataTableInnerLPN;
-        //console.log("ShowDataTableOuterLpn: ", this.ShowDataTableOuterLpn);
         if (this.ShowDataDetail.length > 0) {
           let firstItem = this.ShowDataDetail[0];
           this.model.PACKSLIP_NO = firstItem.PACKSLIP_NO;
@@ -1081,11 +1003,13 @@ export default {
           this.isShowForm = true;
         }
       } catch (error) {
-        if (error.response && error.response.data) {
-          this.$swal("", error.response.data.error, "error");
-        } else {
-          this.$swal("", error.Message, "error");
-        }
+        console.error("Error:", error);
+        const message =
+        error.response?.data?.message ||
+          error.response?.data?.error ||
+          error.message ||
+          "An unexpected error occurred.";
+        this.$swal("", message, "error");
       }
     },
     pad(number) {
@@ -1101,10 +1025,8 @@ export default {
         }, {});
       });
       let ws = xlsx.utils.json_to_sheet(filteredData);
-      /* add to workbook */
       let wb = xlsx.utils.book_new();
       xlsx.utils.book_append_sheet(wb, ws, "data");
-      /* generate an XLSX file */
       xlsx.writeFile(wb, "download.xlsx");
     },
     exportExcel() {
@@ -1120,7 +1042,7 @@ export default {
       const replacer = (key, value) => (value === null ? "" : value);
       const header = Object.keys(items[0]);
       const csv = [
-        header.join(","), // header row first
+        header.join(","),
         ...items.map((row) =>
           header
             .map((fieldName) => JSON.stringify(row[fieldName], replacer))
@@ -1148,7 +1070,7 @@ export default {
       this.LoadComponent();
     },
     BackToParent() {
-      this.$router.push({ path: "/Home/Qualcomm_Application" });
+      this.$router.push({ path: "/Home/QualcommApps" });
     },
   },
 };

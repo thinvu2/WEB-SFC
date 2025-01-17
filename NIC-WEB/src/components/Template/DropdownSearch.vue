@@ -180,7 +180,7 @@ unmounted() {
   height: 100%;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
+  font-size: 1rem;
   font-weight: 555;
   display: flex;
   .drop-down-icon {
@@ -190,6 +190,9 @@ unmounted() {
       transform: rotate(0deg);
     }
   }
+}
+.row {
+  margin: 0;
 }
 .dropdown-popover {
   z-index: 1;

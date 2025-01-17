@@ -189,8 +189,13 @@ export default {
           }else {
             this.ListDataTable = [];
           }
-        }catch(error){
-          console.error("data: ", error);
+        }catch (error) {
+          const message =
+          error.response?.data?.message ||
+            error.response?.data?.error ||
+            error.message ||
+            "An unexpected error occurred.";
+          this.$swal("", message, "error");
         }
       },
 
@@ -201,11 +206,16 @@ export default {
         try {
           let { data } = await Repository.getApiServer(`getAmsPrivilege?database_name=${databaseName}&EMP_NO=${emp_no}`);
           this.ListDataAms = data.data || [];
-        }catch(error) {
-          console.error("data: ", error);
-         }
+        }catch (error) {
+          const message =
+          error.response?.data?.message ||
+            error.response?.data?.error ||
+            error.message ||
+            "An unexpected error occurred.";
+          this.$swal("", message, "error");
+        }
       },
-    //save data send data to back end will compare two array from front- end and back-end if different then insert or delete 
+
       async SaveData() {
         let result = this.searchEmp.match(/^[^_]+/);
         let titleValue = "";
@@ -233,9 +243,14 @@ export default {
                 this.$swal("", data.result, "error");
               } 
               this.ClearForm();
-            }catch(error){
-              this.$swal ("", error, "error");
-            }
+            }catch (error) {
+          const message =
+          error.response?.data?.message ||
+            error.response?.data?.error ||
+            error.message ||
+            "An unexpected error occurred.";
+          this.$swal("", message, "error");
+        }
         });
       },
 

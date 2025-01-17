@@ -21,4 +21,16 @@ export default {
       },
     });
   },
+
+  HttpDelete(url, params) {
+    return axios.delete(`${baseDomain}/${url}`, {
+      params: params,
+      headers: {
+        Authorization: "Bearer caca",
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  },
 };
+

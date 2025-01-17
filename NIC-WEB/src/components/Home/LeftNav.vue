@@ -7,7 +7,6 @@
         >
       </div>
       <div class="clearfix"></div>
-      <!-- menu profile quick info -->
       <div class="profile clearfix">
         <div class="profile_pic">
           <img
@@ -29,11 +28,22 @@
           <h3>{{ $store.state.language == "En" ? "General" : "Chung" }}</h3>
           <ul class="nav side-menu">
             <li>
-              <router-link to="/">
+              <router-link to="/Home">
                 <i class="fa fa-home"></i>Home
                 <span class="fa fa-chevron-right"></span
               ></router-link>
             </li>
+
+             <!-- <li>
+              <router-link to="/Home/Applications">
+                <i class="fa fa-desktop"></i>
+                {{
+                  $store.state.language == "En" ? "Applications" : "?ng d?ng"
+                }}
+                <span class="fa fa-chevron-right"></span
+              ></router-link>
+            </li> -->
+
             <li v-if="dataShowIcon.includes('NIC')">
               <router-link to="/Home/Applications">
                 <i class="fa fa-desktop"></i>
@@ -44,7 +54,7 @@
               ></router-link>
             </li>
             <li v-if="dataShowIcon.includes('QUALCOMM')">
-              <router-link to="/Home/Qualcomm_Application">
+              <router-link to="/QualcommApps">
                 <i class="fa fa-space-shuttle"></i>Qualcomm
                 <span class="fa fa-chevron-right"></span
               ></router-link>
@@ -56,6 +66,7 @@
                 <span class="fa fa-chevron-right"></span
               ></router-link>
             </li>
+
           </ul>
         </div>
       </div>
@@ -77,11 +88,37 @@ import data from "../../data/menu_data";
 import Repository from "../../services/Repository";
 export default {
   name: "LeftNav",
+  // state: {
+  //   dataShowIcon: '',
+  // },
+  // mutations: {
+  //   setDataShowIcon(state, privileges) {
+  //     state.dataShowIcon = privileges;
+  //   },
+  // },
+  // actions: {
+  //   async fetchPrivileges({ commit }, { databaseName, empNo }) {
+  //     try {
+  //       const { data } = await Repository.getApiServer(
+  //         `GetPrivilegeLeftNav?databaseName=${databaseName}&empNo=${empNo}`
+  //       );
+  //       commit("setDataShowIcon", data.data[0].OWNER || []);
+  //     } catch (error) {
+  //       console.error("getPrivilege Error:", error);
+  //       const message =
+  //         error.response?.data?.error ||
+  //         error.message ||
+  //         "An unexpected error occurred.";
+  //       this.$swal("", message, "error");
+  //     }
+  //   },
+  // },
+
   data() {
     return {
+      dataShowIcon: '',
       databaseName: localStorage.databaseName,
       empNo: localStorage.username,
-      dataShowIcon: "",
       listNav: [],
       DataTable: [],
       arrData: [],
@@ -123,7 +160,6 @@ export default {
           `GetPrivilegeLeftNav?databaseName=${databaseName}&empNo=${empNo}`
         );
         this.DataTable = data.data;
-        console.log(this.DataTable);
         this.dataShowIcon = this.DataTable[0].OWNER;
       } catch (error) {
         console.error("getPrivilege Error:", error);
@@ -134,6 +170,7 @@ export default {
         this.$swal("", message, "error");
       }
     },
+
     MaximizeWindow() {
       var docElm = document.documentElement;
       if (docElm.requestFullscreen) {

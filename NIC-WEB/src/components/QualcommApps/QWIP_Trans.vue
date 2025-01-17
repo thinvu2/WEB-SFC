@@ -1,11 +1,15 @@
 <template>
   <div class="wip-inventory">
     <div class="row">
-      <div class="div-back" @click="isShowForm ? ReturnForm() : BackToParent()">
-        <Icon icon="chevron-left" class="back-icon sidenav-icon" />
+      <div class="div-back" @click="BackToParent()">
+        <Icon
+          icon="chevron-left"
+          class="back-icon sidenav-icon"
+          @click="BackToParent()"
+        />
       </div>
       <div class="div-config-name row">
-        <span>Advance Shipment Notice</span>
+        <span>Qualcomm Application</span>
       </div>
     </div>
     <div class="content">Inventory_Transaction :</div>
@@ -58,6 +62,10 @@ export default {
   methods: {
     gotoRoute(route) {
       this.$router.push({ path: route });
+    },
+
+    BackToParent() {
+      this.$router.push({ path: "/Home/QualcommApps" });
     },
   },
 };
@@ -176,6 +184,7 @@ export default {
   background: #eae1e1;
   cursor: pointer;
   margin: 10px 0;
+  margin-left: 20px;
   display: flex;
   align-content: center;
   align-items: center;
@@ -185,12 +194,14 @@ export default {
     background: #b7b7b7;
   }
   .back-icon {
+    margin: 10px;
     height: 20px;
     width: 20px;
   }
 }
 .div-config-name {
-  margin-left: 20px;
+  margin-left: 10px;
+  margin-top: 5px;
   line-height: 50px;
   span {
     font-weight: 555;

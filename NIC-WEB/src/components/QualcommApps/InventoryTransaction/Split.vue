@@ -8,7 +8,7 @@
               <button class="return-btn">&#8592;</button>
             </li>
             <li class="breadcrumb-item">
-              <router-link to="/Home/Qualcomm_Application"
+              <router-link to="/Home/QualcommApps"
                 >Qualcomm</router-link
               >
             </li>
@@ -55,13 +55,7 @@
       </div>
       <div class="form-row">
         <label for="shipping-name">LOT_NO QTY:</label>
-        <input
-          type="number"
-          class="text-input"
-          v-model="model.QTY"
-          readonly
-          v-on:change="SplitQty"
-        />
+        <input type="number" class="text-input" v-model="model.QTY" readonly />
       </div>
       <!-- input -->
       <div class="form-input">
@@ -71,18 +65,7 @@
         <div class="form-row-input">
           <label for="sched-deliv-date">LOT_NO 1 :</label>
 
-          <input
-            class="form-control form-control-sm text-element col-md-3 text-input"
-            :listAll="ListModel"
-            @update-selected-item="UpdateModelReceive"
-            :min="minTimeDefault"
-            id="sched-deliv-date"
-            name="sched-deliv-date"
-            v-model="minTimeDefault"
-            textPlaceHolder="Enter Model Name"
-            readonly
-          />
-          <label for="sched-qty">Schedule Qty:</label>
+          <label for="sched-qty">Qty:</label>
           <input
             type="number"
             id="sched-qty"
@@ -103,25 +86,7 @@
           <label :for="`sched-deliv-date + ${index}`"
             >LOT_NO {{ index + 2 }} :</label
           >
-          <!-- <input
-            type="date"
-            :id="`sched-deliv-date + ${index}`"
-            class="text-input"
-            :min="minTime"
-            :name="`sched-deliv-date + ${index}`"
-            v-model="row.minTime"
-          /> -->
-          <input
-            class="form-control form-control-sm text-element col-md-3 text-input"
-            :listAll="ListModel"
-            @update-selected-item="UpdateModelReceive"
-            :id="`sched-deliv-date + ${index}`"
-            :min="minTime"
-            :name="`sched-deliv-date + ${index}`"
-            v-model="row.minTime"
-            readonly
-          />
-          <label :for="`sched-qty + ${index}`">Schedule Qty:</label>
+          <label :for="`sched-qty + ${index}`">Qty:</label>
           <input
             type="number"
             :id="`sched-qty + ${index}`"
@@ -172,9 +137,55 @@
             <tbody>
               <tr v-for="(row, index) in DataTable" :key="index">
                 <template v-for="(value, key) in row" :key="key">
-                  <td @click="key === 'LOT_NO' && ShowDetail(index)">
-                    {{ value }}
-                  </td>
+                  <template v-if="key === 'PO_NO'">
+                    <td @click="ShowDetail(index)">
+                      {{ value }}
+                    </td></template
+                  >
+                  <template v-else>
+                    <td>
+                      {{ value }}
+                    </td></template
+                  >
+                </template>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </div>
+    </div>
+
+    <div style="height: 20px"><hr /></div>
+    <!-- table -->
+    <div class="main-contain" v-if="isShowForm === true">
+      <div class="row col-sm-12 div-content">
+        <template v-if="DataTableHeader1">
+          <table id="tableMain" class="table mytable">
+            <thead v-if="DataTable1.length > 0">
+              <tr>
+                <template
+                  v-for="(item, index) in DataTableHeader1"
+                  :key="index"
+                >
+                  <th>
+                    {{ item }}
+                  </th>
+                </template>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, index) in DataTable1" :key="index">
+                <template v-for="(value, key) in row" :key="key">
+                  <template v-if="key === 'PO_NO'">
+                    <td @click="ShowDetail(index)">
+                      {{ value }}
+                    </td></template
+                  >
+                  <template v-else>
+                    <td>
+                      {{ value }}
+                    </td></template
+                  >
                 </template>
               </tr>
             </tbody>
@@ -201,17 +212,25 @@ export default {
       isVisible: false,
       DataTableHeader: [],
       DataTable: [],
+      DataTableHeader1: [],
+      DataTable1: [],
       ShowDataDetail: [],
       ListModel: ["AAAA", "BBBBB", "CCCCC"],
       valueSearch: "",
-      transaction: "WIPSplitTransaction",
+      transaction: "InventorySplitTransaction",
       model: {
         database_name: localStorage.databaseName,
         EMP_NO: localStorage.username,
         LOT_NO: "",
         QTY: "",
-        transaction: "WIPSplitTransaction",
+        transaction: "InventorySplitTransaction",
       },
+      IN_FUNC: this.transaction,
+      IN_SUB_FUNC: "",
+      IN_EMP: localStorage.username,
+      IN_LOTNO: "",
+      IN_ACTION_QTY: "",
+      IN_DATA: "",
     };
   },
   created() {
@@ -239,14 +258,8 @@ export default {
       const day = String(today.getDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
     },
-    SplitQty: function (event) {
-      for (let i = 0; i < parseInt(event.target.value); i++) {
-        this.handAddNewForm();
-      }
-    },
     handAddNewForm() {
       this.additionalRows.push({
-        minTime: this.minTime,
         scheduleQty: "0",
       });
     },
@@ -254,9 +267,8 @@ export default {
       this.additionalRows.splice(index, 1);
     },
     async SubmitForm() {
-      console.log("this.model.SCHED_QTY", this.model.SCHED_QTY);
       if (!this.model.SCHED_QTY) {
-        this.$swal("", "Please input a valid Schedule Qty!", "warning");
+        this.$swal("", "Please input a valid Qty!", "warning");
         return;
       }
       // let titleValue = "";
@@ -275,150 +287,133 @@ export default {
       } catch (err) {
         console.error("SweetAlert Error:", err);
       }
-      // this.$swal({
-      //   title: titleValue,
-      //   text: textValue,
-      //   icon: "warning",
-      //   buttons: true,
-      //   dangerMode: true,
-      // }).then(async (willDelete) => {
-      //   if (willDelete.isConfirmed == false) return;
 
       let filleredRows = [];
       this.additionalRows.forEach((row) => {
-        if (row.minTime || row.scheduleQty) {
+        if (row.scheduleQty) {
           filleredRows.push({ ...row });
         }
       });
-      if (this.minTimeDefault || this.model.SCHED_QTY) {
-        filleredRows.push({
-          minTime: this.minTimeDefault,
-          scheduleQty: this.model.SCHED_QTY,
-        });
-      } else {
-        this.$swal("", "Invalid data, input is wrong", "warning");
-        return;
-      }
-      if (filleredRows.length === 0) {
-        this.$swal("", "No data to submit", "warning");
-        return;
-      }
-      let arr2 = filleredRows.map((item) => item.minTime);
-      const set1 = new Set(arr2);
-      if (arr2.length !== set1.size) {
-        this.$swal("", "Delivery Date can't choose the same time", "warning");
-        return;
-      }
       //sum qty
       let sumScheduleQty = filleredRows.reduce(
         (sum, qty) => sum + parseInt(qty.scheduleQty),
         0
       );
       // let sumScheduleQty = 0;
-      let QUANTITY = parseInt(this.ShowDataDetail[0].QUANTITY, 10);
-      // for (let item of filleredRows) {
-      //   sumScheduleQty += parseInt(item.scheduleQty, 10);
-      // }
+      let QUANTITY = parseInt(this.model.QTY, 10);
+      console.log(QUANTITY + "-" + sumScheduleQty);
+      if (QUANTITY < sumScheduleQty) {
+        this.$swal(
+          "",
+          `Total Qty input: ${sumScheduleQty} not equal Quantity: ${QUANTITY}`,
+          "warning"
+        );
+        return;
+      }
 
-      if (Number.isNaN(sumScheduleQty) || Number.isNaN(QUANTITY)) {
-        this.$swal(
-          "",
-          `Invalid data, input is wrong: ${sumScheduleQty}, Quantity: ${QUANTITY}`,
-          "warning"
-        );
-        return;
-      }
-      if (QUANTITY !== sumScheduleQty) {
-        this.$swal(
-          "",
-          `Total scheduleQty: ${sumScheduleQty} not equal Quantity: ${QUANTITY}`,
-          "warning"
-        );
-        return;
-      }
+      let listJson = [];
+      listJson = this.additionalRows;
+      listJson.push({
+        scheduleQty: this.model.SCHED_QTY,
+      });
+      const formattedJson = listJson.reduce((result, item, index) => {
+        result[`LOT${index + 1}`] = item.scheduleQty; // Tạo key "LOT1", "LOT2", ...
+        return result;
+      }, {});
+      let IN_data = JSON.stringify(formattedJson);
+
+      console.log(JSON.stringify(formattedJson));
+
       let payload = {
-        EMP_NO: localStorage.username,
         database_name: localStorage.databaseName,
-        additionalRows: filleredRows,
-        data: [
-          {
-            F_ID: this.model.F_ID,
-            F_SITE: this.model.F_SITE,
-            F_PIP_TYPE: this.model.F_PIP_TYPE,
-            F_MSGID: this.model.F_MSGID,
-            F_TIMESTAMP: this.model.F_TIMESTAMP,
-            F_VENDOR: this.model.F_VENDOR,
-            F_PO: this.model.F_PO,
-            F_PO_ITEM: this.model.F_PO_ITEM,
-            F_CONF_CTG: this.model.F_CONF_CTG,
-            F_REFERENCE: this.model.F_REFERENCE,
-            F_CREATION_DATE: this.model.F_CREATION_DATE,
-            F_LASTEDIT_DT: this.model.F_LASTEDIT_DT,
-            F_FILENAME: this.model.F_FILENAME,
-            F_TIMES: this.model.F_TIMES,
-          },
-        ],
+        IN_FUNC: this.transaction,
+        IN_SUB_FUNC: "InsertData",
+        IN_EMP: localStorage.username,
+        IN_LOTNO: this.model.LOT_NO,
+        IN_ACTION_QTY: this.additionalRows.length,
+        IN_DATA: IN_data,
       };
-      try {
-        let { data } = await Repository.getRepo("InsertTelitEDI", payload);
-        if (data.result == "ok") {
-          this.ClearForm();
-          this.$swal("", "Successfully applied", "success");
-        } else {
-          this.$swal("", data.result, "error");
-        }
-      } catch (error) {
-        console.error("SubmitForm Error:", error);
-        const message =
-          error.response?.data?.error ||
-          error.message ||
-          "An unexpected error occurred.";
-        this.$swal("", message, "error");
+
+      var { data } = await Repository.getRepo("GetDataMerge", payload);
+      this.DataTable1 = [];
+      if (data.result == "ok") {
+        this.DataTable1 = data.data;
+        this.DataTableHeader1 = Object.keys(this.DataTable1[0]);
+        this.additionalRows = [];
+
+        this.model.QTY = this.DataTable1[0].AVAILABLEQTY;
+        this.model.SCHED_QTY = "";
+
+        this.$swal({
+          title: "Success!",
+          text: "Operation completed successfully.",
+          icon: "success", // Biểu tượng thành công
+          confirmButtonText: "OK", // Nút xác nhận
+        });
+      } else {
+        this.$swal("", data.result, "error");
       }
     },
     async LoadComponent() {
       let databaseName = localStorage.databaseName;
+      let lot_no = this.valueSearch;
+      let payload = {
+        database_name: databaseName,
+        IN_FUNC: this.transaction,
+        IN_SUB_FUNC: "ShowListData",
+        IN_EMP: localStorage.username,
+        IN_LOTNO: lot_no,
+        IN_ACTION_QTY: "",
+        IN_DATA: "",
+      };
       try {
-        var event = this.valueSearch;
-        let { data } = await Repository.getApiServer(
-          `GetLoadFormQWip?database_name=${databaseName}&trans_name=${this.transaction}&lot_no=${event}`
-        );
-        console.log(data);
+        let { data } = await Repository.getRepo("GetDataMerge", payload);
+
         if (data.result == "ok") {
           this.DataTable = data.data;
-          this.DataTableHeader = Object.keys(this.DataTable[0]);
+          if (this.DataTable.length > 0) {
+            this.DataTableHeader = Object.keys(this.DataTable[0]);
+          }
+        } else {
+          this.$swal("", data.result, "error");
         }
       } catch (error) {
-        if (error.response && error.response.data) {
-          this.$swal("", error.response.data.error, "error");
-        } else {
-          this.$swal("", error.Message, "error");
-        }
+        console.error("LoadForm Error:", error);
       }
     },
     async ShowDetail(index) {
       let databaseName = localStorage.databaseName;
       let F_PO = this.DataTable[index].LOT_NO;
       try {
-        let responseData = await Repository.getApiServer(
-          `GetLoadFormQWip?database_name=${databaseName}&trans_name=${this.transaction}&lot_no=${F_PO}`
-        );
-        this.ShowDataDetail = responseData.data.data;
-        if (this.ShowDataDetail.length > 0) {
+        let payload = {
+          database_name: databaseName,
+          IN_FUNC: this.transaction,
+          IN_SUB_FUNC: "ShowData",
+          IN_EMP: localStorage.username,
+          IN_LOTNO: F_PO,
+          IN_ACTION_QTY: "",
+          IN_DATA: "",
+        };
+        let { data } = await Repository.getRepo("GetDataMerge", payload);
+        this.ShowDataDetail = data.data;
+        console.log(this.ShowDataDetail);
+        if (data.result == "ok") {
           let firstItem = this.ShowDataDetail[0];
           this.model.LOT_NO = firstItem.LOT_NO;
-          this.model.QTY = firstItem.SCHEDULE_COMPLETION_QTY;
+          this.model.QTY = firstItem.AVAILABLEQTY;
+
+          this.DataTable1 = data.data;
+          if (this.DataTable1.length > 0) {
+            this.DataTableHeader1 = Object.keys(this.DataTable1[0]);
+          }
+
           this.isShowForm = true;
         } else {
+          this.$swal("", data.result, "error");
           this.isShowForm = false;
         }
       } catch (error) {
         console.error("ShowForm Error:", error);
-        const message =
-          error.response?.data?.error ||
-          error.message ||
-          "An unexpected error occurred.";
-        this.$swal("", message, "error");
       }
     },
     pad(number) {

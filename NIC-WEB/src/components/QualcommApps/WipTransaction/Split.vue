@@ -8,7 +8,7 @@
               <button class="return-btn">&#8592;</button>
             </li>
             <li class="breadcrumb-item">
-              <router-link to="/Home/Qualcomm_Application"
+              <router-link to="/Home/QualcommApps"
                 >Qualcomm</router-link
               >
             </li>
@@ -26,13 +26,13 @@
       <div class="searchbox-content">
         <input
           :disabled="showTimeForm"
-          v-on:keyup.enter="LoadComponent()"
+          v-on:keyup.enter="ShowDetail()"
           v-model="valueSearch"
           type="text"
           class="form-control"
           placeholder="Enter Po... "
         />
-        <button @click="LoadComponent()" class="btn-button">
+        <button @click="ShowDetail()" class="btn-button">
           <Icon icon="search" class="sidenav-icon" />
         </button>
       </div>
@@ -54,15 +54,38 @@
         />
       </div>
       <div class="form-row">
-        <label for="shipping-name">LOT_NO QTY:</label>
+        <label for="sched-qty">LOT Qty:</label>
+        <input type="number" class="text-input" readonly v-model="model.QTY" />
+      </div>
+      <!-- <div class="form-row">
+        <label for="sched-qty">Assembly Qty:</label>
         <input
           type="number"
           class="text-input"
-          v-model="model.QTY"
           readonly
-          v-on:change="SplitQty"
+          v-model="model.ASSY_QTY"
         />
       </div>
+      <div class="form-row">
+        <label for="sched-qty">Test Qty:</label>
+        <input
+          type="number"
+          class="text-input"
+          autocomplete="off"
+          v-model="model.TEST_QTY"
+          readonly
+        />
+      </div>
+      <div class="form-row">
+        <label for="sched-qty">SBT Qty:</label>
+        <input
+          type="number"
+          class="text-input"
+          v-model="model.SBT_QTY"
+          readonly
+        />
+      </div> -->
+      <div class="class-hr"><hr /></div>
       <!-- input -->
       <div class="form-input">
         <span class="add-new-form" @click="handAddNewForm()">
@@ -71,20 +94,18 @@
         <div class="form-row-input">
           <label for="sched-deliv-date">LOT_NO1:</label>
           <select
-            class="form-control form-control-sm text-element col-md-3 text-input"
-            :listAll="ListModel"
-            @update-selected-item="UpdateModelReceive"
-            :min="minTimeDefault"
-            id="sched-deliv-date"
-            name="sched-deliv-date"
-            v-model="minTimeDefault"
-            textPlaceHolder="Enter Model Name"
+            type="text"
+            class="text-input"
+            v-model="model.MO_NUMBER"
+            @input="GetbyMo($event)"
           >
-            <template v-for="(row, index) in ListModel" :key="index">
-              <option>{{ row }}</option>
+            <template v-for="(item, index) in ListModel" :key="index">
+              <option>
+                {{ item.MO_NUMBER }}
+              </option>
             </template>
           </select>
-          <label for="sched-qty">Assembly Qty:</label>
+          <label for="sched-qty">LOT_NO1 QTY:</label>
           <input
             type="number"
             id="sched-qty"
@@ -93,7 +114,21 @@
             autocomplete="off"
             max="999999"
             min="0"
-            v-model="model.ASSEMBLY_QTY"
+            readonly
+            v-model="model.LOT_QTY1"
+            @input="limitInputLength($event, 6)"
+          />
+          <!-- <label for="sched-qty">Assembly Qty:</label>
+          <input
+            type="number"
+            id="sched-qty"
+            class="text-input"
+            name="sched-qty"
+            autocomplete="off"
+            max="999999"
+            min="0"
+            readonly
+            v-model="model.ASSY_QTY1"
             @input="limitInputLength($event, 6)"
           />
           <label for="sched-qty">Test Qty:</label>
@@ -105,7 +140,8 @@
             autocomplete="off"
             max="999999"
             min="0"
-            v-model="model.TEST_QTY"
+            readonly
+            v-model="model.TEST_QTY1"
             @input="limitInputLength($event, 6)"
           />
           <label for="sched-qty">SBT Qty:</label>
@@ -117,9 +153,10 @@
             autocomplete="off"
             max="999999"
             min="0"
-            v-model="model.SBT_QTY"
+            readonly
+            v-model="model.SBT_QTY1"
             @input="limitInputLength($event, 6)"
-          />
+          /> -->
         </div>
         <div
           class="form-row-input"
@@ -136,28 +173,22 @@
           <label :for="`sched-deliv-date + ${index}`"
             >LOT_NO{{ index + 2 }}:</label
           >
-          <!-- <input
-            type="date"
-            :id="`sched-deliv-date + ${index}`"
-            class="text-input"
-            :min="minTime"
-            :name="`sched-deliv-date + ${index}`"
-            v-model="row.minTime"
-          /> -->
           <select
-            class="form-control form-control-sm text-element col-md-3 text-input"
-            :listAll="ListModel"
-            @update-selected-item="UpdateModelReceive"
-            :id="`sched-deliv-date + ${index}`"
-            :min="minTime"
+            class="text-input"
             :name="`sched-deliv-date + ${index}`"
-            v-model="row.minTime"
+            :id="`sched-deliv-date + ${index}`"
+            v-model="row.mo"
+            @input="GetbyMo($event)"
           >
-            <template v-for="(row, index) in ListModel" :key="index">
-              <option>{{ row }}</option>
+            <template v-for="(item, index) in ListModel" :key="index">
+              <option>
+                {{ item.MO_NUMBER }}
+              </option>
             </template>
           </select>
-          <label :for="`sched-qty + ${index}`">Assembly Qty:</label>
+          <label :for="`sched-qty + ${index}`"
+            >LOT_NO{{ index + 2 }} QTY:</label
+          >
           <input
             type="number"
             :id="`sched-qty + ${index}`"
@@ -166,7 +197,21 @@
             autocomplete="off"
             max="999999"
             min="0"
-            v-model="row.AssemblyQty"
+            readonly
+            v-model="row.LotQty"
+            @input="limitInputLength($event, 6)"
+          />
+          <!-- <label :for="`sched-qty + ${index}`">Assembly Qty:</label>
+          <input
+            type="number"
+            :id="`sched-qty + ${index}`"
+            class="text-input"
+            :name="`sched-qty + ${index}`"
+            autocomplete="off"
+            max="999999"
+            min="0"
+            readonly
+            v-model="row.AssyQty"
             @input="limitInputLength($event, 6)"
           />
           <label :for="`sched-qty + ${index}`">Test Qty:</label>
@@ -178,6 +223,7 @@
             autocomplete="off"
             max="999999"
             min="0"
+            readonly
             v-model="row.TestQty"
             @input="limitInputLength($event, 6)"
           />
@@ -190,9 +236,10 @@
             autocomplete="off"
             max="999999"
             min="0"
+            readonly
             v-model="row.SBTQty"
             @input="limitInputLength($event, 6)"
-          />
+          /> -->
         </div>
       </div>
     </div>
@@ -227,9 +274,48 @@
             <tbody>
               <tr v-for="(row, index) in DataTable" :key="index">
                 <template v-for="(value, key) in row" :key="key">
-                  <td @click="key === 'LOT_NO' && ShowDetail(index)">
+                  <td @click="key === 'MO_NUMBER' && ShowDetail(index)">
                     {{ value }}
                   </td>
+                </template>
+              </tr>
+            </tbody>
+          </table>
+        </template>
+      </div>
+    </div>
+
+    <div style="height: 20px"><hr /></div>
+    <!-- table -->
+    <div class="main-contain" v-if="isShowForm === true">
+      <div class="row col-sm-12 div-content">
+        <template v-if="DataTableHeader1">
+          <table id="tableMain" class="table mytable">
+            <thead v-if="DataTable1.length > 0">
+              <tr>
+                <template
+                  v-for="(item, index) in DataTableHeader1"
+                  :key="index"
+                >
+                  <th>
+                    {{ item }}
+                  </th>
+                </template>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(row, index) in DataTable1" :key="index">
+                <template v-for="(value, key) in row" :key="key">
+                  <template v-if="key === 'PO_NO'">
+                    <td>
+                      {{ value }}
+                    </td></template
+                  >
+                  <template v-else>
+                    <td>
+                      {{ value }}
+                    </td></template
+                  >
                 </template>
               </tr>
             </tbody>
@@ -256,19 +342,23 @@ export default {
       isVisible: false,
       DataTableHeader: [],
       DataTable: [],
+      DataTableHeader1: [],
+      DataTable1: [],
       ShowDataDetail: [],
-      ListModel: ["AAAA", "BBBBB", "CCCCC"],
+      ListModel: [],
       valueSearch: "",
       transaction: "WIPSplitTransaction",
+      LOTNO_NAME: "LOTNO_NAME",
       model: {
         database_name: localStorage.databaseName,
         EMP_NO: localStorage.username,
         LOT_NO: "",
-        ASSEMBLY_QTY: "",
+        ASSY_QTY: "",
         TEST_QTY: "",
         SBT_QTY: "",
         transaction: "WIPSplitTransaction",
       },
+      ListQty: [],
     };
   },
   created() {
@@ -280,13 +370,25 @@ export default {
   },
   computed: {},
   mounted() {
-    this.LoadComponent();
+    //this.LoadComponent();
     //this.getTodayDate();
   },
   methods: {
     limitInputLength(event, maxLength) {
       if (event.target.value.length >= maxLength) {
         event.target.value = event.target.value.slice(0, maxLength);
+      }
+    },
+
+    async GetbyMo(event) {
+      var event1 = event.target.value;
+      let { data } = await Repository.getApiServer(
+        `GetLoadQtybyMo?database_name=${localStorage.databaseName}&mo=${event1}`
+      );
+
+      if (data.result == "ok") {
+        this.ListQty = data.data;
+        this.model.LOT_QTY1 = this.ListQty[0].TARGET_QTY;
       }
     },
     getTodayDate() {
@@ -303,21 +405,15 @@ export default {
     },
     handAddNewForm() {
       this.additionalRows.push({
-        minTime: this.minTime,
-        scheduleQty: "",
+        mo: this.mo,
       });
     },
     handleDeleteNewForm(index) {
       this.additionalRows.splice(index, 1);
     },
     async SubmitForm() {
-      console.log("this.model.SCHED_QTY", this.model.SCHED_QTY);
-      if (!this.model.SCHED_QTY) {
-        this.$swal("", "Please input a valid Schedule Qty!", "warning");
-        return;
-      }
-      // let titleValue = "";
-      // let textValue = "";
+      console.log(this.model.MO_NUMBER);
+
       let titleValue = "Are you sure edit?";
       let textValue = "Once OK, data will be updated!";
       try {
@@ -332,150 +428,138 @@ export default {
       } catch (err) {
         console.error("SweetAlert Error:", err);
       }
-      // this.$swal({
-      //   title: titleValue,
-      //   text: textValue,
-      //   icon: "warning",
-      //   buttons: true,
-      //   dangerMode: true,
-      // }).then(async (willDelete) => {
-      //   if (willDelete.isConfirmed == false) return;
 
       let filleredRows = [];
       this.additionalRows.forEach((row) => {
-        if (row.minTime || row.scheduleQty) {
+        if (row.mo) {
           filleredRows.push({ ...row });
         }
       });
-      if (this.minTimeDefault || this.model.SCHED_QTY) {
-        filleredRows.push({
-          minTime: this.minTimeDefault,
-          scheduleQty: this.model.SCHED_QTY,
+      filleredRows.push({
+        mo: this.model.MO_NUMBER1,
+      });
+
+      console.log(this.additionalRows);
+      //sum qty
+
+      let listJson = [];
+      listJson = this.additionalRows;
+      listJson.push({
+        mo: this.model.MO_NUMBER,
+      });
+      const formattedJson = listJson.reduce((result, item, index) => {
+        result[`MO${index + 1}`] = item.mo;
+        return result;
+      }, {});
+      let IN_data = JSON.stringify(formattedJson);
+
+      console.log("AAAAAA" + JSON.stringify(formattedJson));
+
+      let payload = {
+        database_name: localStorage.databaseName,
+        IN_FUNC: this.transaction,
+        IN_SUB_FUNC: "InsertData",
+        IN_EMP: localStorage.username,
+        IN_LOTNO: this.model.LOT_NO,
+        IN_ACTION_QTY: this.additionalRows.length,
+        IN_DATA: IN_data,
+      };
+
+      var { data } = await Repository.getRepo("GetDataMerge", payload);
+      this.DataTable1 = [];
+      if (data.result == "ok") {
+        this.DataTable1 = data.data;
+        this.DataTableHeader1 = Object.keys(this.DataTable1[0]);
+        this.additionalRows = [];
+
+        this.model.QTY = this.DataTable1[0].AVAILABLEQTY;
+        this.model.MO_NUMBER = "";
+        this.model.ASSY_QTY1 = "";
+        this.model.SBT_QTY1 = "";
+        this.model.TEST_QTY1 = "";
+
+        this.$swal({
+          title: "Success!",
+          text: "Operation completed successfully.",
+          icon: "success", // Biểu tượng thành công
+          confirmButtonText: "OK", // Nút xác nhận
         });
       } else {
-        this.$swal("", "Invalid data, input is wrong", "warning");
-        return;
-      }
-      if (filleredRows.length === 0) {
-        this.$swal("", "No data to submit", "warning");
-        return;
-      }
-      let arr2 = filleredRows.map((item) => item.minTime);
-      const set1 = new Set(arr2);
-      if (arr2.length !== set1.size) {
-        this.$swal("", "Delivery Date can't choose the same time", "warning");
-        return;
-      }
-      //sum qty
-      let sumScheduleQty = filleredRows.reduce(
-        (sum, qty) => sum + parseInt(qty.scheduleQty),
-        0
-      );
-      // let sumScheduleQty = 0;
-      let QUANTITY = parseInt(this.ShowDataDetail[0].QUANTITY, 10);
-      // for (let item of filleredRows) {
-      //   sumScheduleQty += parseInt(item.scheduleQty, 10);
-      // }
-
-      if (Number.isNaN(sumScheduleQty) || Number.isNaN(QUANTITY)) {
-        this.$swal(
-          "",
-          `Invalid data, input is wrong: ${sumScheduleQty}, Quantity: ${QUANTITY}`,
-          "warning"
-        );
-        return;
-      }
-      if (QUANTITY !== sumScheduleQty) {
-        this.$swal(
-          "",
-          `Total scheduleQty: ${sumScheduleQty} not equal Quantity: ${QUANTITY}`,
-          "warning"
-        );
-        return;
-      }
-      let payload = {
-        EMP_NO: localStorage.username,
-        database_name: localStorage.databaseName,
-        additionalRows: filleredRows,
-        data: [
-          {
-            F_ID: this.model.F_ID,
-            F_SITE: this.model.F_SITE,
-            F_PIP_TYPE: this.model.F_PIP_TYPE,
-            F_MSGID: this.model.F_MSGID,
-            F_TIMESTAMP: this.model.F_TIMESTAMP,
-            F_VENDOR: this.model.F_VENDOR,
-            F_PO: this.model.F_PO,
-            F_PO_ITEM: this.model.F_PO_ITEM,
-            F_CONF_CTG: this.model.F_CONF_CTG,
-            F_REFERENCE: this.model.F_REFERENCE,
-            F_CREATION_DATE: this.model.F_CREATION_DATE,
-            F_LASTEDIT_DT: this.model.F_LASTEDIT_DT,
-            F_FILENAME: this.model.F_FILENAME,
-            F_TIMES: this.model.F_TIMES,
-          },
-        ],
-      };
-      try {
-        let { data } = await Repository.getRepo("InsertTelitEDI", payload);
-        if (data.result == "ok") {
-          this.ClearForm();
-          this.$swal("", "Successfully applied", "success");
-        } else {
-          this.$swal("", data.result, "error");
-        }
-      } catch (error) {
-        console.error("SubmitForm Error:", error);
-        const message =
-          error.response?.data?.error ||
-          error.message ||
-          "An unexpected error occurred.";
-        this.$swal("", message, "error");
+        this.$swal("", data.result, "error");
+        this.additionalRows = [];
       }
     },
     async LoadComponent() {
       let databaseName = localStorage.databaseName;
+      let lot_no = this.valueSearch;
+      let payload = {
+        database_name: databaseName,
+        IN_FUNC: this.transaction,
+        IN_SUB_FUNC: "ShowSplitMO",
+        IN_EMP: localStorage.username,
+        IN_LOTNO: lot_no,
+        IN_ACTION_QTY: "",
+        IN_DATA: "",
+      };
       try {
-        var event = this.valueSearch;
-        let { data } = await Repository.getApiServer(
-          `GetLoadFormQWip?database_name=${databaseName}&trans_name=${this.transaction}&lot_no=${event}`
-        );
-        console.log(data);
+        let { data } = await Repository.getRepo("GetDataMerge", payload);
+
         if (data.result == "ok") {
-          this.DataTable = data.data;
-          this.DataTableHeader = Object.keys(this.DataTable[0]);
+          this.ListModel = [];
+          data.data.forEach((element) => {
+            this.ListModel.push({
+              MO_NUMBER: element.MO_NUMBER,
+              QTY: element.TARGET_QTY,
+            });
+          });
+        } else {
+          this.$swal("", data.result, "error");
         }
       } catch (error) {
-        if (error.response && error.response.data) {
-          this.$swal("", error.response.data.error, "error");
-        } else {
-          this.$swal("", error.Message, "error");
-        }
-      }
-    },
-    async ShowDetail(index) {
-      let databaseName = localStorage.databaseName;
-      let F_PO = this.DataTable[index].LOT_NO;
-      try {
-        let responseData = await Repository.getApiServer(
-          `GetLoadFormQWip?database_name=${databaseName}&trans_name=${this.transaction}&lot_no=${F_PO}`
-        );
-        this.ShowDataDetail = responseData.data.data;
-        if (this.ShowDataDetail.length > 0) {
-          let firstItem = this.ShowDataDetail[0];
-          this.model.LOT_NO = firstItem.LOT_NO;
-          this.model.QTY = firstItem.SCHEDULE_COMPLETION_QTY;
-          this.isShowForm = true;
-        } else {
-          this.isShowForm = false;
-        }
-      } catch (error) {
-        console.error("ShowForm Error:", error);
+        console.error("LoadForm Error:", error);
         const message =
           error.response?.data?.error ||
           error.message ||
           "An unexpected error occurred.";
         this.$swal("", message, "error");
+      }
+    },
+    async ShowDetail() {
+      let databaseName = localStorage.databaseName;
+      let lot_no = this.valueSearch;
+      try {
+        let payload = {
+          database_name: databaseName,
+          IN_FUNC: this.transaction,
+          IN_SUB_FUNC: "ShowDataByMO",
+          IN_EMP: localStorage.username,
+          IN_LOTNO: lot_no,
+          IN_ACTION_QTY: "",
+          IN_DATA: lot_no,
+        };
+        let { data } = await Repository.getRepo("GetDataMerge", payload);
+        this.ShowDataDetail = data.data;
+        console.log(this.ShowDataDetail);
+        if (data.result == "ok") {
+          let firstItem = this.ShowDataDetail[0];
+          this.model.LOT_NO = firstItem.MO_NUMBER;
+          this.model.QTY = firstItem.TARGET_QTY;
+          this.model.ASSY_QTY = firstItem.ASSEMBLY_QTY;
+          this.model.SBT_QTY = firstItem.SBT_QTY;
+          this.model.TEST_QTY = firstItem.TEST_QTY;
+
+          this.DataTable1 = data.data;
+          if (this.DataTable1.length > 0) {
+            this.DataTableHeader1 = Object.keys(this.DataTable1[0]);
+          }
+          this.LoadComponent();
+          this.isShowForm = true;
+        } else {
+          this.$swal("", data.result, "error");
+          this.isShowForm = false;
+        }
+      } catch (error) {
+        console.error("ShowForm Error:", error);
       }
     },
     pad(number) {
@@ -487,8 +571,10 @@ export default {
       this.isShowForm = false;
       this.isShowSubmitForm = true;
       this.additionalRows = [];
-      this.model.SCHED_QTY = "";
-      this.LoadComponent();
+      this.model.ASSY_QTY = "";
+      this.model.SBT_QTY = "";
+      this.model.TEST_QTY = "";
+      //this.LoadComponent();
     },
     ReturnForm() {
       this.DataTable = [];
@@ -496,8 +582,10 @@ export default {
       this.isShowForm = false;
       this.isShowSubmitForm = true;
       this.additionalRows = [];
-      this.model.SCHED_QTY = "";
-      this.LoadComponent();
+      this.model.ASSY_QTY = "";
+      this.model.SBT_QTY = "";
+      this.model.TEST_QTY = "";
+      //this.LoadComponent();
     },
     BackToParent() {
       this.$router.push({ path: "/Home/ConfigApp/QWIP_Trans" });
@@ -619,6 +707,7 @@ export default {
   font-size: 16px;
   border-radius: 5px;
   width: 80%;
+  height: 80%;
   overflow: auto;
   //height: auto;
   //min-height: 100vh;
@@ -782,7 +871,7 @@ export default {
 .class-hr hr {
   margin: 0 auto;
   padding: 0;
-  width: 80%;
+  width: 100%;
   color: #000;
 }
 .td-edit {
