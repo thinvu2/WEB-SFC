@@ -1,8 +1,6 @@
 <template>
   <div class="div-content">
-    <div class="div-top">
-      {{ $store.state.language == "En" ? "All applications" : "Kho ứng dụng" }}
-    </div>
+    <div class="div-top">QualcommApps</div>
     <div class="div-app col-md-12 row">
       <template v-for="(item, index) in showIcon" :key="index">
         <div class="icon-app col-sm-2" :title="item.Name">
@@ -20,7 +18,7 @@
   </div>
 </template>
 <script>
-import QualcommApplications from "../data/qualcommApps";
+import QualcommRoutes from "../data/qualcommApps";
 import Repository from "../services/Repository";
 export default {
   data() {
@@ -53,15 +51,15 @@ export default {
           return;
         }
         if (this.dataPrivilege[0].PASSW === "IT") {
-          this.showIcon = QualcommApplications[1].Applications;
+          this.showIcon = QualcommRoutes[1].Applications;
         } else if (this.dataPrivilege[0].PASSW === "QA") {
-          this.showIcon = QualcommApplications[2].Applications;
+          this.showIcon = QualcommRoutes[2].Applications;
         } else if (this.dataPrivilege[0].PASSW === "PM") {
-          this.showIcon = QualcommApplications[3].Applications;
+          this.showIcon = QualcommRoutes[3].Applications;
         } else if (this.dataPrivilege[0].PASSW === "PD") {
-          this.showIcon = QualcommApplications[4].Applications;
+          this.showIcon = QualcommRoutes[4].Applications;
         } else {
-          this.showIcon = QualcommApplications[0].Applications;
+          this.showIcon = QualcommRoutes[0].Applications;
         }
       } catch (error) {
         console.error("CheckEmpClass Error:", error);

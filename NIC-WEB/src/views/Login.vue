@@ -183,44 +183,6 @@ export default {
       language: "",
     };
   },
-  methods: {
-    changeLanguage(lang) {
-      this.$store.commit("changeLanguage", lang);
-      localStorage.language = lang;
-      console.log(lang);
-    },
-    
-    async submitLogin() {
-      if (typeof this.database == "undefined" || this.database.length == 0) {
-        if (this.$store.state.language == "En") {
-          this.state_alert = "You must choose database";
-        } else {
-          this.state_alert = "Bạn phải chọn database";
-        }
-      } else {
-        var payload = {
-          DatabaseName: this.database,
-          UserName: this.username,
-          PassWord: this.password,
-        };
-        var { data } = await Repository.getRepo("CheckLogin", payload);
-        if (data.result == "ok") {
-          localStorage.databaseName = this.database;
-          localStorage.username = this.username;
-          localStorage.password = this.password;
-          localStorage.empname = data.emp_name;
-          window.location.href = window.location.origin + "/#/Home";
-        } else
-        {
-          if (this.$store.state.language == "En") {
-            this.state_alert = "Wrong username or password";
-          } else {
-            this.state_alert = "Sai tài khoản hoặc mật khẩu";
-          }
-        }
-      }
-    },
-  },
   created() {
     document.title = "Login";
     if (typeof localStorage.databaseName != "undefined") {
@@ -260,6 +222,46 @@ export default {
             "Vi";
       }
     }
+  },
+  methods: {
+    changeLanguage(lang) {
+      this.$store.commit("changeLanguage", lang);
+      localStorage.language = lang;
+      console.log(lang);
+    },
+    
+    async submitLogin() {
+      if (typeof this.database == "undefined" || this.database.length == 0) {
+        if (this.$store.state.language == "En") {
+          this.state_alert = "You must choose database";
+        } else {
+          this.state_alert = "Bạn phải chọn database";
+        }
+      } else {
+        let payload = {
+          DatabaseName: this.database,
+          UserName: this.username,
+          PassWord: this.password,
+        };
+        let { data } = await Repository.getRepo("CheckLogin", payload);
+        console.log('data', data);
+        if (data.result == "ok") {
+          localStorage.databaseName = this.database;
+          localStorage.username = this.username;
+          localStorage.password = this.password;
+          localStorage.empname = data.emp_name;
+          window.location.href = window.location.origin + "#";
+          console.log('aa', window.location.href);
+        } else
+        {
+          if (this.$store.state.language == "En") {
+            this.state_alert = "Wrong username or password";
+          } else {
+            this.state_alert = "Sai tài khoản hoặc mật khẩu";
+          }
+        }
+      }
+    },
   },
 };
 </script>

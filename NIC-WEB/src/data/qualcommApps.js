@@ -1,4 +1,4 @@
-let QualcommApplications = [
+let QualcommRoutes = [
   //No Privilege
         {
             Applications: [
@@ -110,4 +110,4 @@ let QualcommApplications = [
         }
     ]
 
-export default QualcommApplications;
+export default QualcommRoutes;
